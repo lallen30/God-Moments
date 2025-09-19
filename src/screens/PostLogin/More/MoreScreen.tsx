@@ -32,7 +32,7 @@ const MoreScreen: React.FC<MoreScreenProps> = ({ navigation }) => {
       id: 'our-mission',
       title: 'Our Mission',
       icon: 'heart-outline',
-      screen: 'About Us',
+      screen: 'Our Mission',
     },
     {
       id: 'privacy-policy',
@@ -67,7 +67,10 @@ const MoreScreen: React.FC<MoreScreenProps> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => {
+          console.log('More screen back button pressed');
+          navigation.navigate('Home');
+        }} style={styles.backButton}>
           <Icon name="chevron-back" size={24} color={colors.textDark} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>More</Text>
@@ -122,7 +125,9 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.light,
   },
   backButton: {
-    padding: 4,
+    padding: 12,
+    borderRadius: 20,
+    zIndex: 1000,
   },
   headerTitle: {
     flex: 1,

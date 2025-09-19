@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
   ImageBackground,
+  Image,
   Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -20,7 +21,14 @@ const TheGodMinuteScreen: React.FC<TheGodMinuteScreenProps> = ({ navigation }) =
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity 
+          onPress={() => {
+            navigation.navigate('More');
+          }} 
+          style={styles.backButton}
+          activeOpacity={0.7}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+        >
           <Icon name="chevron-back" size={24} color={colors.textDark} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>The God Minute</Text>
@@ -29,13 +37,20 @@ const TheGodMinuteScreen: React.FC<TheGodMinuteScreenProps> = ({ navigation }) =
 
       {/* Hero Section */}
       <ImageBackground
-        source={require('../../../assets/images/hero.png')}
+        source={require('../../../assets/images/hero-header.png')}
         style={styles.heroSection}
         resizeMode="cover"
       >
         <View style={styles.heroOverlay}>
-          <Text style={styles.heroTitle}>THE GOD MINUTE</Text>
-          <Text style={styles.heroSubtitle}>DAILY SPIRITUAL MOMENTS</Text>
+          <View style={styles.appIconContainer}>
+            <View style={styles.appIcon}>
+              <Image 
+                source={require('../../../assets/images/god-minute.png')}
+                style={styles.godMinuteImage}
+                resizeMode="contain"
+              />
+            </View>
+          </View>
         </View>
       </ImageBackground>
 
@@ -44,34 +59,38 @@ const TheGodMinuteScreen: React.FC<TheGodMinuteScreenProps> = ({ navigation }) =
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.comingSoonSection}>
-          <View style={styles.comingSoonCard}>
-            <Icon name="time-outline" size={64} color={colors.accent} style={styles.comingSoonIcon} />
-            <Text style={styles.comingSoonTitle}>Coming Soon</Text>
-            <Text style={styles.comingSoonDescription}>
-              The God Minute is a new feature that will provide you with quick, 
-              meaningful spiritual moments throughout your day. Stay tuned for 
-              this exciting addition to your spiritual journey.
-            </Text>
-            <View style={styles.featuresList}>
-              <View style={styles.featureItem}>
-                <Icon name="checkmark-circle-outline" size={20} color={colors.accent} />
-                <Text style={styles.featureText}>One-minute spiritual reflections</Text>
-              </View>
-              <View style={styles.featureItem}>
-                <Icon name="checkmark-circle-outline" size={20} color={colors.accent} />
-                <Text style={styles.featureText}>Daily inspirational messages</Text>
-              </View>
-              <View style={styles.featureItem}>
-                <Icon name="checkmark-circle-outline" size={20} color={colors.accent} />
-                <Text style={styles.featureText}>Quick prayer moments</Text>
-              </View>
-              <View style={styles.featureItem}>
-                <Icon name="checkmark-circle-outline" size={20} color={colors.accent} />
-                <Text style={styles.featureText}>Spiritual growth tips</Text>
-              </View>
-            </View>
+        {/* Download Buttons */}
+        <View style={styles.downloadSection}>
+          <TouchableOpacity style={styles.downloadButton}>
+            <Text style={styles.downloadButtonText}>GET IT ON Google Play</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.downloadButton}>
+            <Text style={styles.downloadButtonText}>Download on the App Store</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Description Card */}
+        <View style={styles.contentCard}>
+          <View style={styles.cardBorder} />
+          <Text style={styles.cardTitle}>The God Minute</Text>
+          <Text style={styles.cardDescription}>
+            The God Minute is a small group of priests, nuns and lay people who start their day in prayer. Soft music, sacred scripture and a thoughtful reflection are weaved into a 10 minute guided reflection. Listen with your coffee in the morning, while driving to work or taking the dog for a walk. See how easy and beautiful prayer can be.
+          </Text>
+        </View>
+
+        {/* Quote Card */}
+        <View style={styles.quoteCard}>
+          <View style={styles.cardBorder} />
+          <View style={styles.authorPhoto}>
+            <Image 
+              source={require('../../../assets/images/priest.png')}
+              style={styles.priestImage}
+              resizeMode="cover"
+            />
           </View>
+          <Text style={styles.quoteText}>
+            We created The God Minute to help people connect with God every day through beautiful prayer.
+          </Text>
         </View>
 
         <View style={styles.footer}>
@@ -101,7 +120,9 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.light,
   },
   backButton: {
-    padding: 4,
+    padding: 12,
+    borderRadius: 20,
+    zIndex: 1000,
   },
   headerTitle: {
     flex: 1,
@@ -115,7 +136,7 @@ const styles = StyleSheet.create({
     width: 32, // Same width as back button for centering
   },
   heroSection: {
-    height: height * 0.25,
+    height: height * 0.35,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -126,76 +147,147 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  heroTitle: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    textAlign: 'center',
-    lineHeight: 36,
+  appIconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  heroSubtitle: {
-    fontSize: 14,
-    color: '#FFFFFF',
-    marginTop: 8,
-    letterSpacing: 2,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 30,
-    paddingBottom: 20,
-  },
-  comingSoonSection: {
-    marginBottom: 40,
-  },
-  comingSoonCard: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: 16,
-    padding: 30,
+  appIcon: {
+    width: 120,
+    height: 120,
+    backgroundColor: colors.white,
+    borderRadius: 20,
+    justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 4,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 8,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
   },
-  comingSoonIcon: {
-    marginBottom: 20,
-  },
-  comingSoonTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.textDark,
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  comingSoonDescription: {
-    fontSize: 16,
-    color: colors.medium,
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 30,
-  },
-  featuresList: {
-    width: '100%',
-    alignItems: 'flex-start',
-  },
-  featureItem: {
-    flexDirection: 'row',
+  iconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#FFD700',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
+  },
+  iconText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center',
+    lineHeight: 12,
+  },
+  godMinuteImage: {
+    width: 100,
+    height: 100,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 20,
+  },
+  downloadSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 30,
     paddingHorizontal: 10,
   },
-  featureText: {
+  downloadButton: {
+    backgroundColor: '#333',
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 8,
+    flex: 0.48,
+    alignItems: 'center',
+  },
+  downloadButtonText: {
+    color: colors.white,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  contentCard: {
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 3,
+    position: 'relative',
+  },
+  cardBorder: {
+    position: 'absolute',
+    left: 0,
+    top: 20,
+    bottom: 20,
+    width: 4,
+    backgroundColor: '#8B4513',
+    borderRadius: 2,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#8B4513',
+    marginBottom: 16,
+    marginLeft: 16,
+  },
+  cardDescription: {
     fontSize: 16,
     color: colors.textDark,
-    marginLeft: 12,
-    flex: 1,
+    lineHeight: 24,
+    marginLeft: 16,
+  },
+  quoteCard: {
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 3,
+    position: 'relative',
+    alignItems: 'center',
+  },
+  authorPhoto: {
+    marginBottom: 20,
+  },
+  photoCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#D4A574',
+  },
+  priestImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+  },
+  quoteText: {
+    fontSize: 16,
+    color: colors.textDark,
+    lineHeight: 24,
+    textAlign: 'center',
+    fontStyle: 'italic',
+    marginLeft: 16,
+    marginRight: 16,
   },
   footer: {
     alignItems: 'center',

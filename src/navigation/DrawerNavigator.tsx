@@ -27,6 +27,7 @@ import AccountSettingsScreen from '../screens/PostLogin/Settings/AccountSettings
 import MoreScreen from '../screens/PostLogin/More/MoreScreen';
 import TheGodMinuteScreen from '../screens/PostLogin/TheGodMinute/TheGodMinuteScreen';
 import ContactScreen from '../screens/PostLogin/Contact/ContactScreen';
+import OurMissionScreen from '../screens/PostLogin/OurMission/OurMissionScreen';
 // Removed TermsConditionsScreen import as it's not found
 
 const Drawer = createDrawerNavigator();
@@ -95,21 +96,21 @@ const AIWrapper = withNavigationWrapper(() => (
   </View>
 ));
 
-const PrivacyPolicyWrapper = withNavigationWrapper(() => (
+const PrivacyPolicyWrapper = withNavigationWrapper(({ navigation }: any) => (
   <View style={styles.container}>
-    <PrivacyPolicyScreen />
+    <PrivacyPolicyScreen navigation={navigation} />
   </View>
 ));
 
-const TermsConditionsWrapper = withNavigationWrapper(() => (
+const TermsConditionsWrapper = withNavigationWrapper(({ navigation }: any) => (
   <View style={styles.container}>
-    <TermsConditionsScreen />
+    <TermsConditionsScreen navigation={navigation} />
   </View>
 ));
 
-const AccountSettingsWrapper = withNavigationWrapper(({ navigation }: any) => (
+const AccountSettingsWrapper = withNavigationWrapper(() => (
   <View style={styles.container}>
-    <AccountSettingsScreen navigation={navigation} />
+    <AccountSettingsScreen />
   </View>
 ));
 
@@ -128,6 +129,12 @@ const TheGodMinuteWrapper = withNavigationWrapper(({ navigation }: any) => (
 const ContactWrapper = withNavigationWrapper(() => (
   <View style={styles.container}>
     <ContactScreen />
+  </View>
+));
+
+const OurMissionWrapper = withNavigationWrapper(({ navigation }: any) => (
+  <View style={styles.container}>
+    <OurMissionScreen navigation={navigation} />
   </View>
 ));
 
@@ -260,6 +267,16 @@ const DrawerNavigator = ({ navigation }: any) => {
           options={{
             drawerIcon: ({ color }) => (
               <Icon name="mail-outline" size={24} color={color} />
+            ),
+            drawerItemStyle: { display: 'none' },
+          }}
+        />
+        <Drawer.Screen
+          name="Our Mission"
+          component={OurMissionWrapper}
+          options={{
+            drawerIcon: ({ color }) => (
+              <Icon name="heart-outline" size={24} color={color} />
             ),
             drawerItemStyle: { display: 'none' },
           }}

@@ -14,17 +14,16 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { API } from '../../../config/apiConfig';
 import axiosRequest from '../../../utils/axiosUtils';
-import { styles } from './Styles';
 import { colors } from '../../../theme/colors';
+import { styles } from './Styles';
 
 const ContactScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -40,7 +39,6 @@ const ContactScreen = () => {
         if (userData.userData) {
           setName(userData.userData.display_name || '');
           setEmail(userData.userData.user_email || '');
-          setPhone(userData.userData.phone || '');
         }
       }
     } catch (error) {
@@ -51,7 +49,7 @@ const ContactScreen = () => {
   const handleSubmit = async () => {
     if (isSubmitting) return;
 
-    if (!name || !email || !subject || !message) {
+    if (!name || !email || !message) {
       Alert.alert('Error', 'Please fill in all required fields');
       return;
     }
@@ -67,8 +65,7 @@ const ContactScreen = () => {
       const params = new URLSearchParams();
       params.append('name', name.trim());
       params.append('email', email.trim());
-      if (phone) params.append('phone', phone.trim());
-      params.append('subject', subject.trim());
+      params.append('subject', 'Contact Form Message'); // Default subject
       params.append('message', message.trim());
 
       const response = await axiosRequest.post(`${API.ENDPOINTS.MOBILEAPI}/contact_us`, 
@@ -86,8 +83,6 @@ const ContactScreen = () => {
         // Clear form
         setName('');
         setEmail('');
-        setPhone('');
-        setSubject('');
         setMessage('');
         
         // Show success and navigate
@@ -113,90 +108,94 @@ const ContactScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity 
+          onPress={() => {
+            navigation.navigate('More');
+          }} 
+          style={styles.backButton}
+          activeOpacity={0.7}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+        >
+          <Icon name="chevron-back" size={24} color={colors.textDark} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Contact Us</Text>
+        <View style={styles.headerSpacer} />
+      </View>
+      
       <KeyboardAvoidingView 
         style={styles.keyboardAvoidingView}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
       >
-        <View style={styles.contentContainer}>
-          <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={styles.scrollViewContent}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollViewContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Section Title */}
+          <Text style={styles.sectionTitle}>Send us a message</Text>
+          
+          {/* Form Container */}
+          <View style={styles.formContainer}>
+            <Text style={styles.label}>Your Name</Text>
+            <TextInput
+              style={styles.input}
+              value={name}
+              onChangeText={setName}
+              placeholder="John Smith"
+              placeholderTextColor="#999"
+              returnKeyType="next"
+            />
+
+            <Text style={styles.label}>Email Address</Text>
+            <TextInput
+              style={styles.input}
+              value={email}
+              onChangeText={setEmail}
+              placeholder="example@email.com"
+              placeholderTextColor="#999"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              returnKeyType="next"
+            />
+
+            <Text style={styles.label}>Message</Text>
+            <TextInput
+              style={[styles.input, styles.messageInput]}
+              value={message}
+              onChangeText={setMessage}
+              placeholder="Your message"
+              placeholderTextColor="#999"
+              multiline
+              numberOfLines={4}
+              returnKeyType="done"
+              onSubmitEditing={Keyboard.dismiss}
+            />
+          </View>
+        </ScrollView>
+
+        {/* Button and Footer */}
+        <View style={styles.buttonWrapper}>
+          <TouchableOpacity
+            style={[styles.submitButton, isSubmitting && styles.submitButtonDisabled]}
+            onPress={() => {
+              Keyboard.dismiss();
+              handleSubmit();
+            }}
+            disabled={isSubmitting}
           >
-            <View style={styles.formContainer}>
-              <Text style={styles.label}>Name *</Text>
-              <TextInput
-                style={styles.input}
-                value={name}
-                onChangeText={setName}
-                placeholder="Enter your full name"
-                placeholderTextColor={colors.dark}
-                returnKeyType="next"
-              />
-
-              <Text style={styles.label}>Email *</Text>
-              <TextInput
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                placeholder="Enter your email"
-                placeholderTextColor={colors.dark}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                returnKeyType="next"
-              />
-
-              <Text style={styles.label}>Phone</Text>
-              <TextInput
-                style={styles.input}
-                value={phone}
-                onChangeText={setPhone}
-                placeholder="Enter your phone number"
-                placeholderTextColor={colors.dark}
-                keyboardType="phone-pad"
-                returnKeyType="next"
-              />
-
-              <Text style={styles.label}>Subject *</Text>
-              <TextInput
-                style={styles.input}
-                value={subject}
-                onChangeText={setSubject}
-                placeholder="Enter subject"
-                placeholderTextColor={colors.dark}
-                returnKeyType="next"
-              />
-
-              <Text style={styles.label}>Message *</Text>
-              <TextInput
-                style={[styles.input, styles.messageInput]}
-                value={message}
-                onChangeText={setMessage}
-                placeholder="Enter a brief message"
-                placeholderTextColor={colors.dark}
-                multiline
-                numberOfLines={4}
-                returnKeyType="done"
-                onSubmitEditing={Keyboard.dismiss}
-              />
-            </View>
-          </ScrollView>
-
-          <View style={styles.buttonWrapper}>
-            <TouchableOpacity
-              style={[styles.submitButton, isSubmitting && styles.submitButtonDisabled]}
-              onPress={() => {
-                Keyboard.dismiss();
-                handleSubmit();
-              }}
-              disabled={isSubmitting}
-            >
-              <Text style={styles.submitButtonText}>
-                {isSubmitting ? 'Sending...' : 'Send Message'}
-              </Text>
-            </TouchableOpacity>
+            <Text style={styles.submitButtonText}>
+              {isSubmitting ? 'Sending...' : 'Send Message'}
+            </Text>
+          </TouchableOpacity>
+          
+          <View style={styles.footer}>
+            <Text style={styles.footerIcon}>🙏</Text>
+            <Text style={styles.footerTitle}>God Moments</Text>
+            <Text style={styles.footerSubtitle}>Made with ♡ for your spiritual journey</Text>
           </View>
         </View>
       </KeyboardAvoidingView>

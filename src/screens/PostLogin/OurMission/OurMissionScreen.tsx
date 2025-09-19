@@ -6,15 +6,17 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
+  ImageBackground,
+  Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { colors } from '../../../../theme/colors';
+import { colors } from '../../../theme/colors';
 
-interface PrivacyPolicyScreenProps {
+interface OurMissionScreenProps {
   navigation: any;
 }
 
-const PrivacyPolicyScreen: React.FC<PrivacyPolicyScreenProps> = ({ navigation }) => {
+const OurMissionScreen: React.FC<OurMissionScreenProps> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -28,45 +30,40 @@ const PrivacyPolicyScreen: React.FC<PrivacyPolicyScreenProps> = ({ navigation })
         >
           <Icon name="chevron-back" size={24} color={colors.textDark} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Privacy Policy</Text>
+        <Text style={styles.headerTitle}>Our Mission</Text>
         <View style={styles.headerSpacer} />
       </View>
+
+      {/* Hero Section */}
+      <ImageBackground
+        source={require('../../../assets/images/hero.png')}
+        style={styles.heroSection}
+        resizeMode="cover"
+      >
+        
+      </ImageBackground>
 
       <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Top Section - Your Privacy Matters */}
-        <Text style={styles.topTitle}>Your Privacy Matters</Text>
-        <Text style={styles.topDescription}>
-          We are committed to protecting your personal information and spiritual journey with the utmost care and respect.
-        </Text>
-
-        {/* Information Collection Section */}
+        {/* About God Moments Card */}
         <View style={styles.contentCard}>
           <View style={styles.cardBorder} />
-          <Text style={styles.cardTitle}>Information Collection and Use</Text>
+          <Text style={styles.cardTitle}>About God Moments</Text>
           <Text style={styles.cardDescription}>
-            Prayer Reminder is designed with privacy as a core principle. We do not collect, store, or transmit any personal information about you or your device to external servers. All app settings, including your notification time preferences and timezone selection, are stored locally on your device only. We do not require user accounts, email addresses, or any form of personal identification to use this app.
+            Our app is a simple way to awaken you to the presence of God before you. Twice each day, at random times, your phone will gently chime with a bell and display a short scripture verse, inviting you to pause for a sacred moment of gratitude and prayer.
           </Text>
+          <Text style={styles.tagline}>Stop. Breathe. Give thanks.</Text>
         </View>
 
-        {/* Data Storage Section */}
+        {/* Our Mission Card */}
         <View style={styles.contentCard}>
           <View style={styles.cardBorder} />
-          <Text style={styles.cardTitle}>Data Storage and Security</Text>
+          <Text style={styles.cardTitle}>Our Mission</Text>
           <Text style={styles.cardDescription}>
-            Your notification preferences, timezone settings, and prayer history are stored securely on your local device using standard iOS and Android secure storage mechanisms. This information never leaves your device and is not shared with our servers or any third parties. If you delete the app, all locally stored data is permanently removed from your device.
-          </Text>
-        </View>
-
-        {/* Changes to Privacy Policy Section */}
-        <View style={styles.contentCard}>
-          <View style={styles.cardBorder} />
-          <Text style={styles.cardTitle}>Changes to Privacy Policy</Text>
-          <Text style={styles.cardDescription}>
-            We may update this privacy policy periodically to reflect changes in our practices or applicable laws. Any updates will be posted within the app and will take effect immediately upon posting. Your continued use of Prayer Reminder after any changes indicates your acceptance of the updated privacy policy. If you have questions about this privacy policy, please contact us.
+            We are a ministry of evangelization offered by the Vincentian priests and brothers of St. Vincent de Paul. If you're seeking a deeper prayer experience, discover our companion app, The God Minute—a 10-minute daily prayer that weaves together music, scripture, and reflection.
           </Text>
         </View>
 
@@ -79,6 +76,8 @@ const PrivacyPolicyScreen: React.FC<PrivacyPolicyScreenProps> = ({ navigation })
     </SafeAreaView>
   );
 };
+
+const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -116,28 +115,40 @@ const styles = StyleSheet.create({
   headerSpacer: {
     width: 32,
   },
+  heroSection: {
+    height: height * 0.3,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  heroOverlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  heroTitle: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    lineHeight: 40,
+    letterSpacing: 2,
+  },
+  heroSubtitle: {
+    fontSize: 14,
+    color: '#FFFFFF',
+    marginTop: 8,
+    letterSpacing: 3,
+    fontWeight: '300',
+  },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 30,
     paddingBottom: 20,
-  },
-  topTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#8B4513',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  topDescription: {
-    fontSize: 16,
-    color: colors.textDark,
-    lineHeight: 24,
-    marginBottom: 30,
-    textAlign: 'center',
-    paddingHorizontal: 10,
   },
   contentCard: {
     backgroundColor: colors.white,
@@ -166,7 +177,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#8B4513',
+    color: colors.textDark,
     marginBottom: 16,
     marginLeft: 16,
   },
@@ -175,10 +186,18 @@ const styles = StyleSheet.create({
     color: colors.textDark,
     lineHeight: 24,
     marginLeft: 16,
+    marginBottom: 16,
+  },
+  tagline: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#D4A574',
+    textAlign: 'center',
+    marginTop: 8,
   },
   footer: {
     alignItems: 'center',
-    paddingTop: 20,
+    paddingTop: 30,
     paddingBottom: 20,
   },
   footerIcon: {
@@ -198,4 +217,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PrivacyPolicyScreen;
+export default OurMissionScreen;

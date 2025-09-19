@@ -13,13 +13,11 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
 import { colors } from '../../../theme/colors';
 
-interface AccountSettingsScreenProps {
-  navigation: any;
-}
-
-const AccountSettingsScreen: React.FC<AccountSettingsScreenProps> = ({ navigation }) => {
+const AccountSettingsScreen = () => {
+  const navigation = useNavigation<any>();
   // State for notification settings
   const [allowNotifications, setAllowNotifications] = useState(false);
   const [allowSounds, setAllowSounds] = useState(true);
@@ -63,7 +61,7 @@ const AccountSettingsScreen: React.FC<AccountSettingsScreenProps> = ({ navigatio
       const userPreferences = await AsyncStorage.getItem('userPreferences');
       if (userPreferences !== null) {
         const preferences = JSON.parse(userPreferences);
-        setAllowSounds(preferences.allowSounds || true);
+        setAllowSounds(preferences.allowSounds !== undefined ? preferences.allowSounds : true);
         setStartTime(preferences.startTime || '7:00');
         setStartTimeAmPm(preferences.startTimeAmPm || 'AM');
         setEndTime(preferences.endTime || '4:30');
@@ -132,7 +130,14 @@ const AccountSettingsScreen: React.FC<AccountSettingsScreenProps> = ({ navigatio
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate('More')} style={styles.backButton}>
+        <TouchableOpacity 
+          onPress={() => {
+            navigation.navigate('More');
+          }} 
+          style={styles.backButton}
+          activeOpacity={0.7}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+        >
           <Icon name="chevron-back" size={24} color={colors.textDark} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Account Settings</Text>
@@ -337,7 +342,12 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.light,
   },
   backButton: {
-    padding: 4,
+    padding: 12,
+    borderRadius: 20,
+    zIndex: 1000,
+    position: 'absolute',
+    left: 20,
+    top: 16,
   },
   headerTitle: {
     flex: 1,

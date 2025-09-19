@@ -37,36 +37,40 @@ const TermsConditionsScreen: React.FC<TermsConditionsScreenProps> = ({ navigatio
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Top Section - Terms of Service */}
-        <Text style={styles.topTitle}>Terms of Service</Text>
-        <Text style={styles.topDescription}>
-          These terms govern your use of our spiritual companion app. By using Prayer of the Day, you agree to these terms and our commitment to creating a sacred digital space.
-        </Text>
-
-        {/* Acceptance of Terms Section */}
-        <View style={styles.contentCard}>
-          <View style={styles.cardBorder} />
-          <Text style={styles.cardTitle}>Acceptance of Terms</Text>
-          <Text style={styles.cardDescription}>
-            By downloading, installing, or using the Prayer Reminder mobile application, you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use this app. These terms constitute a legal agreement between you and the developers of Prayer Reminder, and your use of the app indicates your acceptance of all terms and conditions outlined herein.
+        <View style={styles.contentContainer}>
+          <Text style={styles.sectionTitle}>Terms & Conditions</Text>
+          
+          <Text style={styles.paragraph}>
+            Welcome to God Moments. By using our mobile application, you agree to comply with and be bound by the following terms and conditions of use.
           </Text>
-        </View>
 
-        {/* App Usage and License Section */}
-        <View style={styles.contentCard}>
-          <View style={styles.cardBorder} />
-          <Text style={styles.cardTitle}>App Usage and License</Text>
-          <Text style={styles.cardDescription}>
-            Prayer Reminder is provided to you as a free mobile application for personal, non-commercial use. We grant you a limited, non-exclusive, non-transferable license to use the app on your personal device. You may not copy, distribute, sell, or create derivative works based on the app or its content. The scripture snippets and prayer content included in the app are intended for personal spiritual reflection and should not be redistributed or used for commercial purposes.
+          <Text style={styles.subheading}>Acceptance of Terms</Text>
+          <Text style={styles.paragraph}>
+            By accessing and using the God Moments app, you accept and agree to be bound by the terms and provision of this agreement.
           </Text>
-        </View>
 
-        {/* Updates and Termination Section */}
-        <View style={styles.contentCard}>
-          <View style={styles.cardBorder} />
-          <Text style={styles.cardTitle}>Updates and Termination</Text>
-          <Text style={styles.cardDescription}>
-            We may update these terms of service at any time without notice. By using this app, you are agreeing to be bound by the then current version of these terms of service.
+          <Text style={styles.subheading}>Use License</Text>
+          <Text style={styles.paragraph}>
+            Permission is granted to temporarily use God Moments for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:
+          </Text>
+          <Text style={styles.bulletPoint}>• Modify or copy the materials</Text>
+          <Text style={styles.bulletPoint}>• Use the materials for any commercial purpose or for any public display</Text>
+          <Text style={styles.bulletPoint}>• Attempt to reverse engineer any software contained in the app</Text>
+          <Text style={styles.bulletPoint}>• Remove any copyright or other proprietary notations from the materials</Text>
+
+          <Text style={styles.subheading}>Disclaimer</Text>
+          <Text style={styles.paragraph}>
+            The materials in God Moments are provided on an 'as is' basis. God Moments makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.
+          </Text>
+
+          <Text style={styles.subheading}>Limitations</Text>
+          <Text style={styles.paragraph}>
+            In no event shall God Moments or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials in God Moments, even if God Moments or an authorized representative has been notified orally or in writing of the possibility of such damage.
+          </Text>
+
+          <Text style={styles.subheading}>Revisions</Text>
+          <Text style={styles.paragraph}>
+            God Moments may revise these terms of service at any time without notice. By using this app, you are agreeing to be bound by the then current version of these terms of service.
           </Text>
         </View>
 
@@ -124,22 +128,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 20,
   },
-  topTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#8B4513',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  topDescription: {
-    fontSize: 16,
-    color: colors.textDark,
-    lineHeight: 24,
-    marginBottom: 30,
-    textAlign: 'center',
-    paddingHorizontal: 10,
-  },
-  contentCard: {
+  contentContainer: {
     backgroundColor: colors.white,
     borderRadius: 12,
     padding: 20,
@@ -152,29 +141,33 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 3,
-    position: 'relative',
   },
-  cardBorder: {
-    position: 'absolute',
-    left: 0,
-    top: 20,
-    bottom: 20,
-    width: 4,
-    backgroundColor: '#8B4513',
-    borderRadius: 2,
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.textDark,
+    marginBottom: 20,
+    textAlign: 'center',
   },
-  cardTitle: {
+  subheading: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#8B4513',
-    marginBottom: 16,
-    marginLeft: 16,
+    color: colors.textDark,
+    marginTop: 20,
+    marginBottom: 10,
   },
-  cardDescription: {
+  paragraph: {
     fontSize: 16,
     color: colors.textDark,
     lineHeight: 24,
-    marginLeft: 16,
+    marginBottom: 16,
+  },
+  bulletPoint: {
+    fontSize: 16,
+    color: colors.textDark,
+    lineHeight: 24,
+    marginBottom: 8,
+    marginLeft: 10,
   },
   footer: {
     alignItems: 'center',
