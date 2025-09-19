@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "591507648086",
+    "project_id": "miin-ojibwe",
+    "storage_bucket": "miin-ojibwe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:591507648086:android:b843130b2e0ac7a44f15f7",
+        "android_client_info": {
+          "package_name": "com.bluestoneapps.miinojibwe"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQIZ2dyK5uY0naZ7_WvyoqFuqD50DFx8E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

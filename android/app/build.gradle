@@ -1,0 +1,108 @@
+apply plugin: "com.android.application"
+apply plugin: "org.jetbrains.kotlin.android"
+apply plugin: "com.facebook.react"
+
+/**
+ * React Native Android configuration.
+ * Most defaults are fine; autolinking stays enabled.
+ */
+react {
+  autolinkLibrariesWithApp()
+}
+
+/** Toggle Proguard (minify) for release if you want smaller builds later. */
+def enableProguardInReleaseBuilds = false
+
+/** JSC flavor used only if Hermes is disabled. */
+def jscFlavor = 'org.webkit:android-jsc:+'
+
+/**
+ * Load signing credentials for the RELEASE (upload) key.
+ * Put these in android/gradle.properties (preferred) or define as env vars.
+ *
+ * android/gradle.properties
+ *   MYAPP_UPLOAD_STORE_FILE=/absolute/path/to/upload-keystore.jks
+ *   MYAPP_UPLOAD_STORE_PASSWORD=*** 
+ *   MYAPP_UPLOAD_KEY_ALIAS=upload
+ *   MYAPP_UPLOAD_KEY_PASSWORD=***
+ */
+def storeFileProp      = project.findProperty("MYAPP_UPLOAD_STORE_FILE") ?: System.getenv("MYAPP_UPLOAD_STORE_FILE")
+def storePasswordProp  = project.findProperty("MYAPP_UPLOAD_STORE_PASSWORD") ?: System.getenv("MYAPP_UPLOAD_STORE_PASSWORD")
+def keyAliasProp       = project.findProperty("MYAPP_UPLOAD_KEY_ALIAS") ?: System.getenv("MYAPP_UPLOAD_KEY_ALIAS")
+def keyPasswordProp    = project.findProperty("MYAPP_UPLOAD_KEY_PASSWORD") ?: System.getenv("MYAPP_UPLOAD_KEY_PASSWORD")
+
+android {
+  ndkVersion rootProject.ext.ndkVersion
+  buildToolsVersion rootProject.ext.buildToolsVersion
+  compileSdk rootProject.ext.compileSdkVersion
+
+  // Package/namespace for your app code & manifest
+  namespace "com.bluestoneapps.miinojibwe"
+
+  defaultConfig {
+    // This is your Play Console applicationId (final once published)
+    applicationId "com.bluestoneapps.miinojibwe"
+
+    minSdkVersion rootProject.ext.minSdkVersion
+    targetSdkVersion rootProject.ext.targetSdkVersion
+
+    // Bump versionCode on every Play upload
+    versionCode 1
+    versionName "1.0.1"
+  }
+
+  signingConfigs {
+    debug {
+      storeFile file('debug.keystore')
+      storePassword 'android'
+      keyAlias 'androiddebugkey'
+      keyPassword 'android'
+    }
+    release {
+      // Use your upload keystore for Play App Signing
+      if (storeFileProp) {
+        storeFile file(storeFileProp)
+        storePassword storePasswordProp
+        keyAlias keyAliasProp
+        keyPassword keyPasswordProp
+      } else {
+        // Fallback prevents build failure if props are missing,
+        // but you'll need real creds before uploading to Play.
+        println "WARNING: Release signing credentials not set. Configure MYAPP_UPLOAD_* in gradle.properties."
+      }
+    }
+  }
+
+  buildTypes {
+    debug {
+      signingConfig signingConfigs.debug
+    }
+    release {
+      signingConfig signingConfigs.release
+      minifyEnabled enableProguardInReleaseBuilds
+      shrinkResources enableProguardInReleaseBuilds
+      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+    }
+  }
+}
+
+dependencies {
+  // The version of react-native is set by the React Native Gradle Plugin
+  implementation("com.facebook.react:react-android")
+
+  // Firebase/OneSignal dependencies
+  implementation platform('com.google.firebase:firebase-bom:32.7.0')
+  implementation 'com.google.firebase:firebase-messaging'
+
+  if (hermesEnabled.toBoolean()) {
+    implementation("com.facebook.react:hermes-android")
+  } else {
+    implementation jscFlavor
+  }
+}
+
+// Autoinstall vector icon fonts during build
+apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
+
+// Apply Google Services plugin (must be at the bottom)
+apply plugin: 'com.google.gms.google-services'
