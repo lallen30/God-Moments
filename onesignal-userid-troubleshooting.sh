@@ -89,7 +89,7 @@ echo "• Push subscription: Follows user ID assignment"
 echo ""
 
 echo -e "${YELLOW}📱 Current Status from Logs:${NC}"
-echo "• OneSignal App ID: 2bf0b7b7-c1ff-478f-a661-9dbb7a5f0965"
+echo "• OneSignal App ID: 2613c87d-4f81-4094-bd84-08495e68bda0"
 echo "• Initialization: ✅ Successful"
 echo "• Permissions: ✅ Granted"
 echo "• User ID: ⏳ Pending (this is the issue we're addressing)"

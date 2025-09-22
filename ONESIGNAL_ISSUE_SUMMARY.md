@@ -10,7 +10,7 @@
 ### 📱 App Configuration
 
 - **Bundle ID**: `com.knoxweb.miin-ojibwe`
-- **OneSignal App ID**: `2bf0b7b7-c1ff-478f-a661-9dbb7a5f0965`
+- **OneSignal App ID**: `2613c87d-4f81-4094-bd84-08495e68bda0`
 - **Platform**: iOS Physical Device (iPhone (2))
 
 ### 🔧 Root Cause Analysis
@@ -21,7 +21,7 @@ The fact that Force Registration failed indicates this is **NOT** a timing issue
 
 #### 1. OneSignal Dashboard Configuration
 
-**Go to:** https://app.onesignal.com/apps/2bf0b7b7-c1ff-478f-a661-9dbb7a5f0965
+**Go to:** https://app.onesignal.com/apps/2613c87d-4f81-4094-bd84-08495e68bda0
 
 **Check these settings:**
 

@@ -33,7 +33,7 @@ export class OneSignalService {
 
     try {
       // Use hardcoded App ID to ensure initialization always occurs
-      const appId = '2bf0b7b7-c1ff-478f-a661-9dbb7a5f0965';
+      const appId = '2613c87d-4f81-4094-bd84-08495e68bda0';
       
       OneSignal.initialize(appId);
 

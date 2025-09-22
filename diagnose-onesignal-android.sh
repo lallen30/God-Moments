@@ -75,7 +75,7 @@ fi
 echo -e "\n${BLUE}4. Checking Environment Variables...${NC}"
 
 if [ -f ".env" ]; then
-    if grep -q "ONESIGNAL_APP_ID=2bf0b7b7-c1ff-478f-a661-9dbb7a5f0965" .env; then
+    if grep -q "ONESIGNAL_APP_ID=2613c87d-4f81-4094-bd84-08495e68bda0" .env; then
         echo -e "${GREEN}✅ OneSignal App ID correct${NC}"
     else
         echo -e "${RED}❌ OneSignal App ID incorrect or missing${NC}"

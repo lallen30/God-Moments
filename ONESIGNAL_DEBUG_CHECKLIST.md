@@ -92,8 +92,8 @@ If permission shows as "Denied" or "Not Asked":
 
 ### OneSignal App Configuration
 
-- **App ID**: 2bf0b7b7-c1ff-478f-a661-9dbb7a5f0965
-- **Dashboard**: https://app.onesignal.com/apps/2bf0b7b7-c1ff-478f-a661-9dbb7a5f0965
+- **App ID**: 2613c87d-4f81-4094-bd84-08495e68bda0
+- **Dashboard**: https://app.onesignal.com/apps/2613c87d-4f81-4094-bd84-08495e68bda0
 
 ### Next Steps if Still Not Working
 
