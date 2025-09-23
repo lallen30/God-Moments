@@ -5,7 +5,7 @@ const axios = require('axios');
 
 // Configuration - get these from your OneSignal dashboard
 const ONESIGNAL_APP_ID = '2613c87d-4f81-4094-bd84-08495e68bda0';
-const ONESIGNAL_REST_API_KEY = 'os_v2_app_fpylpn6b75dy7jtbtw5xuxyjmvgkzbn6sr2ewg5kndclutnaacz54ikmcv2ixm6qchf3nkfac4c5lbp6icbmg2nif24dpt5wdyttzby';
+const ONESIGNAL_REST_API_KEY = '=os_v2_app_eyj4q7kpqfajjpmebbev42f5ud2jhnlvx4mucwmuqemjempuj7gfl7dguc3y3gltzma6bmyxrhsmja2wbx5yr6q4shsgn4lynomvt4y';
 
 async function sendTestPushNotification() {
   try {

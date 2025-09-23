@@ -8,7 +8,7 @@ import type {
   NotificationWillDisplayEvent
 } from 'react-native-onesignal';
 import { EnvConfig } from '../utils/EnvConfig';
-import { Linking, AppState } from 'react-native';
+import { Linking, AppState, Platform } from 'react-native';
 
 export class OneSignalService {
   private static instance: OneSignalService;
@@ -35,28 +35,49 @@ export class OneSignalService {
       // Use hardcoded App ID to ensure initialization always occurs
       const appId = '2613c87d-4f81-4094-bd84-08495e68bda0';
       
+      console.log('🚀 [OneSignal] Starting initialization with App ID:', appId);
+      console.log('📱 [OneSignal] Expected Bundle ID: com.bluestoneapps.godmomentsdevapp');
       OneSignal.initialize(appId);
+      console.log('✅ [OneSignal] Initialize called successfully');
 
-      // Request notification permission
+      // Request notification permission with explicit handling
       try {
-        await OneSignal.Notifications.requestPermission(true);
+        console.log('📱 [OneSignal] Requesting notification permission...');
+        
+        // Check current permission status first
+        const hasPermission = OneSignal.Notifications.hasPermission();
+        console.log('📱 [OneSignal] Current permission status:', hasPermission);
+        
+        if (!hasPermission) {
+          console.log('📱 [OneSignal] Requesting permission...');
+          const permission = await OneSignal.Notifications.requestPermission(true);
+          console.log('📱 [OneSignal] Permission request result:', permission);
+        } else {
+          console.log('✅ [OneSignal] Permission already granted');
+        }
+        
+        // Double-check permission after request
+        const finalPermission = OneSignal.Notifications.hasPermission();
+        console.log('📱 [OneSignal] Final permission status:', finalPermission);
+        
       } catch (permError) {
-        console.warn('Could not request notification permission:', permError);
+        console.error('❌ [OneSignal] Permission request failed:', permError);
       }
 
       // Wait for initialization to complete
-      await new Promise(resolve => setTimeout(resolve, 500));
+      console.log('⏳ [OneSignal] Waiting for initialization to complete...');
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // WORKAROUND: Call OneSignal.login() to force User registration on Android
-      // This fixes the OneSignal v5 Android User ID registration bug
+      // Ensure push subscription is enabled
       try {
-        if (OneSignal.login) {
-          // Generate a unique external ID for this device
-          const deviceId = `device_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-          await OneSignal.login(deviceId);
+        console.log('📱 [OneSignal] Ensuring push subscription is enabled...');
+        if (OneSignal.User && OneSignal.User.pushSubscription) {
+          // Opt into push notifications
+          OneSignal.User.pushSubscription.optIn();
+          console.log('✅ [OneSignal] Push subscription opted in');
         }
-      } catch (loginError) {
-        console.warn('OneSignal.login() failed:', loginError);
+      } catch (subscriptionError) {
+        console.error('❌ [OneSignal] Push subscription error:', subscriptionError);
       }
 
       // Set the notification opened handler
@@ -76,6 +97,21 @@ export class OneSignalService {
       this.setupAppStateListeners();
 
       this.isInitialized = true;
+      console.log('✅ [OneSignal] Initialization complete, starting user monitoring...');
+      
+      // Start monitoring for user registration
+      this.startUserIdMonitoring();
+      
+      // Delayed user registration attempt if natural registration fails
+      setTimeout(async () => {
+        await this.attemptDelayedUserRegistration();
+      }, 5000);
+      
+      // Force refresh subscription after APNS config change
+      setTimeout(async () => {
+        await this.forceRefreshSubscription();
+      }, 7000);
+      
       setTimeout(() => {
         this.logUserState();
       }, 2000);
@@ -88,13 +124,79 @@ export class OneSignalService {
   private async logUserState() {
     try {
       const userId = await this.getOneSignalUserId();
+      
+      // Check push subscription status
+      let pushSubscriptionStatus: any = 'unknown';
+      try {
+        if (OneSignal?.User?.pushSubscription) {
+          const pushSub = OneSignal.User.pushSubscription;
+          pushSubscriptionStatus = {
+            id: pushSub.id || 'none',
+            token: pushSub.token || 'none',
+            optedIn: pushSub.optedIn || false
+          };
+        }
+      } catch (subError) {
+        pushSubscriptionStatus = 'error checking subscription';
+      }
+      
       console.log('🔍 OneSignal User State after initialization:', {
         isInitialized: this.isInitialized,
         userId: userId,
-        hasNotificationPermission: OneSignal?.Notifications?.hasPermission?.() || 'unknown'
+        hasNotificationPermission: OneSignal?.Notifications?.hasPermission?.() || 'unknown',
+        pushSubscription: pushSubscriptionStatus
       });
     } catch (error) {
       console.log('Could not log user state:', error);
+    }
+  }
+
+  // Method to attempt delayed user registration if natural registration fails
+  private async attemptDelayedUserRegistration(): Promise<void> {
+    try {
+      console.log('🔄 [OneSignal] Checking if delayed user registration is needed...');
+      
+      // Check if we already have a user ID
+      const currentUserId = await this.getOneSignalUserId();
+      if (currentUserId && currentUserId !== 'Initialized - ID pending...' && currentUserId !== null) {
+        console.log('✅ [OneSignal] User already registered:', currentUserId);
+        return;
+      }
+      
+      console.log('🔄 [OneSignal] Attempting delayed user registration...');
+      
+      // Try to trigger registration with user properties instead of login
+      if (OneSignal?.User?.addAlias) {
+        const timestamp = Date.now();
+        OneSignal.User.addAlias('device_timestamp', timestamp.toString());
+        console.log('✅ [OneSignal] Added device timestamp alias:', timestamp);
+      }
+      
+      // Add a tag to help trigger registration
+      if (OneSignal?.User?.addTag) {
+        OneSignal.User.addTag('app_version', '1.0.1');
+        OneSignal.User.addTag('platform', Platform.OS);
+        console.log('✅ [OneSignal] Added user tags to trigger registration');
+      }
+      
+      // Ensure push subscription is enabled during delayed registration
+      try {
+        if (OneSignal?.User?.pushSubscription) {
+          OneSignal.User.pushSubscription.optIn();
+          console.log('✅ [OneSignal] Push subscription opted in during delayed registration');
+        }
+      } catch (subscriptionError) {
+        console.error('❌ [OneSignal] Push subscription error during delayed registration:', subscriptionError);
+      }
+      
+      // Wait and check again
+      setTimeout(async () => {
+        const newUserId = await this.getOneSignalUserId();
+        console.log('🔍 [OneSignal] User ID after delayed registration attempt:', newUserId);
+      }, 3000);
+      
+    } catch (error) {
+      console.error('❌ [OneSignal] Delayed user registration failed:', error);
     }
   }
 
@@ -117,6 +219,23 @@ export class OneSignalService {
         launchURL: notificationData.launchURL || notificationData.url
       });
 
+      // Android-specific: Add delay to prevent race conditions
+      if (Platform.OS === 'android') {
+        setTimeout(() => {
+          this.processNotificationClick(actionId, notification);
+        }, 100);
+      } else {
+        this.processNotificationClick(actionId, notification);
+      }
+      
+    } catch (error) {
+      console.error('❌ Error handling notification click:', error);
+    }
+  }
+
+  // Separate method to process notification clicks
+  private processNotificationClick(actionId: string | undefined, notification: OSNotification): void {
+    try {
       // Handle different types of notification clicks
       if (actionId) {
         // Handle action button clicks
@@ -128,11 +247,11 @@ export class OneSignalService {
         this.handleMainNotificationClick(notification);
       }
 
-      // Always try to bring app to foreground
+      // Always try to bring app to foreground (with Android-specific handling)
       this.bringAppToForeground();
       
     } catch (error) {
-      console.error('❌ Error handling notification click:', error);
+      console.error('❌ Error processing notification click:', error);
     }
   }
 
@@ -145,9 +264,19 @@ export class OneSignalService {
       if (notificationData.launchURL || notificationData.url) {
         const url = notificationData.launchURL || notificationData.url;
         console.log('🔗 Opening launch URL:', url);
-        Linking.openURL(url).catch(err => {
-          console.error('Failed to open launch URL:', err);
-        });
+        
+        // Android-specific: Add delay before opening URL to prevent freezing
+        if (Platform.OS === 'android') {
+          setTimeout(() => {
+            Linking.openURL(url).catch(err => {
+              console.error('Failed to open launch URL:', err);
+            });
+          }, 300);
+        } else {
+          Linking.openURL(url).catch(err => {
+            console.error('Failed to open launch URL:', err);
+          });
+        }
         return;
       }
 
@@ -227,20 +356,40 @@ export class OneSignalService {
     try {
       console.log('📱 Bringing app to foreground...');
       
-      // On Android, the app should automatically come to foreground when notification is tapped
-      // This is handled by the Android system and OneSignal SDK
-      
-      // Force app state to active if it's not already
-      if (AppState.currentState !== 'active') {
-        console.log('📱 App state is not active, current state:', AppState.currentState);
-        // The system should handle bringing the app to foreground
-        // We can add additional logic here if needed
+      // Android-specific handling
+      if (Platform.OS === 'android') {
+        console.log('🤖 Android: Handling app foreground transition');
+        
+        // Add a small delay to ensure proper state transition
+        setTimeout(() => {
+          if (AppState.currentState !== 'active') {
+            console.log('📱 App state is not active, current state:', AppState.currentState);
+            // Force a state check after notification handling
+            AppState.addEventListener('change', this.handleAppStateChange);
+          }
+        }, 200);
+      } else {
+        // iOS handling (existing logic)
+        if (AppState.currentState !== 'active') {
+          console.log('📱 App state is not active, current state:', AppState.currentState);
+        }
       }
       
     } catch (error) {
       console.error('❌ Error bringing app to foreground:', error);
     }
   }
+
+  // Handle app state changes (especially for Android)
+  private handleAppStateChange = (nextAppState: string) => {
+    console.log('📱 App state changed to:', nextAppState);
+    
+    if (nextAppState === 'active') {
+      console.log('✅ App successfully brought to foreground');
+      // Remove the listener once app is active
+      // Note: In newer React Native versions, this should use the subscription pattern
+    }
+  };
 
   // Method to setup app state change listeners for better notification handling
   public setupAppStateListeners(): void {
@@ -270,9 +419,11 @@ export class OneSignalService {
     }
     
     try {
-      // Set external user ID using login method
-      OneSignal.login(userId);
-      console.log('Successfully set external user ID');
+      // Use addAlias instead of login to avoid registration issues
+      if (OneSignal?.User?.addAlias) {
+        OneSignal.User.addAlias('external_user_id', userId);
+        console.log('Successfully set external user ID via alias');
+      }
     } catch (error) {
       console.error('Error setting external user ID:', error);
     }
@@ -283,10 +434,11 @@ export class OneSignalService {
     if (!this.isInitialized) return;
     
     try {
-      OneSignal.logout();
-      console.log('Successfully logged out from OneSignal');
+      // Don't call OneSignal.logout() as it can cause external ID issues
+      // Just log that logout was requested
+      console.log('OneSignal logout requested - skipping to avoid external ID issues');
     } catch (error) {
-      console.error('Error logging out from OneSignal:', error);
+      console.error('Error during OneSignal logout:', error);
     }
   }
 
@@ -532,6 +684,60 @@ export class OneSignalService {
       
     } catch (error) {
       console.error('Error during push notification setup check:', error);
+    }
+  }
+
+  // Method to test notification reception
+  public testNotificationReception(): void {
+    console.log('🧪 [OneSignal] Testing notification reception...');
+    console.log('📱 [OneSignal] Check the following:');
+    console.log('  1. Device shows as "Subscribed" in OneSignal dashboard');
+    console.log('  2. Push subscription optedIn is true');
+    console.log('  3. Device has valid push token');
+    console.log('  4. App has notification permissions');
+    
+    // Log current state
+    this.logUserState();
+    
+    console.log('🔔 [OneSignal] Send a test notification from OneSignal dashboard to verify delivery');
+  }
+
+  // Method to force fresh subscription after APNS config change
+  public async forceRefreshSubscription(): Promise<void> {
+    console.log('🔄 [OneSignal] Forcing fresh subscription after APNS config change...');
+    
+    try {
+      // Re-request permissions
+      if (OneSignal?.Notifications?.requestPermission) {
+        console.log('📱 [OneSignal] Re-requesting notification permissions...');
+        await OneSignal.Notifications.requestPermission(true);
+      }
+      
+      // Force opt-in again
+      if (OneSignal?.User?.pushSubscription) {
+        console.log('📱 [OneSignal] Force opting into push subscription...');
+        OneSignal.User.pushSubscription.optIn();
+        
+        // Wait a moment then check status
+        setTimeout(() => {
+          const pushSub = OneSignal.User.pushSubscription;
+          console.log('🔍 [OneSignal] Push subscription after refresh:', {
+            id: pushSub?.id || 'none',
+            token: pushSub?.token || 'none',
+            optedIn: pushSub?.optedIn || false
+          });
+        }, 2000);
+      }
+      
+      // Add a fresh tag to trigger registration
+      if (OneSignal?.User?.addTag) {
+        const timestamp = Date.now();
+        OneSignal.User.addTag('refresh_timestamp', timestamp.toString());
+        console.log('✅ [OneSignal] Added refresh timestamp tag:', timestamp);
+      }
+      
+    } catch (error) {
+      console.error('❌ [OneSignal] Error during subscription refresh:', error);
     }
   }
 }

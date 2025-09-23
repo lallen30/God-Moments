@@ -1,10 +1,12 @@
 import React, { useEffect, useCallback } from 'react';
-// import { oneSignalService } from './src/services/OneSignalService';
+import { oneSignalService } from './src/services/OneSignalService';
 // import DeviceInfo from 'react-native-device-info';
 import AppNavigator from './src/navigation/AppNavigator';
 import ErrorBoundary from './src/components/ErrorBoundary';
 
 function AppContent(): React.JSX.Element {
+  console.log('🔥🔥🔥 APP CONTENT FUNCTION CALLED 🔥🔥🔥');
+  
   const checkAppVersion = useCallback(async () => {
     try {
       // Temporarily disabled to prevent crashes
@@ -21,12 +23,17 @@ function AppContent(): React.JSX.Element {
       try {
         await checkAppVersion();
         
-        // Temporarily disabled OneSignal to prevent crashes
-        // try {
-        //   await oneSignalService.initialize();
-        // } catch (oneSignalError) {
-        //   console.error('Error initializing OneSignal:', oneSignalError);
-        // }
+        // Initialize OneSignal
+        console.log('🔥 [App] About to initialize OneSignal...');
+        try {
+          console.log('🚀 [App] Starting OneSignal initialization...');
+          await oneSignalService.initialize();
+          console.log('✅ [App] OneSignal initialization completed');
+        } catch (oneSignalError) {
+          console.error('❌ [App] Error initializing OneSignal:', oneSignalError);
+          console.error('❌ [App] OneSignal error details:', JSON.stringify(oneSignalError));
+        }
+        console.log('🔥 [App] OneSignal initialization attempt finished');
       } catch (error) {
         console.error('Error during app initialization:', error);
       }

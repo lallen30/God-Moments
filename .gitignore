@@ -80,9 +80,9 @@ __tests__/*/*.snap
 *.swo
 
 # Environment variables
-.env
-.env.*
-!.env.example
+# .env
+# .env.*
+# !.env.example
 
 # Firebase credentials
 firebase/*-firebase-adminsdk-*.json
