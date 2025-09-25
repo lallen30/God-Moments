@@ -48,17 +48,18 @@ export class OneSignalService {
         const hasPermission = OneSignal.Notifications.hasPermission();
         console.log('📱 [OneSignal] Current permission status:', hasPermission);
         
-        if (!hasPermission) {
-          console.log('📱 [OneSignal] Requesting permission...');
-          const permission = await OneSignal.Notifications.requestPermission(true);
-          console.log('📱 [OneSignal] Permission request result:', permission);
-        } else {
-          console.log('✅ [OneSignal] Permission already granted');
-        }
+        // ALWAYS request permission to ensure proper registration
+        console.log('📱 [OneSignal] Requesting permission (forced)...');
+        const permission = await OneSignal.Notifications.requestPermission(true);
+        console.log('📱 [OneSignal] Permission request result:', permission);
         
         // Double-check permission after request
         const finalPermission = OneSignal.Notifications.hasPermission();
         console.log('📱 [OneSignal] Final permission status:', finalPermission);
+        
+        if (!finalPermission) {
+          console.warn('⚠️ [OneSignal] Permission not granted - notifications may not work');
+        }
         
       } catch (permError) {
         console.error('❌ [OneSignal] Permission request failed:', permError);
@@ -78,6 +79,29 @@ export class OneSignalService {
         }
       } catch (subscriptionError) {
         console.error('❌ [OneSignal] Push subscription error:', subscriptionError);
+      }
+
+      // CRITICAL: Login with UUID to ensure proper registration
+      try {
+        console.log('🔑 [OneSignal] Attempting login with UUID...');
+        // Generate proper UUID for device login
+        const deviceUuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          const r = Math.random() * 16 | 0;
+          const v = c === 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+        
+        if (OneSignal.login) {
+          await OneSignal.login(deviceUuid);
+          console.log('✅ [OneSignal] Login successful with UUID:', deviceUuid);
+        } else if (OneSignal.User && OneSignal.User.addAlias) {
+          // Fallback for newer versions
+          OneSignal.User.addAlias('device_id', deviceUuid);
+          console.log('✅ [OneSignal] Device UUID set via alias:', deviceUuid);
+        }
+      } catch (loginError) {
+        console.error('❌ [OneSignal] Login error:', loginError);
+        console.log('🔄 [OneSignal] Continuing without login - may affect registration');
       }
 
       // Set the notification opened handler

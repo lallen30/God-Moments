@@ -10,11 +10,13 @@ import {
   TextInput,
   Alert,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { colors } from '../../../theme/colors';
+import { scheduledNotificationService } from '../../../services/ScheduledNotificationService';
 
 const AccountSettingsScreen = () => {
   const navigation = useNavigation<any>();
@@ -29,19 +31,23 @@ const AccountSettingsScreen = () => {
   const [endTimeAmPm, setEndTimeAmPm] = useState('PM');
   
   // State for timezone
-  const [timezone, setTimezone] = useState('Eastern Time');
+  const [timezone, setTimezone] = useState('America/New_York');
   const [showTimezoneModal, setShowTimezoneModal] = useState(false);
   
-  // Loading state
+  // Loading and saving states
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  
+  // Service status
+  const [serviceStatus, setServiceStatus] = useState<string>('Checking...');
 
   const timezones = [
-    'Eastern Time',
-    'Central Time',
-    'Mountain Time',
-    'Pacific Time',
-    'Alaska Time',
-    'Hawaii Time',
+    { label: 'Eastern Time', value: 'America/New_York' },
+    { label: 'Central Time', value: 'America/Chicago' },
+    { label: 'Mountain Time', value: 'America/Denver' },
+    { label: 'Pacific Time', value: 'America/Los_Angeles' },
+    { label: 'Alaska Time', value: 'America/Anchorage' },
+    { label: 'Hawaii Time', value: 'Pacific/Honolulu' },
   ];
 
   // Load saved settings on component mount
@@ -51,56 +57,146 @@ const AccountSettingsScreen = () => {
 
   const loadSettings = async () => {
     try {
-      // Load push notifications setting from AgreeScreen
-      const pushNotificationsEnabled = await AsyncStorage.getItem('pushNotificationsEnabled');
-      if (pushNotificationsEnabled !== null) {
-        setAllowNotifications(JSON.parse(pushNotificationsEnabled));
+      setServiceStatus('Loading settings...');
+      
+      // Initialize scheduled notification service
+      await scheduledNotificationService.initialize();
+      
+      // Load current settings from the service
+      const currentSettings = await scheduledNotificationService.getCurrentSettings();
+      
+      // Check if user enabled notifications during onboarding
+      const onboardingNotificationPref = await AsyncStorage.getItem('pushNotificationsEnabled');
+      let notificationsEnabled = false;
+      
+      if (currentSettings.notifications_enabled !== undefined) {
+        notificationsEnabled = currentSettings.notifications_enabled;
+      } else if (onboardingNotificationPref !== null) {
+        // Use onboarding preference if no service setting exists
+        notificationsEnabled = JSON.parse(onboardingNotificationPref);
+        console.log('📱 [Settings] Using onboarding notification preference:', notificationsEnabled);
+      }
+      
+      setAllowNotifications(notificationsEnabled);
+      
+      if (currentSettings.start_time) {
+        const [time, period] = convertTo12Hour(currentSettings.start_time);
+        setStartTime(time);
+        setStartTimeAmPm(period);
+      }
+      
+      if (currentSettings.end_time) {
+        const [time, period] = convertTo12Hour(currentSettings.end_time);
+        setEndTime(time);
+        setEndTimeAmPm(period);
+      }
+      
+      if (currentSettings.tz) {
+        setTimezone(currentSettings.tz);
       }
 
-      // Load user preferences from SetPreferencesScreen
+      // Load legacy user preferences for sounds setting
       const userPreferences = await AsyncStorage.getItem('userPreferences');
       if (userPreferences !== null) {
         const preferences = JSON.parse(userPreferences);
         setAllowSounds(preferences.allowSounds !== undefined ? preferences.allowSounds : true);
-        setStartTime(preferences.startTime || '7:00');
-        setStartTimeAmPm(preferences.startTimeAmPm || 'AM');
-        setEndTime(preferences.endTime || '4:30');
-        setEndTimeAmPm(preferences.endTimeAmPm || 'PM');
-        setTimezone(preferences.timezone || 'Eastern Time');
       }
+      
+      // Check service status
+      if (scheduledNotificationService.isServiceInitialized()) {
+        setServiceStatus('Connected to notification service');
+      } else {
+        setServiceStatus('Service not initialized');
+      }
+      
     } catch (error) {
       console.error('Error loading settings:', error);
+      setServiceStatus('Error loading settings');
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Helper function to convert 24-hour time to 12-hour format
+  const convertTo12Hour = (time24: string): [string, string] => {
+    const [hours, minutes] = time24.split(':');
+    const hour = parseInt(hours, 10);
+    const period = hour >= 12 ? 'PM' : 'AM';
+    const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    return [`${hour12}:${minutes}`, period];
+  };
+
+  // Helper function to convert 12-hour time to 24-hour format
+  const convertTo24Hour = (time: string, period: string): string => {
+    const [hours, minutes] = time.split(':');
+    let hour = parseInt(hours, 10);
+    
+    if (period === 'AM' && hour === 12) {
+      hour = 0;
+    } else if (period === 'PM' && hour !== 12) {
+      hour += 12;
+    }
+    
+    return `${hour.toString().padStart(2, '0')}:${minutes}`;
+  };
   const handleSaveSettings = async () => {
     try {
-      // Update push notifications setting
-      await AsyncStorage.setItem('pushNotificationsEnabled', JSON.stringify(allowNotifications));
+      setIsSaving(true);
+      setServiceStatus('Saving settings...');
 
-      // Update user preferences
-      const preferences = {
-        allowSounds,
-        startTime,
-        startTimeAmPm,
-        endTime,
-        endTimeAmPm,
-        timezone,
-        onboardingCompleted: true,
-      };
+      console.log(' [Settings] Starting save process...');
+      console.log(' [Settings] allowNotifications:', allowNotifications);
+      console.log(' [Settings] timezone:', timezone);
 
-      await AsyncStorage.setItem('userPreferences', JSON.stringify(preferences));
+      // Convert times to 24-hour format
+      const startTime24 = convertTo24Hour(startTime, startTimeAmPm);
+      const endTime24 = convertTo24Hour(endTime, endTimeAmPm);
 
-      Alert.alert(
-        'Settings Saved',
-        'Your account settings have been updated successfully.',
-        [{ text: 'OK' }]
-      );
+      console.log(' [Settings] Converted times:', { startTime24, endTime24 });
+
+      // Register/update device with the scheduled notification service
+      const result = await scheduledNotificationService.registerDevice({
+        tz: timezone,
+        start_time: startTime24,
+        end_time: endTime24,
+        notifications_enabled: allowNotifications,
+      });
+
+      console.log(' [Settings] Registration result:', result);
+
+      if (result.success) {
+        // Update legacy local storage for sounds setting
+        const preferences = {
+          allowSounds,
+          startTime,
+          startTimeAmPm,
+          endTime,
+          endTimeAmPm,
+          timezone,
+          onboardingCompleted: true,
+        };
+        await AsyncStorage.setItem('userPreferences', JSON.stringify(preferences));
+        await AsyncStorage.setItem('pushNotificationsEnabled', JSON.stringify(allowNotifications));
+
+        setServiceStatus('Settings saved successfully');
+        
+        Alert.alert(
+          'Settings Saved',
+          result.data?.rescheduled 
+            ? 'Your settings have been updated and notifications have been rescheduled.'
+            : 'Your account settings have been updated successfully.',
+          [{ text: 'OK' }]
+        );
+      } else {
+        setServiceStatus('Failed to save settings');
+        Alert.alert('Error', result.message || 'Failed to save settings. Please try again.');
+      }
     } catch (error) {
       console.error('Error saving settings:', error);
+      setServiceStatus('Error saving settings');
       Alert.alert('Error', 'Failed to save settings. Please try again.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -115,6 +211,12 @@ const AccountSettingsScreen = () => {
   const handleTimezoneSelect = (selectedTimezone: string) => {
     setTimezone(selectedTimezone);
     setShowTimezoneModal(false);
+  };
+
+  // Get timezone display label
+  const getTimezoneLabel = (value: string) => {
+    const tz = timezones.find(t => t.value === value);
+    return tz ? tz.label : value;
   };
 
   if (isLoading) {
@@ -256,15 +358,137 @@ const AccountSettingsScreen = () => {
             <View style={styles.settingContent}>
               <Text style={styles.settingTitle}>Set your timezone</Text>
               <View style={styles.timezoneContainer}>
-                <Text style={styles.timezoneText}>{timezone}</Text>
+                <Text style={styles.timezoneText}>{getTimezoneLabel(timezone)}</Text>
                 <Icon name="chevron-down" size={16} color={colors.medium} />
               </View>
             </View>
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.saveButton} onPress={handleSaveSettings}>
-          <Text style={styles.saveButtonText}>Save Setting</Text>
+        {/* Service Status */}
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>Service Status</Text>
+          <View style={styles.statusContainer}>
+            <Text style={styles.statusText}>{serviceStatus}</Text>
+            {scheduledNotificationService.isServiceInitialized() && (
+              <Icon name="checkmark-circle" size={16} color="#4CAF50" />
+            )}
+          </View>
+        </View>
+
+        {/* DEBUG SECTION - TEMPORARY */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>🔧 Debug (Temporary)</Text>
+          <TouchableOpacity 
+            style={[styles.saveButton, { backgroundColor: '#ff6b6b', marginBottom: 10 }]}
+            onPress={async () => {
+              try {
+                console.log('🗑️ Clearing all app storage...');
+                await AsyncStorage.clear();
+                Alert.alert('Success', 'All app data cleared! Please restart the app.');
+              } catch (error) {
+                console.error('Error clearing storage:', error);
+                Alert.alert('Error', 'Failed to clear storage');
+              }
+            }}
+          >
+            <Text style={styles.saveButtonText}>🗑️ Clear All App Data</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.saveButton, { backgroundColor: '#9b59b6', marginBottom: 10 }]}
+            onPress={async () => {
+              try {
+                console.log('🧪 Testing Laravel API directly...');
+                
+                // Get the same data that would be sent during registration
+                await scheduledNotificationService.initialize();
+                const anonUserId = scheduledNotificationService.getAnonUserId();
+                const { oneSignalService } = require('../../../services/OneSignalService');
+                const playerId = await oneSignalService.getOneSignalUserId();
+                
+                const testData = {
+                  anon_user_id: anonUserId,
+                  onesignal_player_id: playerId,
+                  tz: timezone,
+                  start_time: convertTo24Hour(startTime, startTimeAmPm),
+                  end_time: convertTo24Hour(endTime, endTimeAmPm),
+                  notifications_enabled: allowNotifications,
+                };
+                
+                console.log('🧪 Test data:', testData);
+                
+                const response = await fetch('https://godmoments.betaplanets.com/api/devices/register', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                  },
+                  body: JSON.stringify(testData),
+                });
+                
+                const result = await response.json();
+                console.log('🧪 API Response:', result);
+                
+                Alert.alert('API Test Result', 
+                  `Status: ${response.status}\n\n` +
+                  `Success: ${result.success}\n\n` +
+                  `Message: ${result.message || 'No message'}`
+                );
+              } catch (error) {
+                console.error('🧪 API Test Error:', error);
+                Alert.alert('API Test Error', error instanceof Error ? error.message : String(error));
+              }
+            }}
+          >
+            <Text style={styles.saveButtonText}>🧪 Test Laravel API</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.saveButton, { backgroundColor: '#4ecdc4', marginBottom: 10 }]}
+            onPress={async () => {
+              try {
+                const anonUserId = await AsyncStorage.getItem('anon_user_id');
+                const deviceId = scheduledNotificationService.getDeviceId();
+                const anonUserIdFromService = scheduledNotificationService.getAnonUserId();
+                const onboardingPref = await AsyncStorage.getItem('pushNotificationsEnabled');
+                
+                // Import OneSignal service to check status
+                const { oneSignalService } = require('../../../services/OneSignalService');
+                const oneSignalPlayerId = await oneSignalService.getOneSignalUserId();
+                const oneSignalInitialized = oneSignalService.isOneSignalInitialized();
+                
+                Alert.alert('Debug Info', 
+                  `Stored anon_user_id: ${anonUserId}\n\n` +
+                  `Service anonUserId: ${anonUserIdFromService}\n\n` +
+                  `Device ID: ${deviceId}\n\n` +
+                  `Onboarding pref: ${onboardingPref}\n\n` +
+                  `OneSignal initialized: ${oneSignalInitialized}\n\n` +
+                  `OneSignal player ID: ${oneSignalPlayerId}`
+                );
+              } catch (error) {
+                Alert.alert('Error', 'Failed to get debug info: ' + (error instanceof Error ? error.message : String(error)));
+              }
+            }}
+          >
+            <Text style={styles.saveButtonText}>🔍 Show Debug Info</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Save Settings Button */}
+        <TouchableOpacity 
+          style={[styles.saveButton, isSaving && styles.saveButtonDisabled]} 
+          onPress={handleSaveSettings}
+          disabled={isSaving}
+        >
+          {isSaving ? (
+            <View style={styles.saveButtonContent}>
+              <ActivityIndicator size="small" color={colors.white} />
+              <Text style={[styles.saveButtonText, { marginLeft: 8 }]}>Saving...</Text>
+            </View>
+          ) : (
+            <Text style={styles.saveButtonText}>Save Settings</Text>
+          )}
         </TouchableOpacity>
 
         <View style={styles.footer}>
@@ -292,20 +516,20 @@ const AccountSettingsScreen = () => {
             <ScrollView style={styles.timezoneList}>
               {timezones.map((tz) => (
                 <TouchableOpacity
-                  key={tz}
+                  key={tz.value}
                   style={[
                     styles.timezoneOption,
-                    timezone === tz && styles.timezoneOptionSelected
+                    timezone === tz.value && styles.timezoneOptionSelected
                   ]}
-                  onPress={() => handleTimezoneSelect(tz)}
+                  onPress={() => handleTimezoneSelect(tz.value)}
                 >
                   <Text style={[
                     styles.timezoneOptionText,
-                    timezone === tz && styles.timezoneOptionTextSelected
+                    timezone === tz.value && styles.timezoneOptionTextSelected
                   ]}>
-                    {tz}
+                    {tz.label}
                   </Text>
-                  {timezone === tz && (
+                  {timezone === tz.value && (
                     <Icon name="checkmark" size={20} color={colors.accent} />
                   )}
                 </TouchableOpacity>
@@ -556,6 +780,32 @@ const styles = StyleSheet.create({
   timezoneOptionTextSelected: {
     color: colors.accent,
     fontWeight: '500',
+  },
+  // Service status styles
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: colors.white,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.light,
+  },
+  statusText: {
+    fontSize: 14,
+    color: colors.textDark,
+    flex: 1,
+  },
+  // Save button loading states
+  saveButtonDisabled: {
+    opacity: 0.6,
+  },
+  saveButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

@@ -12,10 +12,12 @@ import {
   Switch,
   TextInput,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../theme/colors';
+import { scheduledNotificationService } from '../../services/ScheduledNotificationService';
 
 interface SetPreferencesScreenProps {
   navigation: any;
@@ -29,9 +31,26 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
   const [endTimeAmPm, setEndTimeAmPm] = useState('PM');
   const [timezone, setTimezone] = useState('Eastern Time');
   const [showTimezoneModal, setShowTimezoneModal] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
+
+  const convertTo24Hour = (time: string, period: string): string => {
+    const [hours, minutes] = time.split(':');
+    let hour = parseInt(hours, 10);
+    
+    if (period === 'AM' && hour === 12) {
+      hour = 0;
+    } else if (period === 'PM' && hour !== 12) {
+      hour += 12;
+    }
+    
+    return `${hour.toString().padStart(2, '0')}:${minutes}`;
+  };
 
   const handleContinue = async () => {
     try {
+      setIsCompleting(true);
+      console.log('🚀 [Onboarding] Starting completion process...');
+
       // Save preferences to local storage
       const preferences = {
         allowSounds,
@@ -45,6 +64,67 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
 
       await AsyncStorage.setItem('userPreferences', JSON.stringify(preferences));
       await AsyncStorage.setItem('onboardingStep', 'completed');
+      console.log('✅ [Onboarding] Saved preferences to local storage');
+
+      // Get push notification preference from onboarding
+      const pushNotificationsEnabled = await AsyncStorage.getItem('pushNotificationsEnabled');
+      const notificationsEnabled = pushNotificationsEnabled ? JSON.parse(pushNotificationsEnabled) : false;
+      console.log('📱 [Onboarding] Push notifications enabled:', notificationsEnabled);
+
+      // If notifications are enabled, register with Laravel
+      if (notificationsEnabled) {
+        console.log('🔔 [Onboarding] Registering device with Laravel...');
+        
+        // Initialize the scheduled notification service
+        await scheduledNotificationService.initialize();
+        
+        // Convert timezone to IANA format
+        const timezoneMap: { [key: string]: string } = {
+          'Eastern Time': 'America/New_York',
+          'Central Time': 'America/Chicago',
+          'Mountain Time': 'America/Denver',
+          'Pacific Time': 'America/Los_Angeles',
+        };
+        const ianaTimezone = timezoneMap[timezone] || 'America/New_York';
+
+        // Register device with Laravel
+        console.log('🔔 [Onboarding] About to call registerDevice with:', {
+          tz: ianaTimezone,
+          start_time: convertTo24Hour(startTime, startTimeAmPm),
+          end_time: convertTo24Hour(endTime, endTimeAmPm),
+          notifications_enabled: notificationsEnabled,
+        });
+
+        const result = await scheduledNotificationService.registerDevice({
+          tz: ianaTimezone,
+          start_time: convertTo24Hour(startTime, startTimeAmPm),
+          end_time: convertTo24Hour(endTime, endTimeAmPm),
+          notifications_enabled: notificationsEnabled,
+        });
+
+        console.log('🔔 [Onboarding] Registration result:', result);
+
+        if (result.success) {
+          console.log('✅ [Onboarding] Device registered successfully with Laravel');
+          console.log('✅ [Onboarding] Device ID:', result.data?.device?.id);
+        } else {
+          console.error('❌ [Onboarding] Failed to register device with Laravel:', result);
+          console.error('❌ [Onboarding] Error details:', {
+            message: result.message,
+            error: result.error,
+            success: result.success
+          });
+          
+          // Show detailed error to user for debugging
+          Alert.alert(
+            'Registration Failed',
+            `Failed to register with server: ${result.message || result.error || 'Unknown error'}\n\nYour preferences have been saved locally. You can try again in Account Settings.`,
+            [{ text: 'Continue' }]
+          );
+        }
+      } else {
+        console.log('📱 [Onboarding] Notifications disabled, skipping Laravel registration');
+      }
 
       // Navigate to Home screen (main app)
       navigation.reset({
@@ -52,8 +132,10 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
         routes: [{ name: 'Home' }],
       });
     } catch (error) {
-      console.error('Error saving preferences:', error);
-      Alert.alert('Error', 'Failed to save preferences. Please try again.');
+      console.error('❌ [Onboarding] Error completing onboarding:', error);
+      Alert.alert('Error', 'Failed to complete setup. Please try again.');
+    } finally {
+      setIsCompleting(false);
     }
   };
 
@@ -197,8 +279,19 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
-          <Text style={styles.continueButtonText}>Continue</Text>
+        <TouchableOpacity 
+          style={[styles.continueButton, isCompleting && styles.continueButtonDisabled]} 
+          onPress={handleContinue}
+          disabled={isCompleting}
+        >
+          {isCompleting ? (
+            <View style={styles.continueButtonContent}>
+              <ActivityIndicator size="small" color={colors.white} />
+              <Text style={[styles.continueButtonText, { marginLeft: 8 }]}>Setting up...</Text>
+            </View>
+          ) : (
+            <Text style={styles.continueButtonText}>Continue</Text>
+          )}
         </TouchableOpacity>
 
         <View style={styles.footer}>
@@ -424,6 +517,14 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 16,
     fontWeight: '600',
+  },
+  continueButtonDisabled: {
+    opacity: 0.6,
+  },
+  continueButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   footer: {
     alignItems: 'center',

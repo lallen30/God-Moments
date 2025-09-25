@@ -59,11 +59,11 @@
 	<key>NSSupportsLiveActivitiesFrequentUpdates</key>
 	<true/>
 	<key>OneSignalAppID</key>
-	<string>$(ONESIGNAL_APP_ID)</string>
+	<string>2613c87d-4f81-4094-bd84-08495e68bda0</string>
 	<key>OneSignalAppId</key>
-	<string>$(ONESIGNAL_APP_ID)</string>
+	<string>2613c87d-4f81-4094-bd84-08495e68bda0</string>
 	<key>OneSignal_app_id</key>
-	<string>$(ONESIGNAL_APP_ID)</string>
+	<string>2613c87d-4f81-4094-bd84-08495e68bda0</string>
 	<key>OneSignal_notificationServiceExtensionTarget</key>
 	<string>OneSignalNotificationServiceExtension</string>
 	<key>OneSignal_swizzler_remote</key>
