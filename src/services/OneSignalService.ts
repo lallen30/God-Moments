@@ -9,10 +9,12 @@ import type {
 } from 'react-native-onesignal';
 import { EnvConfig } from '../utils/EnvConfig';
 import { Linking, AppState, Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export class OneSignalService {
   private static instance: OneSignalService;
   private isInitialized = false;
+  private deviceUuid: string | null = null;
 
   private constructor() {
     // Private constructor to enforce singleton pattern
@@ -23,6 +25,53 @@ export class OneSignalService {
       OneSignalService.instance = new OneSignalService();
     }
     return OneSignalService.instance;
+  }
+
+  /**
+   * Get or create a persistent device UUID for OneSignal login
+   */
+  private async getOrCreateDeviceUuid(): Promise<string> {
+    if (this.deviceUuid) {
+      return this.deviceUuid;
+    }
+
+    try {
+      // Try to get existing UUID from storage
+      const storedUuid = await AsyncStorage.getItem('onesignal_device_uuid');
+      
+      if (storedUuid) {
+        console.log('🆔 [OneSignal] Using existing device UUID:', storedUuid);
+        this.deviceUuid = storedUuid;
+        return storedUuid;
+      }
+
+      // Generate new UUID if none exists
+      const newUuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+
+      // Save the new UUID
+      await AsyncStorage.setItem('onesignal_device_uuid', newUuid);
+      this.deviceUuid = newUuid;
+      
+      console.log('🆔 [OneSignal] Generated new device UUID:', newUuid);
+      return newUuid;
+
+    } catch (error) {
+      console.error('❌ [OneSignal] Error managing device UUID:', error);
+      
+      // Fallback to generating a UUID without saving
+      const fallbackUuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+      
+      this.deviceUuid = fallbackUuid;
+      return fallbackUuid;
+    }
   }
 
   public async initialize(): Promise<void> {
@@ -81,19 +130,16 @@ export class OneSignalService {
         console.error('❌ [OneSignal] Push subscription error:', subscriptionError);
       }
 
-      // CRITICAL: Login with UUID to ensure proper registration
+      // CRITICAL: Login with persistent UUID to ensure proper registration
       try {
-        console.log('🔑 [OneSignal] Attempting login with UUID...');
-        // Generate proper UUID for device login
-        const deviceUuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-          const r = Math.random() * 16 | 0;
-          const v = c === 'x' ? r : (r & 0x3 | 0x8);
-          return v.toString(16);
-        });
+        console.log('🔑 [OneSignal] Attempting login with persistent UUID...');
+        
+        // Get or create persistent device UUID
+        const deviceUuid = await this.getOrCreateDeviceUuid();
         
         if (OneSignal.login) {
           await OneSignal.login(deviceUuid);
-          console.log('✅ [OneSignal] Login successful with UUID:', deviceUuid);
+          console.log('✅ [OneSignal] Login successful with persistent UUID:', deviceUuid);
         } else if (OneSignal.User && OneSignal.User.addAlias) {
           // Fallback for newer versions
           OneSignal.User.addAlias('device_id', deviceUuid);

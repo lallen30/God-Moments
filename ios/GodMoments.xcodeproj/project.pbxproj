@@ -19,6 +19,7 @@
 		535A2B3011C24A4DB0912BB1 /* Montserrat-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E3418CBF240E44F2BD4B96AF /* Montserrat-Regular.ttf */; };
 		566F69307C984914864A0FB9 /* Montserrat-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C76EEB4CA59C4668B06DB668 /* Montserrat-Light.ttf */; };
 		5E8BB3E3FAE478E4BEC3B64B /* libPods-GodMoments-GodMomentsTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 75FAAB3BAB45D58EAD2C5B87 /* libPods-GodMoments-GodMomentsTests.a */; };
+		6FC47DB22E85F22100A69134 /* church_bell.wav in Resources */ = {isa = PBXBuildFile; fileRef = 6FC47DB12E85F22100A69134 /* church_bell.wav */; };
 		71547B78D272409583895CB6 /* Montserrat-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EF47AAA9765A4D15A071CE93 /* Montserrat-MediumItalic.ttf */; };
 		7B97B2E73DD244F2933DC150 /* Montserrat-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AE61D1B2ED03409CBD0CEDFA /* Montserrat-Bold.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
@@ -67,6 +68,7 @@
 		67332B61FAF6E114B6CAFEDE /* libPods-GodMoments.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GodMoments.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		67E01085A42F4A058A58459E /* Montserrat-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Italic.ttf"; path = "../src/assets/fonts/Montserrat-Italic.ttf"; sourceTree = "<group>"; };
 		6F2F3D192E11DB5100599A86 /* LAReactNative.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = LAReactNative.entitlements; path = GodMoments/GodMoments.entitlements; sourceTree = "<group>"; };
+		6FC47DB12E85F22100A69134 /* church_bell.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = church_bell.wav; sourceTree = "<group>"; };
 		75FAAB3BAB45D58EAD2C5B87 /* libPods-GodMoments-GodMomentsTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GodMoments-GodMomentsTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		794E4F973F4244B494B59691 /* Montserrat-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-ExtraLightItalic.ttf"; path = "../src/assets/fonts/Montserrat-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = GodMoments/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -125,6 +127,7 @@
 		13B07FAE1A68108700A75B9A /* GodMoments */ = {
 			isa = PBXGroup;
 			children = (
+				6FC47DB12E85F22100A69134 /* church_bell.wav */,
 				6F2F3D192E11DB5100599A86 /* LAReactNative.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
@@ -322,6 +325,7 @@
 				BCD7E9F876F349EAA07A557C /* Montserrat-ExtraLight.ttf in Resources */,
 				EFCE9A0AFEA4459CA9E933F7 /* Montserrat-ExtraLightItalic.ttf in Resources */,
 				AD02C731160C4B74BB6863BC /* Montserrat-Italic.ttf in Resources */,
+				6FC47DB22E85F22100A69134 /* church_bell.wav in Resources */,
 				566F69307C984914864A0FB9 /* Montserrat-Light.ttf in Resources */,
 				F00A19ACEA2C4F6385BD3CE0 /* Montserrat-LightItalic.ttf in Resources */,
 				990B94D8CE7D413F866D0877 /* Montserrat-Medium.ttf in Resources */,
@@ -715,10 +719,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -788,10 +789,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

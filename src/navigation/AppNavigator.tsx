@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { View, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoginScreen from '../screens/PreLogin/Login/LoginScreen';
 import { WelcomeScreen, AgreeScreen, SetPreferencesScreen } from '../screens/Onboarding';
 import SimpleTestScreen from '../screens/Test/SimpleTestScreen';
@@ -12,6 +14,7 @@ import DrawerNavigator from './DrawerNavigator';
 import TermsAndConditionsScreen from '../screens/PreLogin/Legal/TermsAndConditionsScreen';
 import PrivacyPolicyScreen from '../screens/PreLogin/Legal/PrivacyPolicyScreen';
 import { withNavigationWrapper } from './NavigationWrapper';
+import { colors } from '../theme/colors';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,10 +31,62 @@ const WrappedTermsAndConditionsScreen = withNavigationWrapper(TermsAndConditions
 const WrappedPrivacyPolicyScreen = withNavigationWrapper(PrivacyPolicyScreen);
 
 const AppNavigator = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [initialRoute, setInitialRoute] = useState('Welcome');
+
+  useEffect(() => {
+    checkOnboardingStatus();
+  }, []);
+
+  const checkOnboardingStatus = async () => {
+    try {
+      console.log('🔍 [AppNavigator] Checking onboarding status...');
+      
+      // Check if onboarding has been completed
+      const userPreferences = await AsyncStorage.getItem('userPreferences');
+      
+      if (userPreferences) {
+        const preferences = JSON.parse(userPreferences);
+        console.log('📋 [AppNavigator] Found user preferences:', preferences);
+        
+        if (preferences.onboardingCompleted) {
+          console.log('✅ [AppNavigator] Onboarding completed, navigating to Home');
+          setInitialRoute('Home');
+        } else {
+          console.log('⏳ [AppNavigator] Onboarding not completed, starting with Welcome');
+          setInitialRoute('Welcome');
+        }
+      } else {
+        console.log('🆕 [AppNavigator] No user preferences found, starting with Welcome');
+        setInitialRoute('Welcome');
+      }
+    } catch (error) {
+      console.error('❌ [AppNavigator] Error checking onboarding status:', error);
+      // Default to Welcome screen on error
+      setInitialRoute('Welcome');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Show loading screen while checking onboarding status
+  if (isLoading) {
+    return (
+      <View style={{ 
+        flex: 1, 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: colors.background 
+      }}>
+        <ActivityIndicator size="large" color={colors.accent} />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Welcome"
+        initialRouteName={initialRoute}
         screenOptions={{
           headerShown: false,
           gestureEnabled: true,

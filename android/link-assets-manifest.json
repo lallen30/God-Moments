@@ -72,6 +72,14 @@
     {
       "path": "src/assets/fonts/Montserrat-ThinItalic.ttf",
       "sha1": "9455ac7542b843c9bf96db3dd59302d7da39fa3c"
+    },
+    {
+      "path": "src/assets/audio/catholic_church_bell_notification.wav",
+      "sha1": "06a8814ccb3314ffbfad8932c90486f21526ea76"
+    },
+    {
+      "path": "src/assets/audio/church_bell.wav",
+      "sha1": "06a8814ccb3314ffbfad8932c90486f21526ea76"
     }
   ]
 }

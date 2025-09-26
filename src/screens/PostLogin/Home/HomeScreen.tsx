@@ -8,10 +8,12 @@ import {
   ImageBackground, 
   Image,
   SafeAreaView,
-  Dimensions 
+  Dimensions,
+  ActivityIndicator
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { colors } from '../../../theme/colors';
+import { apiService, HolyGodPraiseData } from '../../../services/apiService';
 
 const { width, height } = Dimensions.get('window');
 
@@ -27,8 +29,9 @@ interface DailyWord {
 
 const HomeScreen = () => {
   const navigation = useNavigation<any>();
-  const [todaysPrayer, setTodaysPrayer] = useState<DailyWord | null>(null);
+  const [todaysPrayer, setTodaysPrayer] = useState<HolyGodPraiseData | null>(null);
   const [notificationsActive, setNotificationsActive] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   // Get current date
   const getCurrentDate = () => {
@@ -41,27 +44,41 @@ const HomeScreen = () => {
     return now.toLocaleDateString('en-US', options);
   };
 
-  // Get current time
-  const getCurrentTime = () => {
-    const now = new Date();
-    return now.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
-      minute: '2-digit',
-      hour12: true 
-    });
+  // Format date from API response to "Month Day, Year" format
+  const formatApiDate = (dateString: string) => {
+    try {
+      // Parse the date string from API (format: "25-09-2025")
+      const [day, month, year] = dateString.split('-');
+      const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      
+      const options: Intl.DateTimeFormatOptions = { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      };
+      return date.toLocaleDateString('en-US', options);
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return getCurrentDate(); // Fallback to current date
+    }
   };
 
-  // Sample prayer data - replace with actual API call
+  // Fetch Holy God Praise data from API
   useEffect(() => {
-    setTodaysPrayer({
-      notification_id: 1,
-      daily_word: "Holy God I praise thy Name",
-      content: "Today's prayer content...",
-      link: "",
-      date: getCurrentDate(),
-      full_date: getCurrentDate(),
-      created_at: new Date().toISOString()
-    });
+    const fetchHolyGodPraise = async () => {
+      try {
+        setLoading(true);
+        const data = await apiService.fetchHolyGodPraise();
+        setTodaysPrayer(data);
+      } catch (error) {
+        console.error('Error fetching Holy God Praise:', error);
+        setTodaysPrayer(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHolyGodPraise();
   }, []);
 
   return (
@@ -89,11 +106,23 @@ const HomeScreen = () => {
           <Text style={styles.sectionTitle}>Today's Prayer</Text>
           <Text style={styles.dateText}>{getCurrentDate()}</Text>
           
-          {todaysPrayer && (
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={colors.accent} />
+              <Text style={styles.loadingText}>Loading today's prayer...</Text>
+            </View>
+          ) : todaysPrayer ? (
             <View style={styles.prayerCard}>
               <View style={styles.prayerContent}>
-                <Text style={styles.prayerText}>{todaysPrayer.daily_word}</Text>
-                <Text style={styles.prayerTime}>{getCurrentTime()}</Text>
+                <Text style={styles.prayerText}>{todaysPrayer.body}</Text>
+                <Text style={styles.prayerTime}>{formatApiDate(todaysPrayer.date)}</Text>
+              </View>
+            </View>
+          ) : (
+            <View style={styles.prayerCard}>
+              <View style={styles.prayerContent}>
+                <Text style={styles.prayerText}>No prayer available for today</Text>
+                <Text style={styles.prayerTime}>{getCurrentDate()}</Text>
               </View>
             </View>
           )}
@@ -308,6 +337,29 @@ const styles = StyleSheet.create({
   footerSubtitle: {
     fontSize: 12,
     color: colors.medium,
+    textAlign: 'center',
+  },
+  loadingContainer: {
+    backgroundColor: colors.cardBackground,
+    borderRadius: 12,
+    padding: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderLeftWidth: 4,
+    borderLeftColor: colors.accent,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: colors.medium,
+    marginTop: 12,
     textAlign: 'center',
   },
 });

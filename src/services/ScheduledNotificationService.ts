@@ -201,6 +201,13 @@ class ScheduledNotificationService {
         const lastData = JSON.parse(lastRegistration);
         if (lastData.onesignal_player_id === playerId && lastData.anon_user_id === this.anonUserId) {
           needsRegistration = false;
+          // Restore device ID from saved registration
+          this.deviceId = lastData.device_id;
+          console.log('✅ [ScheduledNotifications] Using existing registration:', {
+            device_id: this.deviceId,
+            anon_user_id: this.anonUserId,
+            onesignal_player_id: playerId,
+          });
         }
       }
 
@@ -308,6 +315,16 @@ class ScheduledNotificationService {
 
       if (result.success) {
         this.deviceId = result.data.device.id;
+        
+        // Save successful registration to prevent re-registration
+        const registrationRecord = {
+          anon_user_id: this.anonUserId,
+          onesignal_player_id: registrationData.onesignal_player_id,
+          device_id: this.deviceId,
+          registered_at: new Date().toISOString(),
+        };
+        await AsyncStorage.setItem('last_device_registration', JSON.stringify(registrationRecord));
+        
         console.log('✅ [ScheduledNotifications] Device registered successfully:', {
           device_id: this.deviceId,
           next_notifications: result.data.next_schedule.length,

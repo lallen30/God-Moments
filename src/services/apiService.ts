@@ -44,6 +44,17 @@ export interface SocialMediaData {
   tiktok: string;
 }
 
+export interface HolyGodPraiseData {
+  notification_id: number;
+  title: string;
+  body: string;
+  content: string;
+  date: string;
+  full_date: string;
+  next_occurrence: string;
+  created_at: string;
+}
+
 class ApiService {
   async getData(endpoint: string) {
     try {
@@ -184,6 +195,28 @@ class ApiService {
         instagram: 'https://www.instagram.com/miin.ojibwe/',
         tiktok: 'https://www.tiktok.com/@miinojibwe'
       };
+    }
+  }
+
+  async fetchHolyGodPraise(): Promise<HolyGodPraiseData | null> {
+    try {
+      const response = await this.getData('holy-god-praise');
+      console.log('Holy God Praise API Response:', response);
+      
+      if (response?.status === 'ok' && response?.holy_god_praise) {
+        return response.holy_god_praise;
+      }
+      
+      // Return null if no data found (which is normal)
+      if (response?.status === 'ok' && response?.holy_god_praise === null) {
+        console.log('No Holy God Praise notification found for today');
+        return null;
+      }
+      
+      throw new Error(response?.errormsg || 'Failed to fetch Holy God Praise data');
+    } catch (error) {
+      console.error('Error fetching Holy God Praise data:', error);
+      return null;
     }
   }
 }

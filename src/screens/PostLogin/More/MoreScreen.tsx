@@ -23,12 +23,6 @@ const MoreScreen: React.FC<MoreScreenProps> = ({ navigation }) => {
       screen: 'Account Settings',
     },
     {
-      id: 'notifications',
-      title: 'Notifications',
-      icon: 'notifications-outline',
-      screen: 'DailyWords',
-    },
-    {
       id: 'our-mission',
       title: 'Our Mission',
       icon: 'heart-outline',

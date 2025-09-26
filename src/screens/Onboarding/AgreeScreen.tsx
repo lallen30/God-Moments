@@ -9,6 +9,7 @@ import {
   ImageBackground,
   Dimensions,
   Alert,
+  Linking,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors } from '../../theme/colors';
@@ -20,7 +21,7 @@ interface AgreeScreenProps {
 const AgreeScreen: React.FC<AgreeScreenProps> = ({ navigation }) => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
-  const [pushNotificationsEnabled, setPushNotificationsEnabled] = useState(false);
+  const [pushNotificationsEnabled, setPushNotificationsEnabled] = useState(true);
 
   const handleContinue = async () => {
     if (!termsAccepted || !privacyAccepted) {
@@ -55,6 +56,29 @@ const AgreeScreen: React.FC<AgreeScreenProps> = ({ navigation }) => {
   const handleReadPolicy = () => {
     // TODO: Navigate to Privacy Policy screen or open web view
     Alert.alert('Privacy Policy', 'This would open the Privacy Policy document.');
+  };
+
+  const handleNotificationToggle = () => {
+    const newValue = !pushNotificationsEnabled;
+    setPushNotificationsEnabled(newValue);
+    
+    // If user is turning notifications OFF, show helpful guidance
+    if (!newValue) {
+      Alert.alert(
+        'Notifications Disabled',
+        'Prayer notifications are now disabled. You can change this later in Account Settings.\n\nNote: To completely stop all notifications, you can also disable them in your iPhone Settings:\n\nSettings > Notifications > God Moments > Allow Notifications',
+        [
+          { text: 'Got it', style: 'default' },
+          { 
+            text: 'Open Settings', 
+            style: 'default',
+            onPress: () => {
+              Linking.openSettings();
+            }
+          }
+        ]
+      );
+    }
   };
 
   return (
@@ -117,15 +141,18 @@ const AgreeScreen: React.FC<AgreeScreenProps> = ({ navigation }) => {
 
           <TouchableOpacity
             style={styles.agreementItem}
-            onPress={() => setPushNotificationsEnabled(!pushNotificationsEnabled)}
+            onPress={handleNotificationToggle}
           >
             <View style={[styles.checkbox, pushNotificationsEnabled && styles.checkboxChecked]}>
               {pushNotificationsEnabled && <Text style={styles.checkmark}>✓</Text>}
             </View>
             <View style={styles.agreementContent}>
-              <Text style={styles.agreementTitle}>Push Notifications</Text>
+              <Text style={styles.agreementTitle}>Allow Notifications</Text>
               <Text style={styles.agreementDescription}>
-                Send me updates, reminders and{'\n'}promotional content (optional)
+                {pushNotificationsEnabled 
+                  ? "Receive prayer reminders are Active." 
+                  : "Prayer reminders are disabled."
+                }
               </Text>
             </View>
           </TouchableOpacity>
