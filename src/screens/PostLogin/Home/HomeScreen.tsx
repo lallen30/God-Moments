@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   View, 
   Text, 
@@ -11,9 +11,11 @@ import {
   Dimensions,
   ActivityIndicator
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { colors } from '../../../theme/colors';
 import { apiService, HolyGodPraiseData } from '../../../services/apiService';
+import { scheduledNotificationService } from '../../../services/ScheduledNotificationService';
 
 const { width, height } = Dimensions.get('window');
 
@@ -63,7 +65,52 @@ const HomeScreen = () => {
     }
   };
 
-  // Fetch Holy God Praise data from API
+  // Check notification status from user preferences
+  const checkNotificationStatus = async () => {
+    try {
+      // Check multiple sources for notification preference
+      
+      // 1. Check scheduled notification service settings (most reliable)
+      if (scheduledNotificationService.isServiceInitialized()) {
+        const currentSettings = await scheduledNotificationService.getCurrentSettings();
+        if (currentSettings.notifications_enabled !== undefined) {
+          console.log('📱 [Home] Using service notification setting:', currentSettings.notifications_enabled);
+          setNotificationsActive(currentSettings.notifications_enabled);
+          return;
+        }
+      }
+      
+      // 2. Check AsyncStorage for pushNotificationsEnabled (from onboarding/settings)
+      const pushNotificationsEnabled = await AsyncStorage.getItem('pushNotificationsEnabled');
+      if (pushNotificationsEnabled !== null) {
+        const isEnabled = JSON.parse(pushNotificationsEnabled);
+        console.log('📱 [Home] Using AsyncStorage notification setting:', isEnabled);
+        setNotificationsActive(isEnabled);
+        return;
+      }
+      
+      // 3. Check userPreferences as fallback
+      const userPreferences = await AsyncStorage.getItem('userPreferences');
+      if (userPreferences) {
+        const preferences = JSON.parse(userPreferences);
+        // Assume notifications are enabled if onboarding is completed but no explicit setting
+        const isEnabled = preferences.onboardingCompleted !== false;
+        console.log('📱 [Home] Using userPreferences fallback:', isEnabled);
+        setNotificationsActive(isEnabled);
+        return;
+      }
+      
+      // 4. Default to true if no settings found
+      console.log('📱 [Home] No notification settings found, defaulting to enabled');
+      setNotificationsActive(true);
+      
+    } catch (error) {
+      console.error('❌ [Home] Error checking notification status:', error);
+      setNotificationsActive(true); // Default to enabled on error
+    }
+  };
+
+  // Fetch Holy God Praise data from API and check notification status
   useEffect(() => {
     const fetchHolyGodPraise = async () => {
       try {
@@ -78,8 +125,24 @@ const HomeScreen = () => {
       }
     };
 
-    fetchHolyGodPraise();
+    const initializeScreen = async () => {
+      // Run both functions in parallel
+      await Promise.all([
+        fetchHolyGodPraise(),
+        checkNotificationStatus()
+      ]);
+    };
+
+    initializeScreen();
   }, []);
+
+  // Refresh notification status when screen comes into focus (e.g., returning from Settings)
+  useFocusEffect(
+    useCallback(() => {
+      console.log('📱 [Home] Screen focused, checking notification status...');
+      checkNotificationStatus();
+    }, [])
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -141,10 +204,13 @@ const HomeScreen = () => {
         <View style={styles.notificationsSection}>
           <View style={styles.notificationCard}>
             <Text style={styles.notificationTitle}>Notifications</Text>
-            <Text style={styles.notificationText}>
+            <Text style={[
+              styles.notificationText,
+              { color: notificationsActive ? '#28a745' : '#dc3545' }
+            ]}>
               {notificationsActive 
                 ? 'Your prayer notifications are active' 
-                : 'Your prayer notifications are inactive'
+                : 'Your prayer notifications are disabled'
               }
             </Text>
           </View>
@@ -200,6 +266,7 @@ const styles = StyleSheet.create({
   heroTitle: {
     fontSize: 28,
     fontWeight: 'bold',
+    fontFamily: 'Newsreader',
     color: colors.white,
     textAlign: 'center',
     marginBottom: 8,
@@ -221,6 +288,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 24,
     fontWeight: '600',
+    fontFamily: 'Newsreader',
     color: colors.textDark,
     textAlign: 'center',
     marginBottom: 8,
@@ -290,6 +358,7 @@ const styles = StyleSheet.create({
   notificationTitle: {
     fontSize: 18,
     fontWeight: '600',
+    fontFamily: 'Newsreader',
     color: colors.textDark,
     textAlign: 'center',
     marginBottom: 8,

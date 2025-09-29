@@ -74,12 +74,300 @@
       "sha1": "9455ac7542b843c9bf96db3dd59302d7da39fa3c"
     },
     {
-      "path": "src/assets/audio/catholic_church_bell_notification.wav",
-      "sha1": "06a8814ccb3314ffbfad8932c90486f21526ea76"
+      "path": "src/assets/fonts/Newsreader-Italic-VariableFont_opsz,wght.ttf",
+      "sha1": "a9ed53fbbcd52fd1cd0df1414e0e74001d15c547"
     },
     {
-      "path": "src/assets/audio/church_bell.wav",
-      "sha1": "06a8814ccb3314ffbfad8932c90486f21526ea76"
+      "path": "src/assets/fonts/Newsreader-VariableFont_opsz,wght.ttf",
+      "sha1": "d1e7f5f41e97675b4f8daf6a41d130b945c1eeb7"
+    },
+    {
+      "path": "src/assets/fonts/OFL.txt",
+      "sha1": "fdcba9065bb10a9b1c1239b29ac0bd8612be01ba"
+    },
+    {
+      "path": "src/assets/fonts/README.txt",
+      "sha1": "803c81d0649abbd829c542e57705d9e677ba45c4"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_14pt-Bold.ttf",
+      "sha1": "7d3477547c1fc1c7cb036422dada0fb533d6ce59"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_14pt-BoldItalic.ttf",
+      "sha1": "af77f9f7d3e3ce9a4ea1bcde6af6a9ca92d4d710"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_14pt-ExtraBold.ttf",
+      "sha1": "50ec75b6b0f299e0a6211ec3a51642f6f9f6db67"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_14pt-ExtraBoldItalic.ttf",
+      "sha1": "c12c77975145bab74bcaffc43272203374f6100a"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_14pt-ExtraLight.ttf",
+      "sha1": "67bf12abf1750c10b579abe3dceeb815dffa7e61"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_14pt-ExtraLightItalic.ttf",
+      "sha1": "d29d8bda8d495624ef51a365027d74bcbc4727b0"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_14pt-Italic.ttf",
+      "sha1": "e9bf04feb706490123bbee62825f3084eb0bb240"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_14pt-Light.ttf",
+      "sha1": "6cbf439c3c2a9554dfc2bfddc59b0401516f5141"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_14pt-LightItalic.ttf",
+      "sha1": "b202861600b85ad2e91ab0ffb1cd2ab72875d90d"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_14pt-Medium.ttf",
+      "sha1": "4112d192a551b5385ed19e1c48cd1cbbd03db2b9"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_14pt-MediumItalic.ttf",
+      "sha1": "92e80d0cc700b547e28c9de77b675179a2e84e91"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_14pt-Regular.ttf",
+      "sha1": "b5af2222aba28b2061dc0a5684d1d878f67da289"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_14pt-SemiBold.ttf",
+      "sha1": "ce224daac9c6c261beaf90dd7779aedc9bc96987"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_14pt-SemiBoldItalic.ttf",
+      "sha1": "fd87b57c2c7039f617bc44262e6eea6df15a4d33"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_24pt-Bold.ttf",
+      "sha1": "591a30a122240e95d560247f9f3df663fc701a10"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_24pt-BoldItalic.ttf",
+      "sha1": "a27ac5ad6a5d283f40b8cc5367b6284a768a3922"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_24pt-ExtraBold.ttf",
+      "sha1": "f06e3d0f718d9cbe3620f5d79242f3d0d7b68ea9"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_24pt-ExtraBoldItalic.ttf",
+      "sha1": "d486e9ea77157f83477137b7ec7790c2f7bfe47a"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_24pt-ExtraLight.ttf",
+      "sha1": "0dba08d6d8b78424916c6d57c19c1d0c63d2076b"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_24pt-ExtraLightItalic.ttf",
+      "sha1": "74cd77a564012172401948b7b51a826637ffe987"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_24pt-Italic.ttf",
+      "sha1": "ce3ffe6380ca41fd8da95ad4bb2aab9aba3c72e7"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_24pt-Light.ttf",
+      "sha1": "4ed9546b78edb08082c77676bb61b60e9a829e7e"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_24pt-LightItalic.ttf",
+      "sha1": "f3859a9cddff052b7c01ca0ffabe2cfd76711fcc"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_24pt-Medium.ttf",
+      "sha1": "686ddd2d46d1bbf3c4b681b5766c2c667e73cc31"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_24pt-MediumItalic.ttf",
+      "sha1": "edbdea0aa7aebb4ec34a944e8a217c29b19ed386"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_24pt-Regular.ttf",
+      "sha1": "657dcbb78873113a969a6fb4a59b5cfddb9f21b1"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_24pt-SemiBold.ttf",
+      "sha1": "edb4c6b6dc4e8d547e6b620ae12d5b334c89c85b"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_24pt-SemiBoldItalic.ttf",
+      "sha1": "5a80f41511c6f1c4368394ca8e65337c940b38aa"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_36pt-Bold.ttf",
+      "sha1": "6d01747aebf4dbb70e387e0d1842ab3ec55d1246"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_36pt-BoldItalic.ttf",
+      "sha1": "38270554f0f832d1cab50c8c46dc4098d859aece"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_36pt-ExtraBold.ttf",
+      "sha1": "1b15800cfd631443b812f00c3698f75312138dad"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_36pt-ExtraBoldItalic.ttf",
+      "sha1": "0d1ffb966dba98284ce87bf8fc0c2cbecc7ab66e"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_36pt-ExtraLight.ttf",
+      "sha1": "b9b49121baae797018ce12d4cd46628cb85a9c2e"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_36pt-ExtraLightItalic.ttf",
+      "sha1": "05120bfa21a938e043f5d844c02af41e34de275c"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_36pt-Italic.ttf",
+      "sha1": "92122e1949f33017d227fa29b6847da929a7d2be"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_36pt-Light.ttf",
+      "sha1": "9ea61e7c17f82839f16a9576f47c1f9301f3ee1d"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_36pt-LightItalic.ttf",
+      "sha1": "ca6007700bf183aee3f7d03c79046be51cdb108e"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_36pt-Medium.ttf",
+      "sha1": "f79fcf43fb6d723bf563dc4cef01559739919532"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_36pt-MediumItalic.ttf",
+      "sha1": "9054e71a677fa1218ae50b8989db0d91678c326c"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_36pt-Regular.ttf",
+      "sha1": "190c41fec26ae587989906af4f94572fb9559fda"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_36pt-SemiBold.ttf",
+      "sha1": "78a011a66aba6eec79ea89558ea382f74b9243cb"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_36pt-SemiBoldItalic.ttf",
+      "sha1": "c12eecf5884820fdc8c22c3ae11a348e877b191b"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_60pt-Bold.ttf",
+      "sha1": "02c4f598b80021d9374d13886e4fa31e10ac073a"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_60pt-BoldItalic.ttf",
+      "sha1": "9df0cc5fb93371f409575aac62c75a75926f3d9a"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_60pt-ExtraBold.ttf",
+      "sha1": "31bc571e160dd075b7b0526996b0cfb8d3d5f325"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_60pt-ExtraBoldItalic.ttf",
+      "sha1": "e58a3f3b53fa916ae33e5091aa896acfff04d1a7"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_60pt-ExtraLight.ttf",
+      "sha1": "e89e37db09f216962526f4a267842c83bae4a70a"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_60pt-ExtraLightItalic.ttf",
+      "sha1": "52b684919d5bd97d13eee715b473be6b56af8e1c"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_60pt-Italic.ttf",
+      "sha1": "1604a6badf11a3b57406bcf9719d322c7471085a"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_60pt-Light.ttf",
+      "sha1": "f0bbccdcd5317df18e864d64065ee59fdae6b21e"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_60pt-LightItalic.ttf",
+      "sha1": "4940eb160cb3968bb3674aa6706745f97c33b92b"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_60pt-Medium.ttf",
+      "sha1": "67cfd25b009fdf1eb6e843b6ec5c79af6e906e46"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_60pt-MediumItalic.ttf",
+      "sha1": "3a9c3fea992530aa61cf5aa320fa0d0e520e8ddf"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_60pt-Regular.ttf",
+      "sha1": "a7c2be34675c65efe26fe6b473cf6055b6971125"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_60pt-SemiBold.ttf",
+      "sha1": "3cf15ac15470478bf1d690723add1fa6ebe4a6a0"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_60pt-SemiBoldItalic.ttf",
+      "sha1": "a86f39ca3dd24e5809bad29ec7cf817488741e74"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_9pt-Bold.ttf",
+      "sha1": "f2c06babd24854978020adf04198c0c0648d9e87"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_9pt-BoldItalic.ttf",
+      "sha1": "a266eac2ae75bcd43c3a3fbb4f2828a1aac244b0"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_9pt-ExtraBold.ttf",
+      "sha1": "7a6bce5d0b61af4ed0c17b379e092e71b5c849f1"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_9pt-ExtraBoldItalic.ttf",
+      "sha1": "d246ce42c9bc31f04299dd4446bb36d1aad5afc7"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_9pt-ExtraLight.ttf",
+      "sha1": "7b6a9cda7ac395c6cef33f0ee549f53ab3503132"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_9pt-ExtraLightItalic.ttf",
+      "sha1": "39be1b0ccede180747afa9e84ea83814bac7eedc"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_9pt-Italic.ttf",
+      "sha1": "3d65411a52773d0f4040af2790da3f3a1f252f48"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_9pt-Light.ttf",
+      "sha1": "2c9c862c53925d29f35d227ebc38a4fec8c7058f"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_9pt-LightItalic.ttf",
+      "sha1": "4ad5d53db9c91cae1d4ddc0c72a14fab0e7b052e"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_9pt-Medium.ttf",
+      "sha1": "e30b8eaa94645fb112e2c82d2bedc68d207e72a7"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_9pt-MediumItalic.ttf",
+      "sha1": "8cb1e11cddcf9ecf52a5aeefa872b3c24bdc8c9c"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_9pt-Regular.ttf",
+      "sha1": "9921fd350ec6511a4aadd759ab35581ccf258178"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_9pt-SemiBold.ttf",
+      "sha1": "6313ed88aa75b60c4add18f0a4e8efd1b43fbed6"
+    },
+    {
+      "path": "src/assets/fonts/static/Newsreader_9pt-SemiBoldItalic.ttf",
+      "sha1": "8c7ee1b0eec3dbd43bd3966d780168d15380974f"
     }
   ]
 }

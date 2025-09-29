@@ -96,6 +96,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 20,
     paddingBottom: 20,
+    paddingTop: 20,
   },
   welcomeCard: {
     backgroundColor: colors.cardBackground,
@@ -116,6 +117,7 @@ const styles = StyleSheet.create({
   welcomeTitle: {
     fontSize: 24,
     fontWeight: '700',
+    fontFamily: 'Newsreader',
     color: colors.accent,
     marginBottom: 15,
   },

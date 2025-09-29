@@ -9,6 +9,7 @@ import {
   ImageBackground,
   Image,
   Dimensions,
+  Linking,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../../theme/colors';
@@ -18,6 +19,14 @@ interface TheGodMinuteScreenProps {
 }
 
 const TheGodMinuteScreen: React.FC<TheGodMinuteScreenProps> = ({ navigation }) => {
+  const openGooglePlay = () => {
+    Linking.openURL('https://play.google.com/store/apps/details?id=com.cmwp.godmoment');
+  };
+
+  const openAppStore = () => {
+    Linking.openURL('https://apps.apple.com/us/app/the-god-minute/id1385711396');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -36,36 +45,68 @@ const TheGodMinuteScreen: React.FC<TheGodMinuteScreenProps> = ({ navigation }) =
       </View>
 
       {/* Hero Section */}
-      <ImageBackground
-        source={require('../../../assets/images/hero-header.png')}
-        style={styles.heroSection}
-        resizeMode="cover"
-      >
-        <View style={styles.heroOverlay}>
-          <View style={styles.appIconContainer}>
-            <View style={styles.appIcon}>
-              <Image 
-                source={require('../../../assets/images/god-minute.png')}
-                style={styles.godMinuteImage}
-                resizeMode="contain"
-              />
-            </View>
+      <View style={styles.heroContainer}>
+        <ImageBackground
+          source={require('../../../assets/images/hero-header.png')}
+          style={styles.heroSection}
+          resizeMode="cover"
+        />
+        
+        {/* App Icon positioned to overlap both sections */}
+        <View style={styles.appIconContainer}>
+          <View style={styles.appIcon}>
+            <Image 
+              source={require('../../../assets/images/god-minute.png')}
+              style={styles.godMinuteImage}
+              resizeMode="contain"
+            />
           </View>
         </View>
-      </ImageBackground>
+      </View>
 
       <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        
+      {/* Text content in lower portion with cream background */}
+      <View style={styles.textSection}>
+        <Text style={styles.appTitle}>THE GOD MINUTE</Text>
+        <Text style={styles.appSubtitle}>
+          A Catholic app that connects you with God every day in prayer.
+        </Text>
+        <Text style={styles.downloadText}>Download today. Always free.</Text>
+      </View>
+
         {/* Download Buttons */}
         <View style={styles.downloadSection}>
-          <TouchableOpacity style={styles.downloadButton}>
-            <Text style={styles.downloadButtonText}>GET IT ON Google Play</Text>
+          <TouchableOpacity 
+            style={styles.storeButton}
+            onPress={openGooglePlay}
+            activeOpacity={0.8}
+          >
+            <View style={styles.storeButtonIcon}>
+              <Icon name="logo-google-playstore" size={24} color={colors.white} />
+            </View>
+            <View style={styles.storeButtonTextContainer}>
+              <Text style={styles.storeButtonSubtext}>GET IT ON</Text>
+              <Text style={styles.storeButtonMainText}>Google Play</Text>
+            </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.downloadButton}>
-            <Text style={styles.downloadButtonText}>Download on the App Store</Text>
+          
+          <TouchableOpacity 
+            style={styles.storeButton}
+            onPress={openAppStore}
+            activeOpacity={0.8}
+          >
+            <View style={styles.storeButtonIcon}>
+              <Icon name="logo-apple-appstore" size={24} color={colors.white} />
+            </View>
+            <View style={styles.storeButtonTextContainer}>
+              <Text style={styles.storeButtonSubtext}>Download on the</Text>
+              <Text style={styles.storeButtonMainText}>App Store</Text>
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -135,37 +176,61 @@ const styles = StyleSheet.create({
   headerSpacer: {
     width: 32, // Same width as back button for centering
   },
-  heroSection: {
+  heroContainer: {
+    position: 'relative',
     height: height * 0.35,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
-  heroOverlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  heroSection: {
+    height: '80%',
     width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   appIconContainer: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [
+      { translateX: -100 }, // Half of icon width (200/2)
+      { translateY: -50 }    // Move up slightly to create overlap
+    ],
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 10,
   },
   appIcon: {
-    width: 120,
-    height: 120,
-    backgroundColor: colors.white,
-    borderRadius: 20,
+    width: 200,
+    height: 200,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 10,
+  },
+  textSection: {
+    width: '100%',
+    paddingVertical: 30,
+    paddingHorizontal: 30,
+    alignItems: 'center',
+  },
+  appTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    fontFamily: 'Newsreader',
+    color: '#8B4513',
+    textAlign: 'center',
+    marginBottom: 16,
+    letterSpacing: 1,
+  },
+  appSubtitle: {
+    fontSize: 18,
+    color: '#5A5A5A',
+    textAlign: 'center',
+    lineHeight: 26,
+    marginBottom: 12,
+    fontWeight: '400',
+  },
+  downloadText: {
+    fontSize: 16,
+    color: '#D4A574',
+    textAlign: 'center',
+    fontWeight: '600',
+    fontStyle: 'italic',
   },
   iconCircle: {
     width: 80,
@@ -183,35 +248,62 @@ const styles = StyleSheet.create({
     lineHeight: 12,
   },
   godMinuteImage: {
-    width: 100,
-    height: 100,
+    width: 180,
+    height: 180,
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 0, // Add space for overlapping icon
     paddingBottom: 20,
   },
   downloadSection: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 30,
-    paddingHorizontal: 10,
+    paddingHorizontal: 5,
   },
-  downloadButton: {
-    backgroundColor: '#333',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
+  storeButton: {
+    backgroundColor: '#000',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderRadius: 8,
     flex: 0.48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  storeButtonIcon: {
+    width: 32,
+    height: 32,
+    marginRight: 8,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  downloadButtonText: {
+  storeButtonTextContainer: {
+    flex: 1,
+  },
+  storeButtonSubtext: {
     color: colors.white,
-    fontSize: 12,
+    fontSize: 10,
+    fontWeight: '400',
+    lineHeight: 12,
+  },
+  storeButtonMainText: {
+    color: colors.white,
+    fontSize: 14,
     fontWeight: '600',
+    lineHeight: 16,
   },
   contentCard: {
     backgroundColor: colors.white,
@@ -240,6 +332,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: '600',
+    fontFamily: 'Newsreader',
     color: '#8B4513',
     marginBottom: 16,
     marginLeft: 16,

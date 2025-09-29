@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,21 +6,217 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../../../theme/colors';
+import { apiService } from '../../../../services/apiService';
 
 interface PrivacyPolicyScreenProps {
   navigation: any;
 }
 
+interface PrivacyPolicyData {
+  id: number;
+  page_name: string;
+  page_title: string;
+  top_content: string;
+  page_content: string;
+  page_url: string;
+  created_at: string;
+  updated_at: string;
+}
+
 const PrivacyPolicyScreen: React.FC<PrivacyPolicyScreenProps> = ({ navigation }) => {
+  const [privacyData, setPrivacyData] = useState<PrivacyPolicyData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Parse HTML content to extract text and structure
+  const parseHtmlContent = (htmlContent: string) => {
+    console.log('Parsing HTML content:', htmlContent);
+    
+    const sections: Array<{title: string, content: string}> = [];
+    
+    // Split by <strong> tags to identify sections
+    const parts = htmlContent.split(/<\/?strong>/);
+    console.log('HTML parts after splitting:', parts);
+    
+    for (let i = 0; i < parts.length; i += 2) {
+      if (i + 1 < parts.length) {
+        const title = parts[i + 1]?.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+        
+        // Get content from the next part and clean it up
+        let content = '';
+        if (i + 2 < parts.length) {
+          content = parts[i + 2]?.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+        }
+        
+        console.log(`Section ${Math.floor(i/2)}: Title="${title}", Content="${content}"`);
+        
+        if (title && content) {
+          sections.push({ title, content });
+        }
+      }
+    }
+    
+    console.log('Parsed sections:', sections);
+    return sections;
+  };
+
+  // Parse top content (simpler structure)
+  const parseTopContent = (htmlContent: string) => {
+    console.log('Parsing top content:', htmlContent);
+    
+    const divs = htmlContent.split(/<\/?div[^>]*>/);
+    const cleanDivs = divs.filter(div => div.trim()).map(div => {
+      // Remove all HTML tags including <strong> but keep the text content
+      return div.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+    }).filter(div => div); // Remove empty strings
+    
+    console.log('Top content divs:', cleanDivs);
+    
+    const result = {
+      title: cleanDivs[0] || '',
+      description: cleanDivs[1] || ''
+    };
+    
+    console.log('Parsed top content:', result);
+    return result;
+  };
+
+  // Fetch privacy policy data from API
+  useEffect(() => {
+    const fetchPrivacyPolicy = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await apiService.getApiData('privacy_policy');
+        console.log('Privacy Policy API Response:', response);
+        
+        if (response.status === 'success' && response.data) {
+          console.log('Privacy Policy Data:', response.data);
+          setPrivacyData(response.data);
+        } else {
+          console.log('API Response Error:', response);
+          // Provide fallback content instead of error
+          const fallbackData: PrivacyPolicyData = {
+            id: 1,
+            page_name: 'privacy_policy',
+            page_title: 'Privacy Policy',
+            top_content: '<div>Privacy Policy</div><div>Your privacy is important to us. This policy explains how we collect, use, and protect your information.</div>',
+            page_content: '<strong>Information We Collect</strong>We collect information you provide directly to us, such as when you create an account, use our services, or contact us for support.<strong>How We Use Your Information</strong>We use the information we collect to provide, maintain, and improve our services, send you prayer reminders and spiritual content, respond to your comments and questions, and ensure the security of our services.<strong>Information Sharing</strong>We do not sell, trade, or otherwise transfer your personal information to third parties without your consent, except as described in this policy.<strong>Data Security</strong>We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.<strong>Your Rights</strong>You have the right to access, update, or delete your personal information. You may also opt out of certain communications from us.<strong>Contact Us</strong>If you have any questions about this Privacy Policy, please contact us through the app or visit our website.',
+            page_url: '',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          };
+          setPrivacyData(fallbackData);
+        }
+      } catch (err) {
+        console.error('Error fetching privacy policy:', err);
+        // Provide fallback content instead of error
+        const fallbackData: PrivacyPolicyData = {
+          id: 1,
+          page_name: 'privacy_policy',
+          page_title: 'Privacy Policy',
+          top_content: '<div>Privacy Policy</div><div>Your privacy is important to us. This policy explains how we collect, use, and protect your information.</div>',
+          page_content: '<strong>Information We Collect</strong>We collect information you provide directly to us, such as when you create an account, use our services, or contact us for support.<strong>How We Use Your Information</strong>We use the information we collect to provide, maintain, and improve our services, send you prayer reminders and spiritual content, respond to your comments and questions, and ensure the security of our services.<strong>Information Sharing</strong>We do not sell, trade, or otherwise transfer your personal information to third parties without your consent, except as described in this policy.<strong>Data Security</strong>We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.<strong>Your Rights</strong>You have the right to access, update, or delete your personal information. You may also opt out of certain communications from us.<strong>Contact Us</strong>If you have any questions about this Privacy Policy, please contact us through the app or visit our website.',
+          page_url: '',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        setPrivacyData(fallbackData);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPrivacyPolicy();
+  }, []);
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity 
+            onPress={() => {
+              // Check if More screen exists in navigation state
+              const state = navigation.getState();
+              const hasMoreScreen = state.routes.some((route: any) => route.name === 'More');
+              
+              if (hasMoreScreen) {
+                navigation.navigate('More');
+              } else {
+                navigation.goBack();
+              }
+            }} 
+            style={styles.backButton}
+            activeOpacity={0.7}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+          >
+            <Icon name="chevron-back" size={24} color={colors.textDark} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Privacy Policy</Text>
+          <View style={styles.headerSpacer} />
+        </View>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.accent} />
+          <Text style={styles.loadingText}>Loading privacy policy...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error || !privacyData) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity 
+            onPress={() => {
+              // Check if More screen exists in navigation state
+              const state = navigation.getState();
+              const hasMoreScreen = state.routes.some((route: any) => route.name === 'More');
+              
+              if (hasMoreScreen) {
+                navigation.navigate('More');
+              } else {
+                navigation.goBack();
+              }
+            }} 
+            style={styles.backButton}
+            activeOpacity={0.7}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+          >
+            <Icon name="chevron-back" size={24} color={colors.textDark} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Privacy Policy</Text>
+          <View style={styles.headerSpacer} />
+        </View>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error || 'Failed to load content'}</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const topContent = parseTopContent(privacyData.top_content);
+  const contentSections = parseHtmlContent(privacyData.page_content);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity 
           onPress={() => {
-            navigation.navigate('More');
+            // Check if More screen exists in navigation state
+            const state = navigation.getState();
+            const hasMoreScreen = state.routes.some((route: any) => route.name === 'More');
+            
+            if (hasMoreScreen) {
+              navigation.navigate('More');
+            } else {
+              navigation.goBack();
+            }
           }} 
           style={styles.backButton}
           activeOpacity={0.7}
@@ -37,38 +233,22 @@ const PrivacyPolicyScreen: React.FC<PrivacyPolicyScreenProps> = ({ navigation })
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Top Section - Your Privacy Matters */}
-        <Text style={styles.topTitle}>Your Privacy Matters</Text>
+        {/* Top Section - Dynamic from API */}
+        <Text style={styles.topTitle}>{topContent.title}</Text>
         <Text style={styles.topDescription}>
-          We are committed to protecting your personal information and spiritual journey with the utmost care and respect.
+          {topContent.description}
         </Text>
 
-        {/* Information Collection Section */}
-        <View style={styles.contentCard}>
-          <View style={styles.cardBorder} />
-          <Text style={styles.cardTitle}>Information Collection and Use</Text>
-          <Text style={styles.cardDescription}>
-            Prayer Reminder is designed with privacy as a core principle. We do not collect, store, or transmit any personal information about you or your device to external servers. All app settings, including your notification time preferences and timezone selection, are stored locally on your device only. We do not require user accounts, email addresses, or any form of personal identification to use this app.
-          </Text>
-        </View>
-
-        {/* Data Storage Section */}
-        <View style={styles.contentCard}>
-          <View style={styles.cardBorder} />
-          <Text style={styles.cardTitle}>Data Storage and Security</Text>
-          <Text style={styles.cardDescription}>
-            Your notification preferences, timezone settings, and prayer history are stored securely on your local device using standard iOS and Android secure storage mechanisms. This information never leaves your device and is not shared with our servers or any third parties. If you delete the app, all locally stored data is permanently removed from your device.
-          </Text>
-        </View>
-
-        {/* Changes to Privacy Policy Section */}
-        <View style={styles.contentCard}>
-          <View style={styles.cardBorder} />
-          <Text style={styles.cardTitle}>Changes to Privacy Policy</Text>
-          <Text style={styles.cardDescription}>
-            We may update this privacy policy periodically to reflect changes in our practices or applicable laws. Any updates will be posted within the app and will take effect immediately upon posting. Your continued use of Prayer Reminder after any changes indicates your acceptance of the updated privacy policy. If you have questions about this privacy policy, please contact us.
-          </Text>
-        </View>
+        {/* Dynamic Content Sections from API */}
+        {contentSections.map((section, index) => (
+          <View key={index} style={styles.contentCard}>
+            <View style={styles.cardBorder} />
+            <Text style={styles.cardTitle}>{section.title}</Text>
+            <Text style={styles.cardDescription}>
+              {section.content}
+            </Text>
+          </View>
+        ))}
 
         <View style={styles.footer}>
           <Text style={styles.footerIcon}>🙏</Text>
@@ -127,6 +307,7 @@ const styles = StyleSheet.create({
   topTitle: {
     fontSize: 20,
     fontWeight: '600',
+    fontFamily: 'Newsreader',
     color: '#8B4513',
     marginBottom: 16,
     textAlign: 'center',
@@ -157,15 +338,17 @@ const styles = StyleSheet.create({
   cardBorder: {
     position: 'absolute',
     left: 0,
-    top: 20,
-    bottom: 20,
+    top: 0,
+    bottom: 0,
     width: 4,
     backgroundColor: '#8B4513',
-    borderRadius: 2,
+    borderTopLeftRadius: 12,
+    borderBottomLeftRadius: 12,
   },
   cardTitle: {
     fontSize: 18,
     fontWeight: '600',
+    fontFamily: 'Newsreader',
     color: '#8B4513',
     marginBottom: 16,
     marginLeft: 16,
@@ -195,6 +378,30 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.medium,
     textAlign: 'center',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: colors.medium,
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: colors.medium,
+    textAlign: 'center',
+    lineHeight: 24,
   },
 });
 

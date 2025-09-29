@@ -117,6 +117,7 @@ export const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
+    fontFamily: 'Newsreader',
     color: '#333333',
     marginBottom: 10,
     marginLeft: 20,

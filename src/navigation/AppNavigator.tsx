@@ -11,8 +11,8 @@ import ForgotPasswordScreen from '../screens/PreLogin/ForgotPassword/ForgotPassw
 import SignUpScreen from '../screens/PreLogin/SignUp/SignUpScreen';
 import VerifyEmailScreen from '../screens/PreLogin/VerifyEmail/VerifyEmailScreen';
 import DrawerNavigator from './DrawerNavigator';
-import TermsAndConditionsScreen from '../screens/PreLogin/Legal/TermsAndConditionsScreen';
-import PrivacyPolicyScreen from '../screens/PreLogin/Legal/PrivacyPolicyScreen';
+import TermsAndConditionsScreen from '../screens/PostLogin/Legal/TermsConditions/TermsConditionsScreen';
+import PrivacyPolicyScreen from '../screens/PostLogin/Legal/PrivacyPolicy/PrivacyPolicyScreen';
 import { withNavigationWrapper } from './NavigationWrapper';
 import { colors } from '../theme/colors';
 
@@ -141,6 +141,7 @@ const AppNavigator = () => {
             presentation: 'card'
           }}
         />
+        {/* Privacy Policy and Terms are now in DrawerNavigator for proper back navigation */}
         <Stack.Screen
           name="TermsAndConditions"
           component={WrappedTermsAndConditionsScreen}

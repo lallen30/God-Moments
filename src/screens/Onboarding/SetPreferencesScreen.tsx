@@ -32,6 +32,24 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
   const [timezone, setTimezone] = useState('Eastern Time');
   const [showTimezoneModal, setShowTimezoneModal] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
+  const [showNumberPickerModal, setShowNumberPickerModal] = useState(false);
+  const [activePicker, setActivePicker] = useState<
+    'start-hour' | 'start-minute' | 'end-hour' | 'end-minute' | null
+  >(null);
+
+  const hourOptions = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
+  const minuteOptions = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'));
+
+  const parseTime = (time: string): { hour: string; minute: string } => {
+    const [h, m] = time.split(':');
+    return { hour: h.replace(/^0+/, '') || '0', minute: m || '00' };
+  };
+
+  const composeTime = (hour: string, minute: string): string => {
+    const h = parseInt(hour || '0', 10);
+    const m = parseInt(minute || '0', 10);
+    return `${h}:${m.toString().padStart(2, '0')}`;
+  };
 
   const convertTo24Hour = (time: string, period: string): string => {
     const [hours, minutes] = time.split(':');
@@ -205,13 +223,25 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
           <View style={styles.timeSection}>
             <Text style={styles.timeLabel}>Start Time</Text>
             <View style={styles.timeInputContainer}>
-              <TextInput
-                style={styles.timeInput}
-                value={startTime}
-                onChangeText={setStartTime}
-                placeholder="7:00"
-                keyboardType="numeric"
-              />
+              <TouchableOpacity
+                style={styles.timeDropdown}
+                onPress={() => {
+                  setActivePicker('start-hour');
+                  setShowNumberPickerModal(true);
+                }}
+              >
+                <Text style={styles.timeDropdownText}>{parseTime(startTime).hour || '7'}</Text>
+              </TouchableOpacity>
+              <Text style={styles.colonText}>:</Text>
+              <TouchableOpacity
+                style={styles.timeDropdown}
+                onPress={() => {
+                  setActivePicker('start-minute');
+                  setShowNumberPickerModal(true);
+                }}
+              >
+                <Text style={styles.timeDropdownText}>{parseTime(startTime).minute || '00'}</Text>
+              </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.amPmButton, startTimeAmPm === 'AM' && styles.amPmButtonActive]}
                 onPress={() => toggleAmPm('start')}
@@ -234,13 +264,25 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
           <View style={styles.timeSection}>
             <Text style={styles.timeLabel}>End Time</Text>
             <View style={styles.timeInputContainer}>
-              <TextInput
-                style={styles.timeInput}
-                value={endTime}
-                onChangeText={setEndTime}
-                placeholder="4:30"
-                keyboardType="numeric"
-              />
+              <TouchableOpacity
+                style={styles.timeDropdown}
+                onPress={() => {
+                  setActivePicker('end-hour');
+                  setShowNumberPickerModal(true);
+                }}
+              >
+                <Text style={styles.timeDropdownText}>{parseTime(endTime).hour || '4'}</Text>
+              </TouchableOpacity>
+              <Text style={styles.colonText}>:</Text>
+              <TouchableOpacity
+                style={styles.timeDropdown}
+                onPress={() => {
+                  setActivePicker('end-minute');
+                  setShowNumberPickerModal(true);
+                }}
+              >
+                <Text style={styles.timeDropdownText}>{parseTime(endTime).minute || '30'}</Text>
+              </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.amPmButton, endTimeAmPm === 'AM' && styles.amPmButtonActive]}
                 onPress={() => toggleAmPm('end')}
@@ -335,6 +377,59 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
                   {timezone === tz && (
                     <Icon name="checkmark" size={20} color={colors.accent} />
                   )}
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Number Picker Modal for Hour/Minute */}
+      <Modal
+        visible={showNumberPickerModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowNumberPickerModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                {activePicker === 'start-hour' && 'Select Start Hour (1–12)'}
+                {activePicker === 'start-minute' && 'Select Start Minute (00–59)'}
+                {activePicker === 'end-hour' && 'Select End Hour (1–12)'}
+                {activePicker === 'end-minute' && 'Select End Minute (00–59)'}
+              </Text>
+              <TouchableOpacity onPress={() => setShowNumberPickerModal(false)}>
+                <Icon name="close" size={24} color={colors.textDark} />
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={{ paddingHorizontal: 20 }}>
+              {(
+                activePicker?.includes('hour') ? hourOptions : minuteOptions
+              ).map((opt) => (
+                <TouchableOpacity
+                  key={opt}
+                  style={styles.numberOption}
+                  onPress={() => {
+                    if (!activePicker) return;
+                    if (activePicker === 'start-hour') {
+                      const { minute } = parseTime(startTime);
+                      setStartTime(composeTime(opt, minute));
+                    } else if (activePicker === 'start-minute') {
+                      const { hour } = parseTime(startTime);
+                      setStartTime(composeTime(hour, opt));
+                    } else if (activePicker === 'end-hour') {
+                      const { minute } = parseTime(endTime);
+                      setEndTime(composeTime(opt, minute));
+                    } else if (activePicker === 'end-minute') {
+                      const { hour } = parseTime(endTime);
+                      setEndTime(composeTime(hour, opt));
+                    }
+                    setShowNumberPickerModal(false);
+                  }}
+                >
+                  <Text style={styles.numberOptionText}>{opt}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -463,15 +558,25 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  timeInput: {
+  timeDropdown: {
     flex: 1,
-    fontSize: 16,
-    color: '#333',
-    paddingVertical: 8,
+    paddingVertical: 10,
     paddingHorizontal: 12,
     backgroundColor: '#F8F8F8',
     borderRadius: 8,
-    marginRight: 12,
+    marginRight: 8,
+    alignItems: 'center',
+  },
+  timeDropdownText: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500',
+  },
+  colonText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+    marginRight: 8,
   },
   amPmButton: {
     paddingVertical: 8,
@@ -591,6 +696,15 @@ const styles = StyleSheet.create({
   timezoneOptionTextSelected: {
     color: colors.accent,
     fontWeight: '500',
+  },
+  numberOption: {
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.light,
+  },
+  numberOptionText: {
+    fontSize: 16,
+    color: colors.textDark,
   },
 });
 

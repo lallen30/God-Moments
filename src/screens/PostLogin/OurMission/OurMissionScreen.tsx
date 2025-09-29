@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,8 +6,7 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
-  ImageBackground,
-  Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../../theme/colors';
@@ -16,7 +15,182 @@ interface OurMissionScreenProps {
   navigation: any;
 }
 
+interface MissionData {
+  id: number;
+  page_name: string;
+  page_title: string;
+  top_content: string;
+  page_content: string;
+  page_url: string;
+  created_at: string;
+  updated_at: string;
+}
+
 const OurMissionScreen: React.FC<OurMissionScreenProps> = ({ navigation }) => {
+  const [missionData, setMissionData] = useState<MissionData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Parse HTML content to extract text and structure
+  const parseHtmlContent = (htmlContent: string) => {
+    console.log('Parsing Mission HTML content:', htmlContent);
+    
+    const sections: Array<{title: string, content: string}> = [];
+    
+    // Split by <strong> tags to identify sections
+    const parts = htmlContent.split(/<\/?strong>/);
+    console.log('Mission HTML parts after splitting:', parts);
+    
+    for (let i = 0; i < parts.length; i += 2) {
+      if (i + 1 < parts.length) {
+        const title = parts[i + 1]?.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+        
+        // Get content from the next part and clean it up
+        let content = '';
+        if (i + 2 < parts.length) {
+          content = parts[i + 2]?.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+        }
+        
+        console.log(`Mission Section ${Math.floor(i/2)}: Title="${title}", Content="${content}"`);
+        
+        if (title && content) {
+          sections.push({ title, content });
+        }
+      }
+    }
+    
+    console.log('Parsed mission sections:', sections);
+    return sections;
+  };
+
+  // Parse top content with proper strong tag and blockquote handling
+  const parseTopContent = (htmlContent: string) => {
+    console.log('Parsing mission top content:', htmlContent);
+    
+    // Extract blockquote content first
+    const blockquoteMatch = htmlContent.match(/<blockquote>(.*?)<\/blockquote>/);
+    const tagline = blockquoteMatch ? blockquoteMatch[1].trim() : '';
+    
+    // Remove blockquote from content for further processing
+    const contentWithoutBlockquote = htmlContent.replace(/<blockquote>.*?<\/blockquote>/g, '');
+    
+    // Split content by div tags
+    const divs = contentWithoutBlockquote.split(/<\/?div[^>]*>/);
+    const cleanDivs = divs.filter(div => div.trim()).map(div => div.trim()).filter(div => div);
+    
+    console.log('Mission content divs:', cleanDivs);
+    
+    // Parse the content to separate strong tags from regular text
+    const parsedContent: Array<{type: 'strong' | 'text', content: string}> = [];
+    
+    cleanDivs.forEach(div => {
+      if (div.includes('<strong>') && div.includes('</strong>')) {
+        // Split by strong tags
+        const parts = div.split(/<\/?strong>/);
+        for (let i = 0; i < parts.length; i++) {
+          const part = parts[i].replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+          if (part) {
+            if (i % 2 === 1) {
+              // This is content inside strong tags
+              parsedContent.push({ type: 'strong', content: part });
+            } else {
+              // This is regular text
+              parsedContent.push({ type: 'text', content: part });
+            }
+          }
+        }
+      } else {
+        // Regular text content
+        const cleanText = div.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+        if (cleanText) {
+          parsedContent.push({ type: 'text', content: cleanText });
+        }
+      }
+    });
+    
+    console.log('Parsed mission top content:', { parsedContent, tagline });
+    return { parsedContent, tagline };
+  };
+
+  // Simulate API data (in real app, this would be an API call)
+  useEffect(() => {
+    const loadMissionData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Simulate API response with the provided data
+        const simulatedData: MissionData = {
+          id: 1,
+          page_name: 'our_mission',
+          page_title: 'Our Mission',
+          top_content: '<div><strong>About God Moments</strong><br><br>Our app is a simple way to awaken you to the presence of God before you. Twice each day, at random times, your phone will gently chime with a bell and display a short scripture verse, inviting you to pause for a sacred moment of gratitude and prayer.<br><br></div><blockquote>Stop. Breathe. Give thanks.</blockquote>',
+          page_content: '<div><strong>Our Mission</strong><br><br>We are a ministry of evangelization offered by the Vincentian priests and brothers of St. Vincent de Paul. If you\'re seeking a deeper prayer experience, discover our companion app, The God Minute—a 10-minute daily prayer that weaves together music, scripture, and reflection.</div>',
+          page_url: 'our-mission',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        
+        setMissionData(simulatedData);
+      } catch (err) {
+        console.error('Error loading mission data:', err);
+        setError('Failed to load mission content');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMissionData();
+  }, []);
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity 
+            onPress={() => navigation.navigate('More')} 
+            style={styles.backButton}
+            activeOpacity={0.7}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+          >
+            <Icon name="chevron-back" size={24} color={colors.textDark} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Our Mission</Text>
+          <View style={styles.headerSpacer} />
+        </View>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.accent} />
+          <Text style={styles.loadingText}>Loading mission content...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error || !missionData) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity 
+            onPress={() => navigation.navigate('More')} 
+            style={styles.backButton}
+            activeOpacity={0.7}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+          >
+            <Icon name="chevron-back" size={24} color={colors.textDark} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Our Mission</Text>
+          <View style={styles.headerSpacer} />
+        </View>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error || 'Failed to load mission content'}</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const topContent = parseTopContent(missionData.top_content);
+  const contentSections = parseHtmlContent(missionData.page_content);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -34,38 +208,34 @@ const OurMissionScreen: React.FC<OurMissionScreenProps> = ({ navigation }) => {
         <View style={styles.headerSpacer} />
       </View>
 
-      {/* Hero Section */}
-      <ImageBackground
-        source={require('../../../assets/images/hero.png')}
-        style={styles.heroSection}
-        resizeMode="cover"
-      >
-        
-      </ImageBackground>
-
       <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* About God Moments Card */}
-        <View style={styles.contentCard}>
-          <View style={styles.cardBorder} />
-          <Text style={styles.cardTitle}>About God Moments</Text>
-          <Text style={styles.cardDescription}>
-            Our app is a simple way to awaken you to the presence of God before you. Twice each day, at random times, your phone will gently chime with a bell and display a short scripture verse, inviting you to pause for a sacred moment of gratitude and prayer.
-          </Text>
-          <Text style={styles.tagline}>Stop. Breathe. Give thanks.</Text>
+        {/* Top Section - Dynamic from API */}
+        <View style={styles.topContentContainer}>
+          {topContent.parsedContent.map((item, index) => (
+            <Text 
+              key={index} 
+              style={item.type === 'strong' ? styles.topTitle : styles.topDescription}
+            >
+              {item.content}
+            </Text>
+          ))}
         </View>
+        {topContent.tagline && (
+          <Text style={styles.blockquote}>{topContent.tagline}</Text>
+        )}
 
-        {/* Our Mission Card */}
-        <View style={styles.contentCard}>
-          <View style={styles.cardBorder} />
-          <Text style={styles.cardTitle}>Our Mission</Text>
-          <Text style={styles.cardDescription}>
-            We are a ministry of evangelization offered by the Vincentian priests and brothers of St. Vincent de Paul. If you're seeking a deeper prayer experience, discover our companion app, The God Minute—a 10-minute daily prayer that weaves together music, scripture, and reflection.
-          </Text>
-        </View>
+        {/* Content Sections */}
+        {contentSections.map((section, index) => (
+          <View key={index} style={styles.contentCard}>
+            <View style={styles.cardBorder} />
+            <Text style={styles.cardTitle}>{section.title}</Text>
+            <Text style={styles.cardDescription}>{section.content}</Text>
+          </View>
+        ))}
 
         <View style={styles.footer}>
           <Text style={styles.footerIcon}>🙏</Text>
@@ -77,7 +247,6 @@ const OurMissionScreen: React.FC<OurMissionScreenProps> = ({ navigation }) => {
   );
 };
 
-const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -115,40 +284,68 @@ const styles = StyleSheet.create({
   headerSpacer: {
     width: 32,
   },
-  heroSection: {
-    height: height * 0.3,
+  loadingContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 20,
   },
-  heroOverlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  heroTitle: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: colors.medium,
     textAlign: 'center',
-    lineHeight: 40,
-    letterSpacing: 2,
   },
-  heroSubtitle: {
-    fontSize: 14,
-    color: '#FFFFFF',
-    marginTop: 8,
-    letterSpacing: 3,
-    fontWeight: '300',
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: colors.danger,
+    textAlign: 'center',
+    lineHeight: 24,
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
     paddingHorizontal: 20,
-    paddingTop: 30,
+    paddingTop: 20,
     paddingBottom: 20,
+  },
+  topContentContainer: {
+    marginBottom: 20,
+  },
+  topTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    fontFamily: 'Newsreader',
+    color: '#8B4513',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  topDescription: {
+    fontSize: 16,
+    color: colors.textDark,
+    lineHeight: 24,
+    marginBottom: 16,
+    textAlign: 'center',
+    paddingHorizontal: 10,
+  },
+  blockquote: {
+    fontSize: 18,
+    fontWeight: '600',
+    fontFamily: 'Newsreader',
+    color: '#8B4513',
+    textAlign: 'center',
+    marginTop: 16,
+    marginBottom: 20,
+    fontStyle: 'italic',
+    paddingHorizontal: 20,
+    paddingVertical: 16
   },
   contentCard: {
     backgroundColor: colors.white,
@@ -168,16 +365,18 @@ const styles = StyleSheet.create({
   cardBorder: {
     position: 'absolute',
     left: 0,
-    top: 20,
-    bottom: 20,
+    top: 0,
+    bottom: 0,
     width: 4,
     backgroundColor: '#8B4513',
-    borderRadius: 2,
+    borderTopLeftRadius: 12,
+    borderBottomLeftRadius: 12,
   },
   cardTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: colors.textDark,
+    fontFamily: 'Newsreader',
+    color: '#8B4513',
     marginBottom: 16,
     marginLeft: 16,
   },
@@ -187,13 +386,6 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     marginLeft: 16,
     marginBottom: 16,
-  },
-  tagline: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#D4A574',
-    textAlign: 'center',
-    marginTop: 8,
   },
   footer: {
     alignItems: 'center',

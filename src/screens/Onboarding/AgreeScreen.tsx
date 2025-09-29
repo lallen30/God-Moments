@@ -49,13 +49,11 @@ const AgreeScreen: React.FC<AgreeScreenProps> = ({ navigation }) => {
   };
 
   const handleReadTerms = () => {
-    // TODO: Navigate to Terms of Service screen or open web view
-    Alert.alert('Terms of Service', 'This would open the Terms of Service document.');
+    navigation.navigate('TermsAndConditions');
   };
 
   const handleReadPolicy = () => {
-    // TODO: Navigate to Privacy Policy screen or open web view
-    Alert.alert('Privacy Policy', 'This would open the Privacy Policy document.');
+    navigation.navigate('PrivacyPolicy');
   };
 
   const handleNotificationToggle = () => {
