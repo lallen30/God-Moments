@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../../theme/colors';
@@ -95,7 +96,7 @@ const MoreScreen: React.FC<MoreScreenProps> = ({ navigation }) => {
         </View>
 
         <View style={styles.footer}>
-          <Text style={styles.footerIcon}>🙏</Text>
+          <Image source={require('../../../assets/images/footer-icon.png')} style={styles.footerIcon} resizeMode="contain" />
           <Text style={styles.footerTitle}>God Moments</Text>
           <Text style={styles.footerSubtitle}>Made with ♡ for your spiritual journey</Text>
         </View>
@@ -188,7 +189,8 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   footerIcon: {
-    fontSize: 24,
+    width: 12,
+    height: 14,
     marginBottom: 8,
   },
   footerTitle: {

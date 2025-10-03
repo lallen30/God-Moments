@@ -241,26 +241,41 @@ class ScheduledNotificationService {
       // Get device timezone
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-      // Default notification settings
-      const defaultSettings = {
-        tz: timezone,
-        start_time: '09:00',
-        end_time: '21:00',
-        notifications_enabled: true,
-      };
+      let settings: DeviceSettings;
 
-      // Merge with any saved settings or custom settings
-      const savedSettings = await this.getSavedSettings();
-      const settings = { ...defaultSettings, ...savedSettings, ...customSettings };
+      if (customSettings && customSettings.start_time && customSettings.end_time) {
+        // User provided explicit settings - use them directly
+        settings = {
+          tz: customSettings.tz || timezone,
+          start_time: customSettings.start_time,
+          end_time: customSettings.end_time,
+          notifications_enabled: customSettings.notifications_enabled ?? true,
+        };
+        console.log('📝 [ScheduledNotifications] Using explicit user settings:', settings);
+      } else {
+        // No explicit settings - try saved settings or require them
+        const savedSettings = await this.getSavedSettings();
+        if (savedSettings.start_time && savedSettings.end_time) {
+          settings = {
+            tz: savedSettings.tz || timezone,
+            start_time: savedSettings.start_time,
+            end_time: savedSettings.end_time,
+            notifications_enabled: savedSettings.notifications_enabled ?? true,
+          };
+          console.log('📝 [ScheduledNotifications] Using saved settings:', settings);
+        } else {
+          throw new Error('No notification time settings provided. User must set preferences first.');
+        }
+      }
 
       // Register device with the Laravel backend
       const registrationData: DeviceRegistrationData = {
         anon_user_id: this.anonUserId,
         onesignal_player_id: playerId,
-        tz: settings.tz,
-        start_time: settings.start_time,
-        end_time: settings.end_time,
-        notifications_enabled: settings.notifications_enabled,
+        tz: settings.tz!,
+        start_time: settings.start_time!,
+        end_time: settings.end_time!,
+        notifications_enabled: settings.notifications_enabled!,
       };
 
       console.log('📤 [ScheduledNotifications] Registering device:', {

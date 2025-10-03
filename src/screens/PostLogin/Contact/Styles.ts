@@ -127,7 +127,8 @@ export const styles = StyleSheet.create({
     paddingTop: 20,
   },
   footerIcon: {
-    fontSize: 24,
+    width: 12,
+    height: 14,
     marginBottom: 8,
   },
   footerTitle: {

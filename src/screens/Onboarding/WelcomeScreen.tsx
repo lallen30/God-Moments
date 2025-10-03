@@ -3,17 +3,17 @@ import {
   View,
   Text,
   StyleSheet,
-  ImageBackground,
   TouchableOpacity,
   SafeAreaView,
   ScrollView,
+  Image,
+  ImageBackground,
   Dimensions,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { colors } from '../../theme/colors';
 
 const { width, height } = Dimensions.get('window');
-
 const WelcomeScreen = () => {
   const navigation = useNavigation();
 
@@ -47,12 +47,8 @@ const WelcomeScreen = () => {
         <View style={styles.welcomeCard}>
           <Text style={styles.welcomeTitle}>Welcome to God Moments</Text>
           <Text style={styles.welcomeText}>
-            Our app breaks your daily routine into unexpected moments of connection with He, 
-            who made us all. Instead of scheduled prayers that become routine, this app delivers 
-            a surprise scripture-based reminder each day within your chosen time window. These 
-            brief, yet powerful prayers arrive as simple notifications, inviting you to pause 
-            wherever you are and offer thanks and reflection. By embracing the element of 
-            surprise, God Moments helps break through the noise of busy life.
+          God Moments is a Catholic ministry of evangelization and faith offered by the Vincentian priests and brothers of St. Vincent De Paul. Our goal is to help people of faith connect with God in a deep and personal way.
+          If you are seeking a deeper prayer experience, discover our companion app, THE GOD MINUTE—a 10 minute daily prayer based on the Liturgy of the Hours that weaves sacred music, scripture and a short reflection into a spiritual meditation to bless your day.
           </Text>
         </View>
 
@@ -63,7 +59,7 @@ const WelcomeScreen = () => {
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Text style={styles.footerIcon}>🙏</Text>
+          <Image source={require('../../assets/images/footer-icon.png')} style={styles.footerIcon} resizeMode="contain" />
           <Text style={styles.footerTitle}>God Moments</Text>
           <Text style={styles.footerSubtitle}>Made with ♡ for your spiritual journey</Text>
         </View>
@@ -153,7 +149,8 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   footerIcon: {
-    fontSize: 24,
+    width: 12,
+    height: 14,
     marginBottom: 8,
   },
   footerTitle: {

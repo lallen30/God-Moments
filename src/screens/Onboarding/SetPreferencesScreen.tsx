@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
+  TouchableOpacity,
   SafeAreaView,
   ScrollView,
-  TouchableOpacity,
-  ImageBackground,
-  Dimensions,
   Alert,
-  Switch,
-  TextInput,
-  Modal,
+  Platform,
+  Image,
+  Dimensions,
+  ImageBackground,
   ActivityIndicator,
+  Switch,
+  Modal,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -337,7 +338,7 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
         </TouchableOpacity>
 
         <View style={styles.footer}>
-          <Text style={styles.footerIcon}>🙏</Text>
+          <Image source={require('../../assets/images/footer-icon.png')} style={styles.footerIcon} resizeMode="contain" />
           <Text style={styles.footerTitle}>God Moments</Text>
           <Text style={styles.footerSubtitle}>Made with ♡ for your spiritual journey</Text>
         </View>
@@ -636,7 +637,8 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   footerIcon: {
-    fontSize: 24,
+    width: 12,
+    height: 14,
     marginBottom: 8,
   },
   footerTitle: {

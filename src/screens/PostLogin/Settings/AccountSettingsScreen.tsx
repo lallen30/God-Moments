@@ -7,10 +7,11 @@ import {
   ScrollView,
   TouchableOpacity,
   Switch,
-  TextInput,
   Alert,
-  Modal,
+  Platform,
   ActivityIndicator,
+  Image,
+  Modal,
   Linking,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -487,7 +488,7 @@ const AccountSettingsScreen = () => {
         </TouchableOpacity>
 
         <View style={styles.footer}>
-          <Text style={styles.footerIcon}>🙏</Text>
+          <Image source={require('../../../assets/images/footer-icon.png')} style={styles.footerIcon} resizeMode="contain" />
           <Text style={styles.footerTitle}>God Moments</Text>
           <Text style={styles.footerSubtitle}>Made with ♡ for your spiritual journey</Text>
         </View>
@@ -779,7 +780,8 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   footerIcon: {
-    fontSize: 24,
+    width: 12,
+    height: 14,
     marginBottom: 8,
   },
   footerTitle: {

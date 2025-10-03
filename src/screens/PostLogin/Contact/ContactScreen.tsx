@@ -11,6 +11,7 @@ import {
   Platform,
   SafeAreaView,
   Keyboard,
+  Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -193,7 +194,7 @@ const ContactScreen = () => {
           </TouchableOpacity>
           
           <View style={styles.footer}>
-            <Text style={styles.footerIcon}>🙏</Text>
+            <Image source={require('../../../assets/images/footer-icon.png')} style={styles.footerIcon} resizeMode="contain" />
             <Text style={styles.footerTitle}>God Moments</Text>
             <Text style={styles.footerSubtitle}>Made with ♡ for your spiritual journey</Text>
           </View>
