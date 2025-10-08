@@ -61,7 +61,7 @@ const AgreeScreen: React.FC<AgreeScreenProps> = ({ navigation }) => {
   const handleNotificationToggle = () => {
     const newValue = !pushNotificationsEnabled;
     setPushNotificationsEnabled(newValue);
-    
+
     // If user is turning notifications OFF, show helpful guidance
     if (!newValue) {
       Alert.alert(
@@ -69,8 +69,8 @@ const AgreeScreen: React.FC<AgreeScreenProps> = ({ navigation }) => {
         'Prayer notifications are now disabled. You can change this later in Account Settings.\n\nNote: To completely stop all notifications, you can also disable them in your iPhone Settings:\n\nSettings > Notifications > God Moments > Allow Notifications',
         [
           { text: 'Got it', style: 'default' },
-          { 
-            text: 'Open Settings', 
+          {
+            text: 'Open Settings',
             style: 'default',
             onPress: () => {
               Linking.openSettings();
@@ -93,7 +93,7 @@ const AgreeScreen: React.FC<AgreeScreenProps> = ({ navigation }) => {
         resizeMode="cover"
       />
 
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -149,8 +149,8 @@ const AgreeScreen: React.FC<AgreeScreenProps> = ({ navigation }) => {
             <View style={styles.agreementContent}>
               <Text style={styles.agreementTitle}>Allow Notifications</Text>
               <Text style={styles.agreementDescription}>
-                {pushNotificationsEnabled 
-                  ? "Receive prayer reminders are Active." 
+                {pushNotificationsEnabled
+                  ? "Receive prayer reminders are Active."
                   : "Prayer reminders are disabled."
                 }
               </Text>
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     color: colors.textDark,
   },
   heroSection: {
-    height: height * 0.25,
+    height: height * 0.30,
     justifyContent: 'center',
     alignItems: 'center',
   },

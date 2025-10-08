@@ -64,12 +64,40 @@ const AccountSettingsScreen = () => {
   };
 
   const timezones = [
+    // United States
     { label: 'Eastern Time', value: 'America/New_York' },
     { label: 'Central Time', value: 'America/Chicago' },
     { label: 'Mountain Time', value: 'America/Denver' },
     { label: 'Pacific Time', value: 'America/Los_Angeles' },
     { label: 'Alaska Time', value: 'America/Anchorage' },
     { label: 'Hawaii Time', value: 'Pacific/Honolulu' },
+    // Europe
+    { label: 'Ireland (Dublin)', value: 'Europe/Dublin' },
+    { label: 'United Kingdom (London)', value: 'Europe/London' },
+    { label: 'Central European Time', value: 'Europe/Paris' },
+    { label: 'Eastern European Time', value: 'Europe/Athens' },
+    // Africa
+    { label: 'South Africa (Johannesburg)', value: 'Africa/Johannesburg' },
+    { label: 'Nigeria (Lagos)', value: 'Africa/Lagos' },
+    { label: 'Kenya (Nairobi)', value: 'Africa/Nairobi' },
+    { label: 'Egypt (Cairo)', value: 'Africa/Cairo' },
+    // Asia
+    { label: 'India (Mumbai)', value: 'Asia/Kolkata' },
+    { label: 'Philippines (Manila)', value: 'Asia/Manila' },
+    { label: 'Singapore', value: 'Asia/Singapore' },
+    { label: 'Japan (Tokyo)', value: 'Asia/Tokyo' },
+    { label: 'China (Beijing)', value: 'Asia/Shanghai' },
+    // Australia & Pacific
+    { label: 'Australia (Sydney)', value: 'Australia/Sydney' },
+    { label: 'Australia (Melbourne)', value: 'Australia/Melbourne' },
+    { label: 'Australia (Brisbane)', value: 'Australia/Brisbane' },
+    { label: 'Australia (Perth)', value: 'Australia/Perth' },
+    { label: 'New Zealand (Auckland)', value: 'Pacific/Auckland' },
+    // Americas (Other)
+    { label: 'Canada (Toronto)', value: 'America/Toronto' },
+    { label: 'Mexico (Mexico City)', value: 'America/Mexico_City' },
+    { label: 'Brazil (São Paulo)', value: 'America/Sao_Paulo' },
+    { label: 'Argentina (Buenos Aires)', value: 'America/Argentina/Buenos_Aires' },
   ];
 
   // Load saved settings on component mount
@@ -137,10 +165,40 @@ const AccountSettingsScreen = () => {
       } else if (preferencesData?.timezone) {
         // Fallback to local storage timezone, convert to IANA format if needed
         const timezoneMap: { [key: string]: string } = {
+          // United States
           'Eastern Time': 'America/New_York',
           'Central Time': 'America/Chicago',
           'Mountain Time': 'America/Denver',
           'Pacific Time': 'America/Los_Angeles',
+          'Alaska Time': 'America/Anchorage',
+          'Hawaii Time': 'Pacific/Honolulu',
+          // Europe
+          'Ireland (Dublin)': 'Europe/Dublin',
+          'United Kingdom (London)': 'Europe/London',
+          'Central European Time': 'Europe/Paris',
+          'Eastern European Time': 'Europe/Athens',
+          // Africa
+          'South Africa (Johannesburg)': 'Africa/Johannesburg',
+          'Nigeria (Lagos)': 'Africa/Lagos',
+          'Kenya (Nairobi)': 'Africa/Nairobi',
+          'Egypt (Cairo)': 'Africa/Cairo',
+          // Asia
+          'India (Mumbai)': 'Asia/Kolkata',
+          'Philippines (Manila)': 'Asia/Manila',
+          'Singapore': 'Asia/Singapore',
+          'Japan (Tokyo)': 'Asia/Tokyo',
+          'China (Beijing)': 'Asia/Shanghai',
+          // Australia & Pacific
+          'Australia (Sydney)': 'Australia/Sydney',
+          'Australia (Melbourne)': 'Australia/Melbourne',
+          'Australia (Brisbane)': 'Australia/Brisbane',
+          'Australia (Perth)': 'Australia/Perth',
+          'New Zealand (Auckland)': 'Pacific/Auckland',
+          // Americas (Other)
+          'Canada (Toronto)': 'America/Toronto',
+          'Mexico (Mexico City)': 'America/Mexico_City',
+          'Brazil (São Paulo)': 'America/Sao_Paulo',
+          'Argentina (Buenos Aires)': 'America/Argentina/Buenos_Aires',
         };
         const ianaTimezone = timezoneMap[preferencesData.timezone] || preferencesData.timezone;
         setTimezone(ianaTimezone);

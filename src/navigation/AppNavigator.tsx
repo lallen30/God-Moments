@@ -4,8 +4,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { View, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoginScreen from '../screens/PreLogin/Login/LoginScreen';
-import { WelcomeScreen, AgreeScreen, SetPreferencesScreen } from '../screens/Onboarding';
+import { WelcomeScreen, AgreeScreen, SetPreferencesScreen, SuccessScreen } from '../screens/Onboarding';
 import SimpleTestScreen from '../screens/Test/SimpleTestScreen';
+import Splash from '../screens/Splash/Splash';
 
 import ForgotPasswordScreen from '../screens/PreLogin/ForgotPassword/ForgotPasswordScreen';
 import SignUpScreen from '../screens/PreLogin/SignUp/SignUpScreen';
@@ -22,6 +23,7 @@ const Stack = createNativeStackNavigator();
 const WrappedWelcomeScreen = withNavigationWrapper(WelcomeScreen);
 const WrappedAgreeScreen = withNavigationWrapper(AgreeScreen);
 const WrappedSetPreferencesScreen = withNavigationWrapper(SetPreferencesScreen);
+const WrappedSuccessScreen = withNavigationWrapper(SuccessScreen);
 const WrappedSimpleTestScreen = withNavigationWrapper(SimpleTestScreen);
 const WrappedLoginScreen = withNavigationWrapper(LoginScreen);
 const WrappedSignUpScreen = withNavigationWrapper(SignUpScreen);
@@ -31,6 +33,7 @@ const WrappedTermsAndConditionsScreen = withNavigationWrapper(TermsAndConditions
 const WrappedPrivacyPolicyScreen = withNavigationWrapper(PrivacyPolicyScreen);
 
 const AppNavigator = () => {
+  const [showSplash, setShowSplash] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [initialRoute, setInitialRoute] = useState('Welcome');
 
@@ -41,14 +44,14 @@ const AppNavigator = () => {
   const checkOnboardingStatus = async () => {
     try {
       console.log('🔍 [AppNavigator] Checking onboarding status...');
-      
+
       // Check if onboarding has been completed
       const userPreferences = await AsyncStorage.getItem('userPreferences');
-      
+
       if (userPreferences) {
         const preferences = JSON.parse(userPreferences);
         console.log('📋 [AppNavigator] Found user preferences:', preferences);
-        
+
         if (preferences.onboardingCompleted) {
           console.log('✅ [AppNavigator] Onboarding completed, navigating to Home');
           setInitialRoute('Home');
@@ -69,14 +72,23 @@ const AppNavigator = () => {
     }
   };
 
+  const handleSplashFinish = () => {
+    setShowSplash(false);
+  };
+
+  // Show splash screen first
+  if (showSplash) {
+    return <Splash onFinish={handleSplashFinish} />;
+  }
+
   // Show loading screen while checking onboarding status
   if (isLoading) {
     return (
-      <View style={{ 
-        flex: 1, 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        backgroundColor: colors.background 
+      <View style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: colors.background
       }}>
         <ActivityIndicator size="large" color={colors.accent} />
       </View>
@@ -107,6 +119,10 @@ const AppNavigator = () => {
         <Stack.Screen
           name="SetPreferences"
           component={WrappedSetPreferencesScreen}
+        />
+        <Stack.Screen
+          name="Success"
+          component={WrappedSuccessScreen}
         />
         <Stack.Screen
           name="Login"

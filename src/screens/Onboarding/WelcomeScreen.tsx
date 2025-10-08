@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,13 +9,57 @@ import {
   Image,
   ImageBackground,
   Dimensions,
+  ActivityIndicator,
+  useWindowDimensions,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import RenderHtml from 'react-native-render-html';
 import { colors } from '../../theme/colors';
+import { apiService } from '../../services/apiService';
 
 const { width, height } = Dimensions.get('window');
+
+interface WelcomeData {
+  page_title: string;
+  page_content: string;
+}
+
 const WelcomeScreen = () => {
   const navigation = useNavigation();
+  const { width } = useWindowDimensions();
+  const [welcomeData, setWelcomeData] = useState<WelcomeData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchWelcomeData();
+  }, []);
+
+  const fetchWelcomeData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await apiService.getApiData('welcome');
+      console.log('Welcome API Response:', response);
+
+      if (response?.status === 'success' && response?.data) {
+        setWelcomeData(response.data);
+      } else {
+        throw new Error('Failed to fetch welcome data');
+      }
+    } catch (err) {
+      console.error('Error fetching welcome data:', err);
+      setError('Failed to load welcome content');
+      // Set default content as fallback
+      setWelcomeData({
+        page_title: 'Welcome to God Moments',
+        page_content: 'God Moments is a Catholic ministry of evangelization and faith offered by the Vincentian priests and brothers of St. Vincent De Paul. Our goal is to help people of faith connect with God in a deep and personal way.\nIf you are seeking a deeper prayer experience, discover our companion app, THE GOD MINUTE—a 10 minute daily prayer based on the Liturgy of the Hours that weaves sacred music, scripture and a short reflection into a spiritual meditation to bless your day.'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const handleContinue = () => {
     // Navigate to the Agree screen in the onboarding flow
@@ -37,19 +81,47 @@ const WelcomeScreen = () => {
       />
 
       {/* Scrollable Content */}
-      <ScrollView 
-        style={styles.scrollView} 
+      <ScrollView
+        style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
 
         {/* Welcome Card */}
         <View style={styles.welcomeCard}>
-          <Text style={styles.welcomeTitle}>Welcome to God Moments</Text>
-          <Text style={styles.welcomeText}>
-          God Moments is a Catholic ministry of evangelization and faith offered by the Vincentian priests and brothers of St. Vincent De Paul. Our goal is to help people of faith connect with God in a deep and personal way.
-          If you are seeking a deeper prayer experience, discover our companion app, THE GOD MINUTE—a 10 minute daily prayer based on the Liturgy of the Hours that weaves sacred music, scripture and a short reflection into a spiritual meditation to bless your day.
-          </Text>
+          {loading ? (
+            <ActivityIndicator size="large" color={colors.accent} style={styles.loader} />
+          ) : (
+            <>
+              {welcomeData?.page_content && (
+                <RenderHtml
+                  contentWidth={width - 80}
+                  source={{ html: welcomeData.page_content }}
+                  tagsStyles={{
+                    body: {
+                      color: colors.textDark,
+                      fontSize: 16,
+                      lineHeight: 24,
+                    },
+                    strong: {
+                      fontWeight: '700',
+                      color: colors.textDark,
+                    },
+                    p: {
+                      marginBottom: 8,
+                    },
+                    div: {
+                      marginBottom: 0,
+                    },
+                    a: {
+                      color: colors.accent,
+                      textDecorationLine: 'underline',
+                    },
+                  }}
+                />
+              )}
+            </>
+          )}
         </View>
 
         {/* Continue Button */}
@@ -84,7 +156,7 @@ const styles = StyleSheet.create({
     color: colors.textDark,
   },
   heroSection: {
-    height: height * 0.25,
+    height: height * 0.30,
   },
   scrollView: {
     flex: 1,
@@ -122,6 +194,9 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.textDark,
     textAlign: 'left',
+  },
+  loader: {
+    marginVertical: 20,
   },
   continueButton: {
     backgroundColor: colors.accent,

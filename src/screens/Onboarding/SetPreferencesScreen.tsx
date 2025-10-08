@@ -55,13 +55,13 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
   const convertTo24Hour = (time: string, period: string): string => {
     const [hours, minutes] = time.split(':');
     let hour = parseInt(hours, 10);
-    
+
     if (period === 'AM' && hour === 12) {
       hour = 0;
     } else if (period === 'PM' && hour !== 12) {
       hour += 12;
     }
-    
+
     return `${hour.toString().padStart(2, '0')}:${minutes}`;
   };
 
@@ -93,16 +93,46 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
       // If notifications are enabled, register with Laravel
       if (notificationsEnabled) {
         console.log('🔔 [Onboarding] Registering device with Laravel...');
-        
+
         // Initialize the scheduled notification service
         await scheduledNotificationService.initialize();
-        
+
         // Convert timezone to IANA format
         const timezoneMap: { [key: string]: string } = {
+          // United States
           'Eastern Time': 'America/New_York',
           'Central Time': 'America/Chicago',
           'Mountain Time': 'America/Denver',
           'Pacific Time': 'America/Los_Angeles',
+          'Alaska Time': 'America/Anchorage',
+          'Hawaii Time': 'Pacific/Honolulu',
+          // Europe
+          'Ireland (Dublin)': 'Europe/Dublin',
+          'United Kingdom (London)': 'Europe/London',
+          'Central European Time': 'Europe/Paris',
+          'Eastern European Time': 'Europe/Athens',
+          // Africa
+          'South Africa (Johannesburg)': 'Africa/Johannesburg',
+          'Nigeria (Lagos)': 'Africa/Lagos',
+          'Kenya (Nairobi)': 'Africa/Nairobi',
+          'Egypt (Cairo)': 'Africa/Cairo',
+          // Asia
+          'India (Mumbai)': 'Asia/Kolkata',
+          'Philippines (Manila)': 'Asia/Manila',
+          'Singapore': 'Asia/Singapore',
+          'Japan (Tokyo)': 'Asia/Tokyo',
+          'China (Beijing)': 'Asia/Shanghai',
+          // Australia & Pacific
+          'Australia (Sydney)': 'Australia/Sydney',
+          'Australia (Melbourne)': 'Australia/Melbourne',
+          'Australia (Brisbane)': 'Australia/Brisbane',
+          'Australia (Perth)': 'Australia/Perth',
+          'New Zealand (Auckland)': 'Pacific/Auckland',
+          // Americas (Other)
+          'Canada (Toronto)': 'America/Toronto',
+          'Mexico (Mexico City)': 'America/Mexico_City',
+          'Brazil (São Paulo)': 'America/Sao_Paulo',
+          'Argentina (Buenos Aires)': 'America/Argentina/Buenos_Aires',
         };
         const ianaTimezone = timezoneMap[timezone] || 'America/New_York';
 
@@ -133,7 +163,7 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
             error: result.error,
             success: result.success
           });
-          
+
           // Show detailed error to user for debugging
           Alert.alert(
             'Registration Failed',
@@ -145,11 +175,8 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
         console.log('📱 [Onboarding] Notifications disabled, skipping Laravel registration');
       }
 
-      // Navigate to Home screen (main app)
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Home' }],
-      });
+      // Navigate to Success screen
+      navigation.navigate('Success');
     } catch (error) {
       console.error('❌ [Onboarding] Error completing onboarding:', error);
       Alert.alert('Error', 'Failed to complete setup. Please try again.');
@@ -167,12 +194,40 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
   };
 
   const timezones = [
+    // United States
     'Eastern Time',
     'Central Time',
     'Mountain Time',
     'Pacific Time',
     'Alaska Time',
     'Hawaii Time',
+    // Europe
+    'Ireland (Dublin)',
+    'United Kingdom (London)',
+    'Central European Time',
+    'Eastern European Time',
+    // Africa
+    'South Africa (Johannesburg)',
+    'Nigeria (Lagos)',
+    'Kenya (Nairobi)',
+    'Egypt (Cairo)',
+    // Asia
+    'India (Mumbai)',
+    'Philippines (Manila)',
+    'Singapore',
+    'Japan (Tokyo)',
+    'China (Beijing)',
+    // Australia & Pacific
+    'Australia (Sydney)',
+    'Australia (Melbourne)',
+    'Australia (Brisbane)',
+    'Australia (Perth)',
+    'New Zealand (Auckland)',
+    // Americas (Other)
+    'Canada (Toronto)',
+    'Mexico (Mexico City)',
+    'Brazil (São Paulo)',
+    'Argentina (Buenos Aires)',
   ];
 
   const handleTimezoneSelect = (selectedTimezone: string) => {
@@ -192,7 +247,7 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
         resizeMode="cover"
       />
 
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -202,11 +257,12 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
         {/* Notification Settings */}
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>Notification Settings</Text>
-          
+
+
           <View style={styles.settingItem}>
             <View style={styles.settingContent}>
-              <Text style={styles.settingTitle}>Allow Sounds</Text>
-              <Text style={styles.settingDescription}>Allow prayer notification sounds</Text>
+              <Text style={styles.settingTitle}>Allow Sound</Text>
+              <Text style={styles.settingDescription}>Allow prayer notification sound</Text>
             </View>
             <Switch
               value={allowSounds}
@@ -220,7 +276,8 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
         {/* Notification Times */}
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>Notification Times</Text>
-          
+          <Text style={styles.sectionDescription}>Between what hours would you like to receive your God moments?</Text>
+
           <View style={styles.timeSection}>
             <Text style={styles.timeLabel}>Start Time</Text>
             <View style={styles.timeInputContainer}>
@@ -307,8 +364,8 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
         {/* Timezone */}
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>Timezone</Text>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={styles.settingItem}
             onPress={() => setShowTimezoneModal(true)}
           >
@@ -322,8 +379,8 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity 
-          style={[styles.continueButton, isCompleting && styles.continueButtonDisabled]} 
+        <TouchableOpacity
+          style={[styles.continueButton, isCompleting && styles.continueButtonDisabled]}
           onPress={handleContinue}
           disabled={isCompleting}
         >
@@ -459,7 +516,7 @@ const styles = StyleSheet.create({
     color: colors.textDark,
   },
   heroSection: {
-    height: height * 0.25,
+    height: height * 0.30,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -529,6 +586,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     color: colors.textDark,
+    marginBottom: 4,
+  },
+  sectionDescription: {
+    fontSize: 14,
+    color: colors.medium,
     marginBottom: 4,
   },
   settingDescription: {

@@ -2,6 +2,7 @@ import { environment } from '../config/environment';
 import { storageService } from './storageService';
 import { oneSignalService } from './OneSignalService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import DeviceInfo from 'react-native-device-info';
 
 // Use the properly constructed baseURL from environment
 const BASE_URL = environment.baseURL;
@@ -10,6 +11,7 @@ const API_BASE = `${BASE_URL}api`; // baseURL already ends with /, so don't add 
 export interface DeviceRegistrationData {
   anon_user_id: string;
   onesignal_player_id: string;
+  device_fingerprint?: string;
   tz: string;
   start_time: string;
   end_time: string;
@@ -138,6 +140,50 @@ class ScheduledNotificationService {
   }
 
   /**
+   * Generate a persistent device fingerprint that survives app reinstalls
+   */
+  private async generateDeviceFingerprint(): Promise<string> {
+    try {
+      const [
+        uniqueId,
+        brand,
+        model,
+        systemVersion,
+        androidId
+      ] = await Promise.allSettled([
+        DeviceInfo.getUniqueId(),
+        DeviceInfo.getBrand(),
+        DeviceInfo.getModel(),
+        DeviceInfo.getSystemVersion(),
+        DeviceInfo.getAndroidId()
+      ]).then(results => results.map(result => 
+        result.status === 'fulfilled' ? result.value : 'unknown'
+      ));
+
+      // Create a stable fingerprint using device characteristics
+      // This should persist across app reinstalls but be unique per device
+      const fingerprint = `${brand}-${model}-${systemVersion}-${uniqueId || androidId}`.toLowerCase();
+      
+      console.log('🔍 [ScheduledNotifications] Generated device fingerprint:', {
+        brand,
+        model,
+        systemVersion,
+        uniqueId: uniqueId?.substring(0, 8) + '...',
+        androidId: androidId?.substring(0, 8) + '...',
+        fingerprint: fingerprint.substring(0, 20) + '...',
+        fullFingerprint: fingerprint
+      });
+
+      return fingerprint;
+    } catch (error) {
+      console.error('❌ [ScheduledNotifications] Failed to generate device fingerprint:', error);
+      // Fallback to a random but stored fingerprint
+      const fallbackFingerprint = 'fallback-' + this.generateAnonUserId();
+      return fallbackFingerprint;
+    }
+  }
+
+  /**
    * Wait for OneSignal to be initialized and get player ID
    */
   private async waitForOneSignal(): Promise<void> {
@@ -208,6 +254,15 @@ class ScheduledNotificationService {
             anon_user_id: this.anonUserId,
             onesignal_player_id: playerId,
           });
+        } else {
+          // Player ID or anon user ID changed - force cleanup of old registration
+          console.log('🔄 [ScheduledNotifications] Player ID or anon user ID changed, forcing re-registration:', {
+            old_player_id: lastData.onesignal_player_id,
+            new_player_id: playerId,
+            old_anon_user_id: lastData.anon_user_id,
+            new_anon_user_id: this.anonUserId,
+          });
+          needsRegistration = true;
         }
       }
 
@@ -230,12 +285,35 @@ class ScheduledNotificationService {
     try {
       const playerId = await oneSignalService.getOneSignalUserId();
       
+      console.log('🔍 [ScheduledNotifications] OneSignal Player ID received:', playerId);
+      
       if (!playerId || playerId === 'Initialized - ID pending...') {
         throw new Error('OneSignal player ID not available');
       }
 
+      // Check notification permission status
+      const permissionStatus = oneSignalService.getNotificationPermission();
+      console.log('🔍 [ScheduledNotifications] Notification permission status:', permissionStatus);
+      
+      if (permissionStatus !== 'Granted') {
+        console.warn('⚠️ [ScheduledNotifications] Notification permission not granted:', permissionStatus);
+        // Still proceed with registration but log the issue
+      }
+
+      // Validate UUID format
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(playerId)) {
+        console.error('❌ [ScheduledNotifications] Invalid OneSignal Player ID format:', playerId);
+        throw new Error(`OneSignal player ID is not in valid UUID format: ${playerId}`);
+      }
+
       if (!this.anonUserId) {
         throw new Error('Anonymous user ID not available');
+      }
+
+      if (!uuidRegex.test(this.anonUserId)) {
+        console.error('❌ [ScheduledNotifications] Invalid anon_user_id format:', this.anonUserId);
+        throw new Error(`Anonymous user ID is not in valid UUID format: ${this.anonUserId}`);
       }
 
       // Get device timezone
@@ -268,8 +346,18 @@ class ScheduledNotificationService {
         }
       }
 
+      // Generate device fingerprint (with fallback)
+      let deviceFingerprint: string | undefined;
+      try {
+        deviceFingerprint = await this.generateDeviceFingerprint();
+        console.log('✅ [ScheduledNotifications] Device fingerprint generated successfully');
+      } catch (error) {
+        console.error('⚠️ [ScheduledNotifications] Device fingerprint generation failed, proceeding without it:', error);
+        deviceFingerprint = undefined;
+      }
+
       // Register device with the Laravel backend
-      const registrationData: DeviceRegistrationData = {
+      const registrationData: any = {
         anon_user_id: this.anonUserId,
         onesignal_player_id: playerId,
         tz: settings.tz!,
@@ -278,9 +366,15 @@ class ScheduledNotificationService {
         notifications_enabled: settings.notifications_enabled!,
       };
 
+      // Only add device_fingerprint if it was generated successfully
+      if (deviceFingerprint) {
+        registrationData.device_fingerprint = deviceFingerprint;
+      }
+
       console.log('📤 [ScheduledNotifications] Registering device:', {
         anon_user_id: registrationData.anon_user_id,
         onesignal_player_id: registrationData.onesignal_player_id,
+        device_fingerprint: registrationData.device_fingerprint,
         tz: registrationData.tz,
         start_time: registrationData.start_time,
         end_time: registrationData.end_time,
@@ -357,6 +451,49 @@ class ScheduledNotificationService {
         message: 'Registration failed',
         error: error instanceof Error ? error.message : 'Unknown error',
       };
+    }
+  }
+
+  /**
+   * Re-request notification permissions and update registration
+   */
+  public async requestNotificationPermissions(): Promise<boolean> {
+    try {
+      console.log('🔔 [ScheduledNotifications] Re-requesting notification permissions...');
+      
+      // Check current permission
+      const currentPermission = oneSignalService.getNotificationPermission();
+      console.log('🔍 [ScheduledNotifications] Current permission:', currentPermission);
+      
+      if (currentPermission === 'Granted') {
+        console.log('✅ [ScheduledNotifications] Permission already granted');
+        return true;
+      }
+      
+      // Re-request permission through OneSignal
+      await oneSignalService.checkPushNotificationSetup();
+      
+      // Wait a moment for permission to be processed
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Check permission again
+      const newPermission = oneSignalService.getNotificationPermission();
+      console.log('🔍 [ScheduledNotifications] New permission status:', newPermission);
+      
+      if (newPermission === 'Granted') {
+        console.log('✅ [ScheduledNotifications] Permission granted! Re-registering device...');
+        
+        // Re-register device to update subscription status
+        await this.registerDevice();
+        return true;
+      } else {
+        console.warn('⚠️ [ScheduledNotifications] Permission still not granted:', newPermission);
+        return false;
+      }
+      
+    } catch (error) {
+      console.error('❌ [ScheduledNotifications] Error requesting permissions:', error);
+      return false;
     }
   }
 
@@ -516,16 +653,29 @@ class ScheduledNotificationService {
   }
 
   /**
-   * Force re-registration (useful for debugging)
+   * Force re-registration (useful for debugging and app reinstall scenarios)
    */
   public async forceReregistration(): Promise<DeviceRegistrationResponse> {
     try {
-      // Clear saved registration
+      console.log('🔄 [ScheduledNotifications] Forcing re-registration...');
+      
+      // Clear saved registration and device ID
       await AsyncStorage.removeItem('last_device_registration');
       this.deviceId = null;
       
-      // Re-register
-      return await this.registerDevice();
+      // Force re-initialization to get fresh anon user ID if needed
+      await this.ensureAnonUserId();
+      
+      // Re-register with current settings
+      const result = await this.registerDevice();
+      
+      if (result.success) {
+        console.log('✅ [ScheduledNotifications] Force re-registration successful');
+      } else {
+        console.error('❌ [ScheduledNotifications] Force re-registration failed:', result.message);
+      }
+      
+      return result;
     } catch (error) {
       console.error('❌ [ScheduledNotifications] Force re-registration failed:', error);
       return {
@@ -533,6 +683,37 @@ class ScheduledNotificationService {
         message: 'Force re-registration failed',
         error: error instanceof Error ? error.message : 'Unknown error',
       };
+    }
+  }
+
+  /**
+   * Check if current registration is valid and force re-registration if needed
+   */
+  public async validateAndCleanupRegistration(): Promise<void> {
+    try {
+      const playerId = await oneSignalService.getOneSignalUserId();
+      const lastRegistration = await AsyncStorage.getItem('last_device_registration');
+      
+      if (!playerId || playerId === 'Initialized - ID pending...') {
+        console.log('⚠️ [ScheduledNotifications] No valid player ID for validation');
+        return;
+      }
+      
+      if (lastRegistration) {
+        const lastData = JSON.parse(lastRegistration);
+        
+        // Check if player ID changed (app reinstall scenario)
+        if (lastData.onesignal_player_id !== playerId) {
+          console.log('🔄 [ScheduledNotifications] Player ID changed, forcing cleanup registration:', {
+            old_player_id: lastData.onesignal_player_id,
+            new_player_id: playerId,
+          });
+          
+          await this.forceReregistration();
+        }
+      }
+    } catch (error) {
+      console.error('❌ [ScheduledNotifications] Registration validation failed:', error);
     }
   }
 }

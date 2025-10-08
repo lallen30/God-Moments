@@ -1,18 +1,19 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect } from 'react'
-import { images } from '../../resources/images'
-import { useDispatch } from 'react-redux'
-import { stayLoginAction } from '../../store/authSlice/auth.actions'
 
-const Splash = () => {
-    const dispatch = useDispatch();
+const Splash = ({ onFinish }) => {
     useEffect(() => {
-        dispatch(stayLoginAction())
-    }, [])
+        // Show splash screen for a minimum duration to ensure users see it
+        const timer = setTimeout(() => {
+            onFinish && onFinish();
+        }, 3000); // Show for 3 seconds minimum
+
+        return () => clearTimeout(timer);
+    }, [onFinish])
     return (
         <View style={styles.container}>
             <Image
-                source={images.splash}
+                source={require('../../assets/images/splash/splash.png')}
                 style={styles.image}
                 resizeMode="contain"
             />

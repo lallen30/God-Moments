@@ -8,9 +8,14 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Image,
+  ImageBackground,
+  Dimensions,
+  Linking,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../../theme/colors';
+
+const { width, height } = Dimensions.get('window');
 
 interface OurMissionScreenProps {
   navigation: any;
@@ -209,25 +214,20 @@ const OurMissionScreen: React.FC<OurMissionScreenProps> = ({ navigation }) => {
         <View style={styles.headerSpacer} />
       </View>
 
+      {/* Hero Section */}
+      <ImageBackground
+        source={require('../../../assets/images/hero-header.png')}
+        style={styles.heroSection}
+        resizeMode="cover"
+      >
+
+      </ImageBackground>
+
       <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Top Section - Dynamic from API */}
-        <View style={styles.topContentContainer}>
-          {topContent.parsedContent.map((item, index) => (
-            <Text 
-              key={index} 
-              style={item.type === 'strong' ? styles.topTitle : styles.topDescription}
-            >
-              {item.content}
-            </Text>
-          ))}
-        </View>
-        {topContent.tagline && (
-          <Text style={styles.blockquote}>{topContent.tagline}</Text>
-        )}
 
         {/* Content Sections */}
         {contentSections.map((section, index) => (
@@ -237,6 +237,15 @@ const OurMissionScreen: React.FC<OurMissionScreenProps> = ({ navigation }) => {
             <Text style={styles.cardDescription}>{section.content}</Text>
           </View>
         ))}
+
+        {/* God Minute Button */}
+        <TouchableOpacity 
+          style={styles.godMinuteButton}
+          onPress={() => Linking.openURL('https://www.thegodminute.org/')}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.godMinuteButtonText}>Visit The God Minute</Text>
+        </TouchableOpacity>
 
         <View style={styles.footer}>
           <Image source={require('../../../assets/images/footer-icon.png')} style={styles.footerIcon} resizeMode="contain" />
@@ -284,6 +293,11 @@ const styles = StyleSheet.create({
   },
   headerSpacer: {
     width: 32,
+  },
+  heroSection: {
+    height: height * 0.25,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   loadingContainer: {
     flex: 1,
@@ -408,6 +422,34 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.medium,
     textAlign: 'center',
+  },
+  godMinuteButton: {
+    backgroundColor: '#8B4513',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    marginTop: 20,
+    marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  godMinuteButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.white,
+    marginRight: 8,
+  },
+  buttonIcon: {
+    marginLeft: 4,
   },
 });
 

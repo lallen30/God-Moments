@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,20 +11,65 @@ import {
   Image,
   ImageBackground,
   Dimensions,
+  ActivityIndicator,
+  useWindowDimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import RenderHtml from 'react-native-render-html';
 import { colors } from '../../../theme/colors';
+import { apiService } from '../../../services/apiService';
 interface TheGodMinuteScreenProps {
   navigation: any;
 }
 
+interface GodMinuteData {
+  page_title: string;
+  page_content: string;
+  top_content: string;
+}
+
 const TheGodMinuteScreen: React.FC<TheGodMinuteScreenProps> = ({ navigation }) => {
+  const { width } = useWindowDimensions();
+  const [godMinuteData, setGodMinuteData] = useState<GodMinuteData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchGodMinuteData();
+  }, []);
+
+  const fetchGodMinuteData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await apiService.getApiData('the-god-minute');
+      console.log('God Minute API Response:', response);
+      
+      if (response?.status === 'success' && response?.data) {
+        setGodMinuteData(response.data);
+      } else {
+        throw new Error('Failed to fetch God Minute data');
+      }
+    } catch (err) {
+      console.error('Error fetching God Minute data:', err);
+      setError('Failed to load God Minute content');
+      // Set default content as fallback
+      setGodMinuteData({
+        page_title: 'The God Minute',
+        page_content: 'We created The God Minute to help people connect with God every day through beautiful prayer.',
+        top_content: 'The God Minute is a small group of priests, nuns and lay people who start their day in prayer. Soft music, sacred scripture and a thoughtful reflection are weaved into a 10 minute guided reflection. Listen with your coffee in the morning, while driving to work or taking the dog for a walk. See how easy and beautiful prayer can be.'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const openGooglePlay = () => {
-    Linking.openURL('https://play.google.com/store/apps/details?id=com.cmwp.godmoment');
+    Linking.openURL('https://thegodminute.org');
   };
 
   const openAppStore = () => {
-    Linking.openURL('https://apps.apple.com/us/app/the-god-minute/id1385711396');
+    Linking.openURL('https://thegodminute.org');
   };
 
   return (
@@ -72,7 +117,6 @@ const TheGodMinuteScreen: React.FC<TheGodMinuteScreenProps> = ({ navigation }) =
         
       {/* Text content in lower portion with cream background */}
       <View style={styles.textSection}>
-        <Text style={styles.appTitle}>THE GOD MINUTE</Text>
         <Text style={styles.appSubtitle}>
           A Catholic app that connects you with God every day in prayer.
         </Text>
@@ -112,16 +156,37 @@ const TheGodMinuteScreen: React.FC<TheGodMinuteScreenProps> = ({ navigation }) =
 
         {/* Description Card */}
         <View style={styles.contentCard}>
-          <View style={styles.cardBorder} />
-          <Text style={styles.cardTitle}>The God Minute</Text>
-          <Text style={styles.cardDescription}>
-            The God Minute is a small group of priests, nuns and lay people who start their day in prayer. Soft music, sacred scripture and a thoughtful reflection are weaved into a 10 minute guided reflection. Listen with your coffee in the morning, while driving to work or taking the dog for a walk. See how easy and beautiful prayer can be.
-          </Text>
+          {loading ? (
+            <ActivityIndicator size="small" color={colors.accent} style={styles.loader} />
+          ) : (
+            <>
+              {godMinuteData?.top_content ? (
+                <RenderHtml
+                  contentWidth={width - 80}
+                  source={{ html: godMinuteData.top_content }}
+                  tagsStyles={{
+                    body: {
+                      fontSize: 16,
+                      color: colors.textDark,
+                      lineHeight: 24,
+                      marginLeft: 16,
+                    },
+                    p: {
+                      marginBottom: 12,
+                    },
+                  }}
+                />
+              ) : (
+                <Text style={styles.cardDescription}>
+                  The God Minute is a small group of priests, nuns and lay people who start their day in prayer. Soft music, sacred scripture and a thoughtful reflection are weaved into a 10 minute guided reflection. Listen with your coffee in the morning, while driving to work or taking the dog for a walk. See how easy and beautiful prayer can be.
+                </Text>
+              )}
+            </>
+          )}
         </View>
 
         {/* Quote Card */}
         <View style={styles.quoteCard}>
-          <View style={styles.cardBorder} />
           <View style={styles.authorPhoto}>
             <Image 
               source={require('../../../assets/images/priest.png')}
@@ -129,9 +194,29 @@ const TheGodMinuteScreen: React.FC<TheGodMinuteScreenProps> = ({ navigation }) =
               resizeMode="cover"
             />
           </View>
-          <Text style={styles.quoteText}>
-            We created The God Minute to help people connect with God every day through beautiful prayer.
-          </Text>
+          {godMinuteData?.page_content ? (
+            <RenderHtml
+              contentWidth={width - 80}
+              source={{ html: godMinuteData.page_content }}
+              tagsStyles={{
+                body: {
+                  fontSize: 16,
+                  color: colors.textDark,
+                  lineHeight: 24,
+                  textAlign: 'center',
+                  fontStyle: 'italic',
+                },
+                p: {
+                  marginBottom: 0,
+                  textAlign: 'center',
+                },
+              }}
+            />
+          ) : (
+            <Text style={styles.quoteText}>
+              We created The God Minute to help people connect with God every day through beautiful prayer.
+            </Text>
+          )}
         </View>
 
         <View style={styles.footer}>
@@ -310,6 +395,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
     marginBottom: 20,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.accent,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -318,16 +405,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 3,
-    position: 'relative',
-  },
-  cardBorder: {
-    position: 'absolute',
-    left: 0,
-    top: 20,
-    bottom: 20,
-    width: 4,
-    backgroundColor: '#8B4513',
-    borderRadius: 2,
   },
   cardTitle: {
     fontSize: 18,
@@ -348,6 +425,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
     marginBottom: 20,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.accent,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -356,7 +435,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 3,
-    position: 'relative',
     alignItems: 'center',
   },
   authorPhoto: {
@@ -369,8 +447,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#D4A574',
   },
   priestImage: {
-    width: 60,
-    height: 60,
+    width: 100,
+    height: 100,
     borderRadius: 30,
   },
   quoteText: {
@@ -401,6 +479,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.medium,
     textAlign: 'center',
+  },
+  loader: {
+    marginVertical: 20,
   },
 });
 

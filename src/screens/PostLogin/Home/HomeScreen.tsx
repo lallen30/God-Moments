@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  ScrollView, 
-  TouchableOpacity, 
-  ImageBackground, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  ImageBackground,
   Image,
   SafeAreaView,
   Dimensions,
@@ -38,10 +38,10 @@ const HomeScreen = () => {
   // Get current date
   const getCurrentDate = () => {
     const now = new Date();
-    const options: Intl.DateTimeFormatOptions = { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     };
     return now.toLocaleDateString('en-US', options);
   };
@@ -52,11 +52,11 @@ const HomeScreen = () => {
       // Parse the date string from API (format: "25-09-2025")
       const [day, month, year] = dateString.split('-');
       const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-      
-      const options: Intl.DateTimeFormatOptions = { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+
+      const options: Intl.DateTimeFormatOptions = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
       };
       return date.toLocaleDateString('en-US', options);
     } catch (error) {
@@ -69,7 +69,7 @@ const HomeScreen = () => {
   const checkNotificationStatus = async () => {
     try {
       // Check multiple sources for notification preference
-      
+
       // 1. Check scheduled notification service settings (most reliable)
       if (scheduledNotificationService.isServiceInitialized()) {
         const currentSettings = await scheduledNotificationService.getCurrentSettings();
@@ -79,7 +79,7 @@ const HomeScreen = () => {
           return;
         }
       }
-      
+
       // 2. Check AsyncStorage for pushNotificationsEnabled (from onboarding/settings)
       const pushNotificationsEnabled = await AsyncStorage.getItem('pushNotificationsEnabled');
       if (pushNotificationsEnabled !== null) {
@@ -88,7 +88,7 @@ const HomeScreen = () => {
         setNotificationsActive(isEnabled);
         return;
       }
-      
+
       // 3. Check userPreferences as fallback
       const userPreferences = await AsyncStorage.getItem('userPreferences');
       if (userPreferences) {
@@ -99,11 +99,11 @@ const HomeScreen = () => {
         setNotificationsActive(isEnabled);
         return;
       }
-      
+
       // 4. Default to true if no settings found
       console.log('📱 [Home] No notification settings found, defaulting to enabled');
       setNotificationsActive(true);
-      
+
     } catch (error) {
       console.error('❌ [Home] Error checking notification status:', error);
       setNotificationsActive(true); // Default to enabled on error
@@ -153,22 +153,19 @@ const HomeScreen = () => {
 
       {/* Hero Section */}
       <ImageBackground
-        source={require('../../../assets/images/hero-header.png')}
+        source={require('../../../assets/images/hero-jesus.png')}
         style={styles.heroSection}
         resizeMode="cover"
       >
-        <View style={styles.heroOverlay}>
-          <Text style={styles.heroTitle}>Daily Spiritual Moments</Text>
-          <Text style={styles.heroSubtitle}>Strengthen your faith and{'\n'}grow everyday.</Text>
-        </View>
+
       </ImageBackground>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Today's Prayer Section */}
         <View style={styles.todaysPrayerSection}>
-          <Text style={styles.sectionTitle}>Today's Prayer</Text>
+          <Text style={styles.sectionTitle}>Today’s God Moment</Text>
           <Text style={styles.dateText}>{getCurrentDate()}</Text>
-          
+
           {loading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={colors.accent} />
@@ -193,8 +190,8 @@ const HomeScreen = () => {
 
         {/* Cross Image */}
         <View style={styles.crossContainer}>
-          <Image 
-            source={require('../../../assets/images/cross.png')} 
+          <Image
+            source={require('../../../assets/images/cross.png')}
             style={styles.crossImage}
             resizeMode="contain"
           />
@@ -208,8 +205,8 @@ const HomeScreen = () => {
               styles.notificationText,
               { color: notificationsActive ? '#28a745' : '#dc3545' }
             ]}>
-              {notificationsActive 
-                ? 'Your prayer notifications are active' 
+              {notificationsActive
+                ? 'Your prayer notifications are active'
                 : 'Your prayer notifications are disabled'
               }
             </Text>
@@ -217,7 +214,7 @@ const HomeScreen = () => {
         </View>
 
         {/* More Options Button */}
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.moreOptionsButton}
           onPress={() => navigation.navigate('More')}
         >
@@ -329,12 +326,11 @@ const styles = StyleSheet.create({
   },
   crossContainer: {
     alignItems: 'center',
-    paddingVertical: 30,
+    paddingBottom: 20,
   },
   crossImage: {
-    width: 80,
-    height: 80,
-    opacity: 0.7,
+    width: 108,
+    height: 108,
   },
   notificationsSection: {
     paddingHorizontal: 20,
