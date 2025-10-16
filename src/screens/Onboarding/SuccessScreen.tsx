@@ -9,7 +9,9 @@ import {
   Dimensions,
   Platform,
   ActivityIndicator,
+  useWindowDimensions,
 } from 'react-native';
+import RenderHtml from 'react-native-render-html';
 import { colors } from '../../theme/colors';
 import { apiService } from '../../services/apiService';
 
@@ -25,6 +27,7 @@ interface SuccessData {
 const { width, height } = Dimensions.get('window');
 
 const SuccessScreen: React.FC<SuccessScreenProps> = ({ navigation }) => {
+  const { width: windowWidth } = useWindowDimensions();
   const [successData, setSuccessData] = useState<SuccessData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -87,9 +90,32 @@ const SuccessScreen: React.FC<SuccessScreenProps> = ({ navigation }) => {
 
                 {/* Message Card */}
                 <View style={styles.messageCard}>
-                  <Text style={styles.messageText}>
-                    {successData?.page_content || 'You will soon begin receiving your two random God Moment notifications. A bell will sound and a notice will appear on your phone with a short spiritual thought for the day.\n\nThat\'s it! Nothing to click or open. A simple, quick reminder to offer a moment of prayer to God in the midst of your busy day. Then swipe the notification away.'}
-                  </Text>
+                  {successData?.page_content ? (
+                    <RenderHtml
+                      contentWidth={windowWidth - 100}
+                      source={{ html: successData.page_content }}
+                      tagsStyles={{
+                        body: {
+                          color: '#000000',
+                          fontSize: 15,
+                          lineHeight: 24,
+                          textAlign: 'center',
+                          fontWeight: '500',
+                        },
+                        strong: {
+                          fontWeight: '700',
+                          color: '#000000',
+                        },
+                        p: {
+                          marginBottom: 8,
+                        },
+                      }}
+                    />
+                  ) : (
+                    <Text style={styles.messageText}>
+                      You will soon begin receiving your two random God Moment notifications. A bell will sound and a notice will appear on your phone with a short spiritual thought for the day.{"\n\n"}That's it! Nothing to click or open. A simple, quick reminder to offer a moment of prayer to God in the midst of your busy day. Then swipe the notification away.
+                    </Text>
+                  )}
                 </View>
 
                 {/* Continue Button */}
@@ -121,7 +147,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 120,
+    paddingTop: 160,
   },
   content: {
     width: '100%',
@@ -143,9 +169,9 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
   messageCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    backgroundColor: 'rgba(252, 246, 233, 0.75)',
     borderRadius: 15,
-    padding: 25,
+    padding: 20,
     marginTop: 0,
     marginHorizontal: 30,
     marginBottom: 40,
@@ -159,11 +185,11 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   messageText: {
-    fontSize: 16,
+    fontSize: 15,
     lineHeight: 24,
-    color: '#333333',
+    color: '#000000',
     textAlign: 'center',
-    fontWeight: 'bold',
+    fontWeight: '500'
   },
   continueButton: {
     backgroundColor: colors.accent,

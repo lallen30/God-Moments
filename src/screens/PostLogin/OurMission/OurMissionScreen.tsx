@@ -216,7 +216,7 @@ const OurMissionScreen: React.FC<OurMissionScreenProps> = ({ navigation }) => {
 
       {/* Hero Section */}
       <ImageBackground
-        source={require('../../../assets/images/hero-header.png')}
+        source={require('../../../assets/images/vincent.png')}
         style={styles.heroSection}
         resizeMode="cover"
       >

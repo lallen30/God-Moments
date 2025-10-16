@@ -93,6 +93,9 @@ const WelcomeScreen = () => {
             <ActivityIndicator size="large" color={colors.accent} style={styles.loader} />
           ) : (
             <>
+              {welcomeData?.page_title && (
+                <Text style={styles.cardTitle}>{welcomeData.page_title}</Text>
+              )}
               {welcomeData?.page_content && (
                 <RenderHtml
                   contentWidth={width - 80}
@@ -181,6 +184,12 @@ const styles = StyleSheet.create({
     elevation: 5,
     borderLeftWidth: 4,
     borderLeftColor: colors.accent,
+  },
+  cardTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.textDark,
+    marginBottom: 12,
   },
   welcomeTitle: {
     fontSize: 24,

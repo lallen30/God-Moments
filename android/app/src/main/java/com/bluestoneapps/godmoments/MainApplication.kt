@@ -1,4 +1,4 @@
-package com.bluestoneapps.miinojibwe
+package com.bluestoneapps.godmoments
 
 import android.app.Application
 import com.facebook.react.PackageList

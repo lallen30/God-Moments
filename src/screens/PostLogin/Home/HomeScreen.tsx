@@ -191,7 +191,7 @@ const HomeScreen = () => {
         {/* Cross Image */}
         <View style={styles.crossContainer}>
           <Image
-            source={require('../../../assets/images/cross.png')}
+            source={require('../../../assets/images/bell.png')}
             style={styles.crossImage}
             resizeMode="contain"
           />

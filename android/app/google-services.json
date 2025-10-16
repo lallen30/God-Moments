@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "591507648086",
-    "project_id": "miin-ojibwe",
-    "storage_bucket": "miin-ojibwe.firebasestorage.app"
+    "project_number": "787926181201",
+    "project_id": "god-moments",
+    "storage_bucket": "god-moments.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:591507648086:android:b843130b2e0ac7a44f15f7",
+        "mobilesdk_app_id": "1:787926181201:android:f0676a9b22059c1676df70",
         "android_client_info": {
-          "package_name": "com.bluestoneapps.miinojibwe"
+          "package_name": "com.bluestoneapps.godmoments"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAQIZ2dyK5uY0naZ7_WvyoqFuqD50DFx8E"
+          "current_key": "AIzaSyBT8bXZXsM7oLCwScDsyO5qb6GYmKu2Eyw"
         }
       ],
       "services": {

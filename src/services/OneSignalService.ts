@@ -531,6 +531,78 @@ export class OneSignalService {
     }
   }
 
+  /**
+   * Check if OneSignal has a valid push subscription with token
+   * Returns true only if device is fully subscribed and can receive notifications
+   */
+  public async hasValidPushSubscription(): Promise<boolean> {
+    if (!this.isInitialized) {
+      console.log('⚠️ [OneSignal] Not initialized - no valid subscription');
+      return false;
+    }
+
+    try {
+      // Check if we have permission first
+      const hasPermission = OneSignal?.Notifications?.hasPermission?.();
+      console.log('🔍 [OneSignal] hasValidPushSubscription check - Permission:', hasPermission);
+      
+      if (!hasPermission) {
+        console.log('⚠️ [OneSignal] No notification permission - no valid subscription');
+        return false;
+      }
+
+      // Check for push subscription object
+      if (!OneSignal?.User?.pushSubscription) {
+        console.log('⚠️ [OneSignal] No pushSubscription object - no valid subscription');
+        return false;
+      }
+
+      const pushSub = OneSignal.User.pushSubscription;
+      console.log('🔍 [OneSignal] hasValidPushSubscription check - Full subscription:', {
+        id: pushSub.id,
+        optedIn: pushSub.optedIn,
+        token: pushSub.token,
+        hasToken: !!pushSub.token,
+        tokenLength: pushSub.token?.length
+      });
+
+      // Check if subscribed (optedIn)
+      if (!pushSub.optedIn) {
+        console.log('⚠️ [OneSignal] Not opted in (optedIn=false) - no valid subscription');
+        console.log('💡 [OneSignal] This usually means APNS certificate issue or wrong environment (Dev vs Prod)');
+        return false;
+      }
+
+      // CRITICAL: Check if we have a valid push token (identifier)
+      if (!pushSub.token || pushSub.token === '' || pushSub.token === 'null' || pushSub.token === 'none') {
+        console.log('⚠️ [OneSignal] No valid push token - APNS/FCM registration incomplete');
+        console.log('💡 [OneSignal] Token value:', pushSub.token);
+        console.log('💡 [OneSignal] Check: 1) APNS certificate in OneSignal, 2) Dev vs Prod mismatch, 3) Bundle ID match');
+        return false;
+      }
+
+      // Check if we have a subscription ID
+      if (!pushSub.id || pushSub.id === '' || pushSub.id === 'none') {
+        console.log('⚠️ [OneSignal] No subscription ID - registration incomplete');
+        console.log('💡 [OneSignal] ID value:', pushSub.id);
+        return false;
+      }
+
+      console.log('✅ [OneSignal] Valid push subscription confirmed:', {
+        id: pushSub.id,
+        token: pushSub.token?.substring(0, 20) + '...',
+        optedIn: pushSub.optedIn,
+        hasPermission: hasPermission
+      });
+
+      return true;
+
+    } catch (error) {
+      console.error('❌ [OneSignal] Error checking push subscription:', error);
+      return false;
+    }
+  }
+
   // Method to get the OneSignal user ID with enhanced debugging
   public async getOneSignalUserId(): Promise<string | null> {
     if (!this.isInitialized) {

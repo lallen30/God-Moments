@@ -60,6 +60,8 @@ const AccountSettingsScreen = () => {
   const composeTime = (hour: string, minute: string): string => {
     const h = parseInt(hour || '0', 10);
     const m = parseInt(minute || '0', 10);
+    // Note: Hour is NOT padded for 12-hour display (e.g., "8:03" not "08:03")
+    // But this is fine because convertTo24Hour handles it correctly
     return `${h}:${m.toString().padStart(2, '0')}`;
   };
 
@@ -107,10 +109,19 @@ const AccountSettingsScreen = () => {
 
   const loadSettings = async () => {
     try {
-      setServiceStatus('Loading settings...');
+      setServiceStatus('Initializing notification service...');
       
-      // Initialize scheduled notification service
+      // Initialize scheduled notification service and wait for it to complete
       await scheduledNotificationService.initialize();
+      
+      // Verify service is properly initialized before proceeding
+      if (!scheduledNotificationService.isServiceInitialized()) {
+        console.warn('⚠️ [Settings] Service initialization incomplete, retrying...');
+        setServiceStatus('Retrying initialization...');
+        await scheduledNotificationService.initialize();
+      }
+      
+      setServiceStatus('Loading settings...');
       
       // Load current settings from the service
       const currentSettings = await scheduledNotificationService.getCurrentSettings();
@@ -246,25 +257,61 @@ const AccountSettingsScreen = () => {
       setIsSaving(true);
       setServiceStatus('Saving settings...');
 
-      console.log(' [Settings] Starting save process...');
-      console.log(' [Settings] allowNotifications:', allowNotifications);
-      console.log(' [Settings] timezone:', timezone);
+      console.log('💾 [Settings] Starting save process...');
+      console.log('💾 [Settings] Service initialized:', scheduledNotificationService.isServiceInitialized());
+      console.log('💾 [Settings] Current device ID:', scheduledNotificationService.getDeviceId());
+      console.log('💾 [Settings] Current anon user ID:', scheduledNotificationService.getAnonUserId());
+      console.log('💾 [Settings] allowNotifications:', allowNotifications);
+      console.log('💾 [Settings] timezone:', timezone);
+      console.log('💾 [Settings] 12-hour times BEFORE conversion:', {
+        startTime,
+        startTimeAmPm,
+        endTime,
+        endTimeAmPm,
+      });
 
       // Convert times to 24-hour format
       const startTime24 = convertTo24Hour(startTime, startTimeAmPm);
       const endTime24 = convertTo24Hour(endTime, endTimeAmPm);
 
-      console.log(' [Settings] Converted times:', { startTime24, endTime24 });
+      console.log('💾 [Settings] 24-hour times AFTER conversion:', { startTime24, endTime24 });
 
-      // Register/update device with the scheduled notification service
-      const result = await scheduledNotificationService.registerDevice({
+      // Check if service is initialized
+      if (!scheduledNotificationService.isServiceInitialized()) {
+        console.warn('⚠️ [Settings] Service not initialized, attempting to initialize...');
+        setServiceStatus('Initializing service...');
+        await scheduledNotificationService.initialize();
+        
+        // Double-check initialization succeeded
+        if (!scheduledNotificationService.isServiceInitialized()) {
+          throw new Error('Failed to initialize notification service. Please try again.');
+        }
+      }
+      
+      // Verify we have required IDs after initialization
+      const deviceId = scheduledNotificationService.getDeviceId();
+      const anonUserId = scheduledNotificationService.getAnonUserId();
+      
+      console.log('💾 [Settings] Post-initialization check:', {
+        isInitialized: scheduledNotificationService.isServiceInitialized(),
+        hasDeviceId: !!deviceId,
+        hasAnonUserId: !!anonUserId,
+      });
+
+      // Update device settings with the scheduled notification service
+      const result = await scheduledNotificationService.updateSettings({
         tz: timezone,
         start_time: startTime24,
         end_time: endTime24,
         notifications_enabled: allowNotifications,
       });
 
-      console.log(' [Settings] Registration result:', result);
+      console.log('💾 [Settings] Update result:', result);
+      
+      // TEMPORARY: Alert to show result in UI
+      if (!result.success) {
+        console.error('💾 [Settings] DETAILED ERROR:', JSON.stringify(result, null, 2));
+      }
 
       if (result.success) {
         // Update legacy local storage for sounds setting
@@ -291,12 +338,37 @@ const AccountSettingsScreen = () => {
         );
       } else {
         setServiceStatus('Failed to save settings');
-        Alert.alert('Error', result.message || 'Failed to save settings. Please try again.');
+        console.error('❌ [Settings] Update failed:', result);
+        
+        // Show more detailed error message with specific guidance
+        const errorMsg = result.error || result.message || 'Unknown error occurred';
+        let userMessage = `Settings update failed:\n${errorMsg}`;
+        
+        // Add specific guidance based on error type
+        if (errorMsg.includes('OneSignal')) {
+          userMessage += '\n\nPlease wait a moment for notifications to initialize, then try again.';
+        } else if (errorMsg.includes('initialized')) {
+          userMessage += '\n\nPlease close and reopen the app, then try again.';
+        } else {
+          userMessage += '\n\nPlease check your internet connection and try again.';
+        }
+        
+        Alert.alert('Error', userMessage);
       }
     } catch (error) {
-      console.error('Error saving settings:', error);
+      console.error('❌ [Settings] Error saving settings:', error);
+      console.error('❌ [Settings] Error details:', {
+        name: error instanceof Error ? error.name : 'Unknown',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack trace',
+      });
       setServiceStatus('Error saving settings');
-      Alert.alert('Error', 'Failed to save settings. Please try again.');
+      
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      Alert.alert(
+        'Error', 
+        `Failed to save settings: ${errorMessage}\n\nPlease try again or contact support if the issue persists.`
+      );
     } finally {
       setIsSaving(false);
     }

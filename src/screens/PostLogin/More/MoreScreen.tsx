@@ -15,8 +15,16 @@ interface MoreScreenProps {
   navigation: any;
 }
 
+interface MenuItem {
+  id: string;
+  title: string;
+  icon: string;
+  screen: string;
+  isSpacer?: boolean;
+}
+
 const MoreScreen: React.FC<MoreScreenProps> = ({ navigation }) => {
-  const menuItems = [
+  const menuItems: MenuItem[] = [
     {
       id: 'account-settings',
       title: 'Account Settings',
@@ -30,16 +38,10 @@ const MoreScreen: React.FC<MoreScreenProps> = ({ navigation }) => {
       screen: 'Our Mission',
     },
     {
-      id: 'privacy-policy',
-      title: 'Privacy Policy',
-      icon: 'document-text-outline',
-      screen: 'Privacy Policy',
-    },
-    {
-      id: 'terms-conditions',
-      title: 'Terms & Conditions',
-      icon: 'document-outline',
-      screen: 'Terms of Service',
+      id: 'the-god-minute',
+      title: 'The God Minute',
+      icon: 'time-outline',
+      screen: 'The God Minute',
     },
     {
       id: 'contact-us',
@@ -48,10 +50,23 @@ const MoreScreen: React.FC<MoreScreenProps> = ({ navigation }) => {
       screen: 'Contact',
     },
     {
-      id: 'the-god-minute',
-      title: 'The God Minute',
-      icon: 'time-outline',
-      screen: 'The God Minute',
+      id: 'spacer',
+      title: '',
+      icon: '',
+      screen: '',
+      isSpacer: true,
+    },
+    {
+      id: 'terms-conditions',
+      title: 'Terms & Conditions',
+      icon: 'document-outline',
+      screen: 'Terms of Service',
+    },
+    {
+      id: 'privacy-policy',
+      title: 'Privacy Policy',
+      icon: 'document-text-outline',
+      screen: 'Privacy Policy',
     },
   ];
 
@@ -80,19 +95,26 @@ const MoreScreen: React.FC<MoreScreenProps> = ({ navigation }) => {
         <Text style={styles.sectionTitle}>App Settings and Navigation</Text>
 
         <View style={styles.menuSection}>
-          {menuItems.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.menuItem}
-              onPress={() => handleMenuItemPress(item.screen)}
-            >
-              <View style={styles.menuItemContent}>
-                <Icon name={item.icon} size={24} color={colors.accent} style={styles.menuIcon} />
-                <Text style={styles.menuItemText}>{item.title}</Text>
-              </View>
-              <Icon name="chevron-forward" size={20} color={colors.medium} />
-            </TouchableOpacity>
-          ))}
+          {menuItems.map((item) => {
+            // Render spacer instead of menu item
+            if (item.isSpacer) {
+              return <View key={item.id} style={styles.menuSpacer} />;
+            }
+            
+            return (
+              <TouchableOpacity
+                key={item.id}
+                style={styles.menuItem}
+                onPress={() => handleMenuItemPress(item.screen)}
+              >
+                <View style={styles.menuItemContent}>
+                  <Icon name={item.icon} size={24} color={colors.accent} style={styles.menuIcon} />
+                  <Text style={styles.menuItemText}>{item.title}</Text>
+                </View>
+                <Icon name="chevron-forward" size={20} color={colors.medium} />
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         <View style={styles.footer}>
@@ -152,6 +174,9 @@ const styles = StyleSheet.create({
   },
   menuSection: {
     marginBottom: 40,
+  },
+  menuSpacer: {
+    height: 20,
   },
   menuItem: {
     flexDirection: 'row',

@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
-      android:name="com.bluestoneapps.miinojibwe.MainApplication"
+      android:name="com.bluestoneapps.godmoments.MainApplication"
       android:label="@string/app_name"
       android:icon="@mipmap/ic_launcher"
       android:roundIcon="@mipmap/ic_launcher_round"
@@ -23,7 +23,7 @@
           android:name="com.onesignal.NotificationAccentColor"
           android:value="FF271E5C" />
       <activity
-        android:name="com.bluestoneapps.miinojibwe.MainActivity"
+        android:name="com.bluestoneapps.godmoments.MainActivity"
         android:label="@string/app_name"
         android:theme="@style/SplashTheme"
         android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"

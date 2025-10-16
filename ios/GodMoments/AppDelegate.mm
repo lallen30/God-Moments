@@ -8,7 +8,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   // Initialize React Native
-  self.moduleName = @"god-moments";
+  self.moduleName = @"GodMoments";
   self.initialProps = @{};
   
   return [super application:application didFinishLaunchingWithOptions:launchOptions];

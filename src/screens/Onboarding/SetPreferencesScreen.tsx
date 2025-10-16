@@ -19,6 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../theme/colors';
 import { scheduledNotificationService } from '../../services/ScheduledNotificationService';
+import { oneSignalService } from '../../services/OneSignalService';
 
 interface SetPreferencesScreenProps {
   navigation: any;
@@ -90,12 +91,9 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
       const notificationsEnabled = pushNotificationsEnabled ? JSON.parse(pushNotificationsEnabled) : false;
       console.log('📱 [Onboarding] Push notifications enabled:', notificationsEnabled);
 
-      // If notifications are enabled, register with Laravel
+      // If notifications are enabled, register with Laravel in the background
       if (notificationsEnabled) {
-        console.log('🔔 [Onboarding] Registering device with Laravel...');
-
-        // Initialize the scheduled notification service
-        await scheduledNotificationService.initialize();
+        console.log('🔔 [Onboarding] Starting background registration...');
 
         // Convert timezone to IANA format
         const timezoneMap: { [key: string]: string } = {
@@ -136,41 +134,198 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
         };
         const ianaTimezone = timezoneMap[timezone] || 'America/New_York';
 
-        // Register device with Laravel
-        console.log('🔔 [Onboarding] About to call registerDevice with:', {
-          tz: ianaTimezone,
-          start_time: convertTo24Hour(startTime, startTimeAmPm),
-          end_time: convertTo24Hour(endTime, endTimeAmPm),
-          notifications_enabled: notificationsEnabled,
-        });
+        // Wait 5 seconds to give OneSignal time to obtain APNS token before starting registration
+        console.log('⏳ [Onboarding] Waiting 5 seconds for OneSignal APNS token...');
+        await new Promise(resolve => setTimeout(resolve, 5000));
 
-        const result = await scheduledNotificationService.registerDevice({
-          tz: ianaTimezone,
-          start_time: convertTo24Hour(startTime, startTimeAmPm),
-          end_time: convertTo24Hour(endTime, endTimeAmPm),
-          notifications_enabled: notificationsEnabled,
-        });
+        // Fire-and-forget: Register in the background with automatic retries
+        (async () => {
+          const maxRetries = 5;
+          const baseDelay = 5000; // Start with 5 seconds
+          
+          for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+              console.log(`🔔 [Onboarding] Background registration attempt ${attempt}/${maxRetries}`);
+              
+              // Initialize the scheduled notification service
+              await scheduledNotificationService.initialize();
+              
+              // Verify service initialized successfully
+              if (!scheduledNotificationService.isServiceInitialized()) {
+                console.warn(`⚠️ [Onboarding] Background attempt ${attempt}: Service not initialized yet`);
+                
+                // If not last attempt, wait and retry
+                if (attempt < maxRetries) {
+                  const delay = baseDelay * Math.pow(2, attempt - 1); // Exponential backoff: 2s, 4s, 8s, 16s, 32s
+                  console.log(`⏳ [Onboarding] Waiting ${delay}ms before retry...`);
+                  await new Promise(resolve => setTimeout(resolve, delay));
+                  continue;
+                }
+                
+                console.error('❌ [Onboarding] All initialization attempts failed. Saving for later retry.');
+                // Save failed registration for retry when app opens Settings
+                await AsyncStorage.setItem('pending_registration', JSON.stringify({
+                  tz: ianaTimezone,
+                  start_time: convertTo24Hour(startTime, startTimeAmPm),
+                  end_time: convertTo24Hour(endTime, endTimeAmPm),
+                  notifications_enabled: notificationsEnabled,
+                  timestamp: new Date().toISOString(),
+                }));
+                return;
+              }
 
-        console.log('🔔 [Onboarding] Registration result:', result);
+              console.log(`✅ [Onboarding] Background attempt ${attempt}: Service initialized`);
 
-        if (result.success) {
-          console.log('✅ [Onboarding] Device registered successfully with Laravel');
-          console.log('✅ [Onboarding] Device ID:', result.data?.device?.id);
-        } else {
-          console.error('❌ [Onboarding] Failed to register device with Laravel:', result);
-          console.error('❌ [Onboarding] Error details:', {
-            message: result.message,
-            error: result.error,
-            success: result.success
-          });
+              // Register device with Laravel
+              console.log('🔔 [Onboarding] Background: Registering device with:', {
+                tz: ianaTimezone,
+                start_time: convertTo24Hour(startTime, startTimeAmPm),
+                end_time: convertTo24Hour(endTime, endTimeAmPm),
+                notifications_enabled: notificationsEnabled,
+              });
 
-          // Show detailed error to user for debugging
-          Alert.alert(
-            'Registration Failed',
-            `Failed to register with server: ${result.message || result.error || 'Unknown error'}\n\nYour preferences have been saved locally. You can try again in Account Settings.`,
-            [{ text: 'Continue' }]
-          );
-        }
+              // On last attempt, bypass subscription check in case SDK is not reflecting actual state
+              const bypassCheck = (attempt === maxRetries);
+              if (bypassCheck) {
+                console.log('⚠️ [Onboarding] Last attempt - bypassing subscription check to try anyway');
+              }
+              
+              const result = await scheduledNotificationService.registerDevice({
+                tz: ianaTimezone,
+                start_time: convertTo24Hour(startTime, startTimeAmPm),
+                end_time: convertTo24Hour(endTime, endTimeAmPm),
+                notifications_enabled: notificationsEnabled,
+              }, bypassCheck);
+
+              if (result.success) {
+                console.log('✅ [Onboarding] Background: Device registered successfully!');
+                console.log('✅ [Onboarding] Background: Device ID:', result.data?.device?.id);
+                
+                // Clear any pending registration since we succeeded
+                await AsyncStorage.removeItem('pending_registration');
+                
+                // SHOW SUCCESS ALERT (optional - can be removed for production)
+                Alert.alert(
+                  '✅ Notifications Active',
+                  'Your prayer notifications are now scheduled. You will receive reminders twice daily during your selected time window.',
+                  [{text: 'OK'}]
+                );
+                
+                return; // Success! Exit the retry loop
+              } else {
+                // Check if it's a subscription error (OneSignal APNS/FCM token not ready yet)
+                if (result.error === 'NO_VALID_SUBSCRIPTION') {
+                  console.warn(`⚠️ [Onboarding] Attempt ${attempt}: Push subscription not ready yet (APNS/FCM token not obtained)`);
+                  
+                  if (attempt < maxRetries) {
+                    // Wait longer for APNS token (3x normal delay for subscription issues)
+                    const delay = baseDelay * Math.pow(2, attempt - 1) * 3;
+                    console.log(`⏳ [Onboarding] Waiting ${delay}ms for OneSignal to obtain push token...`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    continue;
+                  }
+                  
+                  console.error('❌ [Onboarding] OneSignal never obtained valid push subscription after all retries');
+                  
+                  // SHOW ERROR ALERT (simplified for production)
+                  Alert.alert(
+                    '⚠️ Setup Incomplete',
+                    'We\'re still setting up your notifications. This will complete automatically in the background. Your notifications may be delayed by a few minutes.',
+                    [{text: 'OK'}]
+                  );
+                  
+                  // Save for later retry
+                  await AsyncStorage.setItem('pending_registration', JSON.stringify({
+                    tz: ianaTimezone,
+                    start_time: convertTo24Hour(startTime, startTimeAmPm),
+                    end_time: convertTo24Hour(endTime, endTimeAmPm),
+                    notifications_enabled: notificationsEnabled,
+                    timestamp: new Date().toISOString(),
+                    reason: 'NO_VALID_SUBSCRIPTION'
+                  }));
+                  return;
+                }
+                
+                // Registration failed - check if it's a permanent error
+                const errorMsg = result.error || result.message || '';
+                const isPermanentError = errorMsg.includes('validation') || 
+                                        errorMsg.includes('invalid') || 
+                                        errorMsg.includes('format');
+                
+                if (isPermanentError) {
+                  console.error('❌ [Onboarding] Permanent error, not retrying:', errorMsg);
+                  
+                  // SHOW PERMANENT ERROR ALERT (simplified for production)
+                  Alert.alert(
+                    '⚠️ Setup Issue',
+                    'There was an issue setting up your notifications. Please check your notification settings and try again.',
+                    [{text: 'OK'}]
+                  );
+                  
+                  return; // Don't retry permanent errors
+                }
+                
+                console.warn(`⚠️ [Onboarding] Background attempt ${attempt}: Registration failed:`, errorMsg);
+                
+                // If not last attempt, wait and retry
+                if (attempt < maxRetries) {
+                  const delay = baseDelay * Math.pow(2, attempt - 1);
+                  console.log(`⏳ [Onboarding] Waiting ${delay}ms before retry...`);
+                  await new Promise(resolve => setTimeout(resolve, delay));
+                  continue;
+                } else {
+                  // All retries exhausted
+                  Alert.alert(
+                    '⚠️ Registration Failed',
+                    `Failed after ${maxRetries} attempts:\n\n${errorMsg}\n\nSaved for retry later.`,
+                    [{text: 'OK'}]
+                  );
+                }
+                
+                // All retries exhausted - save for later
+                console.error('❌ [Onboarding] All registration attempts failed. Saving for later retry.');
+                await AsyncStorage.setItem('pending_registration', JSON.stringify({
+                  tz: ianaTimezone,
+                  start_time: convertTo24Hour(startTime, startTimeAmPm),
+                  end_time: convertTo24Hour(endTime, endTimeAmPm),
+                  notifications_enabled: notificationsEnabled,
+                  timestamp: new Date().toISOString(),
+                }));
+              }
+            } catch (error) {
+              console.warn(`⚠️ [Onboarding] Background attempt ${attempt} error:`, error);
+              
+              // If not last attempt, wait and retry
+              if (attempt < maxRetries) {
+                const delay = baseDelay * Math.pow(2, attempt - 1);
+                console.log(`⏳ [Onboarding] Waiting ${delay}ms before retry...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                continue;
+              }
+              
+              // All retries exhausted
+              console.error('❌ [Onboarding] All attempts failed due to errors. Saving for later retry.');
+              await AsyncStorage.setItem('pending_registration', JSON.stringify({
+                tz: ianaTimezone,
+                start_time: convertTo24Hour(startTime, startTimeAmPm),
+                end_time: convertTo24Hour(endTime, endTimeAmPm),
+                notifications_enabled: notificationsEnabled,
+                timestamp: new Date().toISOString(),
+              }));
+            }
+          }
+        })();
+
+        console.log('✅ [Onboarding] Background registration initiated, proceeding to Success screen');
+        
+        // Optional: Show alert that registration is in progress (can be removed if not needed)
+        // setTimeout(() => {
+        //   Alert.alert(
+        //     '⏳ Setting Up Notifications',
+        //     'Your prayer notifications are being scheduled. This may take a moment.',
+        //     [{text: 'OK'}]
+        //   );
+        // }, 2000);
       } else {
         console.log('📱 [Onboarding] Notifications disabled, skipping Laravel registration');
       }

@@ -4,9 +4,10 @@ import { oneSignalService } from './OneSignalService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DeviceInfo from 'react-native-device-info';
 
-// Use the properly constructed baseURL from environment
-const BASE_URL = environment.baseURL;
-const API_BASE = `${BASE_URL}api`; // baseURL already ends with /, so don't add another /
+// Use the properly constructed API URL from environment
+// environment.apiURL = "https://godmoments.betaplanets.com/api/"
+// We need to remove the trailing slash for our endpoint construction
+const API_BASE = environment.apiURL.replace(/\/$/, '');
 
 export interface DeviceRegistrationData {
   anon_user_id: string;
@@ -79,7 +80,8 @@ class ScheduledNotificationService {
    * Initialize the service and register device if needed
    */
   public async initialize(): Promise<void> {
-    if (this.isInitialized) {
+    if (this.isInitialized && this.anonUserId) {
+      console.log('✅ [ScheduledNotifications] Service already initialized');
       return;
     }
 
@@ -88,19 +90,32 @@ class ScheduledNotificationService {
 
       // Get or create anonymous user ID
       await this.ensureAnonUserId();
+      console.log('✅ [ScheduledNotifications] Anonymous user ID ready:', this.anonUserId);
 
       // Wait for OneSignal to be ready
+      console.log('⏳ [ScheduledNotifications] Waiting for OneSignal...');
       await this.waitForOneSignal();
+      
+      const playerId = await oneSignalService.getOneSignalUserId();
+      console.log('✅ [ScheduledNotifications] OneSignal ready, player ID:', playerId);
 
-      // Register device with backend
-      await this.registerDeviceIfNeeded();
+      // Don't auto-register during initialization - wait for explicit registration call
+      // This prevents errors when no settings are available yet
+      console.log('✅ [ScheduledNotifications] Initialization complete (registration will happen when settings are provided)');
 
       this.isInitialized = true;
-      console.log('✅ [ScheduledNotifications] Service initialized successfully');
+      console.log('✅ [ScheduledNotifications] Service initialized successfully', {
+        deviceId: this.deviceId,
+        anonUserId: this.anonUserId,
+        isInitialized: this.isInitialized,
+      });
 
     } catch (error) {
       console.error('❌ [ScheduledNotifications] Failed to initialize:', error);
-      // Don't throw - allow app to continue functioning
+      // Mark as not initialized so it can be retried
+      this.isInitialized = false;
+      // Don't throw - allow app to continue functioning, but log the error
+      console.warn('⚠️ [ScheduledNotifications] Service will attempt re-initialization on next action');
     }
   }
 
@@ -184,10 +199,10 @@ class ScheduledNotificationService {
   }
 
   /**
-   * Wait for OneSignal to be initialized and get player ID
+   * Wait for OneSignal to be initialized AND have valid push subscription
    */
   private async waitForOneSignal(): Promise<void> {
-    const maxAttempts = 30; // 30 seconds
+    const maxAttempts = 45; // 45 seconds (increased from 30 to allow for APNS token fetch)
     let attempts = 0;
 
     return new Promise((resolve, reject) => {
@@ -196,18 +211,25 @@ class ScheduledNotificationService {
         
         try {
           if (oneSignalService.isOneSignalInitialized()) {
-            const playerId = await oneSignalService.getOneSignalUserId();
+            // CRITICAL: Check for valid push subscription, not just player ID
+            const hasValidSubscription = await oneSignalService.hasValidPushSubscription();
             
-            if (playerId && playerId !== 'Initialized - ID pending...' && playerId !== null) {
-              console.log('✅ [ScheduledNotifications] OneSignal ready with player ID:', playerId);
+            if (hasValidSubscription) {
+              const playerId = await oneSignalService.getOneSignalUserId();
+              console.log('✅ [ScheduledNotifications] OneSignal ready with valid subscription:', playerId);
               resolve();
               return;
+            } else {
+              console.log(`🔍 [ScheduledNotifications] Attempt ${attempts}/${maxAttempts}: Waiting for valid push subscription with APNS/FCM token...`);
             }
           }
 
           if (attempts >= maxAttempts) {
-            console.warn('⚠️ [ScheduledNotifications] OneSignal timeout - proceeding without player ID');
-            resolve(); // Don't reject - allow service to continue
+            console.warn('⚠️ [ScheduledNotifications] OneSignal timeout - push subscription not obtained after 45 seconds');
+            console.warn('⚠️ [ScheduledNotifications] Will proceed but registration may fail if subscription still not ready');
+            // IMPORTANT: Resolve anyway to allow initialization to complete
+            // The registerDevice() method will check again and reject if still no valid subscription
+            resolve();
             return;
           }
 
@@ -216,7 +238,9 @@ class ScheduledNotificationService {
         } catch (error) {
           console.error('❌ [ScheduledNotifications] Error waiting for OneSignal:', error);
           if (attempts >= maxAttempts) {
-            resolve(); // Don't reject - allow service to continue
+            console.warn('⚠️ [ScheduledNotifications] Max attempts reached, proceeding anyway');
+            // Resolve to allow initialization to complete - registerDevice will validate
+            resolve();
           } else {
             setTimeout(checkOneSignal, 1000);
           }
@@ -281,8 +305,25 @@ class ScheduledNotificationService {
   /**
    * Register device with the Laravel backend
    */
-  public async registerDevice(customSettings?: Partial<DeviceSettings>): Promise<DeviceRegistrationResponse> {
+  public async registerDevice(customSettings?: Partial<DeviceSettings>, bypassSubscriptionCheck: boolean = false): Promise<DeviceRegistrationResponse> {
     try {
+      // CRITICAL: Verify valid push subscription before proceeding
+      const hasValidSubscription = await oneSignalService.hasValidPushSubscription();
+      
+      if (!hasValidSubscription && !bypassSubscriptionCheck) {
+        console.error('❌ [ScheduledNotifications] Cannot register - no valid push subscription');
+        return {
+          success: false,
+          message: 'Cannot register device without valid push subscription. OneSignal has not obtained APNS/FCM token yet.',
+          error: 'NO_VALID_SUBSCRIPTION'
+        };
+      }
+      
+      if (!hasValidSubscription && bypassSubscriptionCheck) {
+        console.warn('⚠️ [ScheduledNotifications] Bypassing subscription check - attempting registration anyway');
+        console.warn('⚠️ [ScheduledNotifications] OneSignal SDK may not reflect actual subscription state in Release builds');
+      }
+
       const playerId = await oneSignalService.getOneSignalUserId();
       
       console.log('🔍 [ScheduledNotifications] OneSignal Player ID received:', playerId);
@@ -297,7 +338,7 @@ class ScheduledNotificationService {
       
       if (permissionStatus !== 'Granted') {
         console.warn('⚠️ [ScheduledNotifications] Notification permission not granted:', permissionStatus);
-        // Still proceed with registration but log the issue
+        // This should not happen since hasValidPushSubscription checks permission, but log it
       }
 
       // Validate UUID format
@@ -502,22 +543,83 @@ class ScheduledNotificationService {
    */
   public async updateSettings(settings: DeviceSettings): Promise<DeviceRegistrationResponse> {
     try {
+      console.log('🔄 [ScheduledNotifications] ===== UPDATE SETTINGS CALLED =====');
+      console.log('🔄 [ScheduledNotifications] updateSettings called with:', settings);
+      console.log('🔄 [ScheduledNotifications] Current state:', {
+        deviceId: this.deviceId,
+        anonUserId: this.anonUserId,
+        isInitialized: this.isInitialized,
+      });
+      
       if (!this.deviceId) {
         // If no device ID, try to register first
+        console.log('⚠️ [ScheduledNotifications] No device ID found, attempting registration...');
+        
+        // Verify we have required data for registration
+        if (!this.anonUserId) {
+          console.error('❌ [ScheduledNotifications] Missing anon user ID - initialization incomplete');
+          return {
+            success: false,
+            message: 'Registration failed',
+            error: 'Service not properly initialized. Missing anonymous user ID.',
+          };
+        }
+        
+        const playerId = await oneSignalService.getOneSignalUserId();
+        if (!playerId || playerId === 'Initialized - ID pending...') {
+          console.error('❌ [ScheduledNotifications] OneSignal player ID not ready');
+          return {
+            success: false,
+            message: 'Registration failed',
+            error: 'OneSignal is not ready yet. Please wait a moment and try again.',
+          };
+        }
+        
+        console.log('✅ [ScheduledNotifications] Prerequisites met, proceeding with registration...');
         return await this.registerDevice(settings);
       }
 
       console.log('📤 [ScheduledNotifications] Updating device settings:', settings);
+      console.log('📤 [ScheduledNotifications] API URL:', `${API_BASE}/devices/${this.deviceId}/settings`);
+
+      // Use POST with _method=PATCH to work around hosting providers that block PATCH requests
+      const requestBody = {
+        ...settings,
+        _method: 'PATCH', // Laravel method spoofing
+      };
+
+      console.log('📤 [ScheduledNotifications] REQUEST BODY:', JSON.stringify(requestBody, null, 2));
 
       const response = await fetch(`${API_BASE}/devices/${this.deviceId}/settings`, {
-        method: 'PATCH',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
-        body: JSON.stringify(settings),
+        body: JSON.stringify(requestBody),
       });
 
-      const result: DeviceRegistrationResponse = await response.json();
+      console.log('📥 [ScheduledNotifications] Response status:', response.status);
+      
+      const responseText = await response.text();
+      console.log('📥 [ScheduledNotifications] Response body:', responseText);
+      
+      if (!response.ok) {
+        console.error('❌ [ScheduledNotifications] Update failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: responseText,
+        });
+        
+        return {
+          success: false,
+          message: 'Settings update failed',
+          error: responseText || `HTTP ${response.status}: ${response.statusText}`,
+        };
+      }
+
+      const result: DeviceRegistrationResponse = JSON.parse(responseText);
+      console.log('📥 [ScheduledNotifications] Update result:', result);
 
       if (result.success && result.data) {
         // Save updated settings

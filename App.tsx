@@ -2,6 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { oneSignalService } from './src/services/OneSignalService';
 import { scheduledNotificationService } from './src/services/ScheduledNotificationService';
 import { onboardingUtils } from './src/utils/onboardingUtils';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // import DeviceInfo from 'react-native-device-info';
 import AppNavigator from './src/navigation/AppNavigator';
 import ErrorBoundary from './src/components/ErrorBoundary';
@@ -46,6 +47,28 @@ function AppContent(): React.JSX.Element {
             console.log('✅ [App] Onboarding completed, initializing Scheduled Notification Service...');
             await scheduledNotificationService.initialize();
             console.log('✅ [App] Scheduled Notification Service initialization completed');
+            
+            // Check for pending registration from onboarding
+            try {
+              const pendingRegistration = await AsyncStorage.getItem('pending_registration');
+              
+              if (pendingRegistration) {
+                const settings = JSON.parse(pendingRegistration);
+                console.log('🔄 [App] Found pending registration from onboarding, retrying...');
+                
+                // Retry registration in background
+                const result = await scheduledNotificationService.registerDevice(settings);
+                
+                if (result.success) {
+                  console.log('✅ [App] Pending registration completed successfully!');
+                  await AsyncStorage.removeItem('pending_registration');
+                } else {
+                  console.warn('⚠️ [App] Pending registration still failed, will retry on next app launch');
+                }
+              }
+            } catch (pendingError) {
+              console.warn('⚠️ [App] Error checking/retrying pending registration:', pendingError);
+            }
           } else {
             console.log('⏭️ [App] Onboarding not completed, skipping Scheduled Notification Service initialization');
           }

@@ -37,11 +37,11 @@ android {
   compileSdk rootProject.ext.compileSdkVersion
 
   // Package/namespace for your app code & manifest
-  namespace "com.bluestoneapps.miinojibwe"
+  namespace "com.bluestoneapps.godmoments"
 
   defaultConfig {
     // This is your Play Console applicationId (final once published)
-    applicationId "com.bluestoneapps.miinojibwe"
+    applicationId "com.bluestoneapps.godmoments"
 
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
