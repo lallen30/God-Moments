@@ -305,23 +305,18 @@ class ScheduledNotificationService {
   /**
    * Register device with the Laravel backend
    */
-  public async registerDevice(customSettings?: Partial<DeviceSettings>, bypassSubscriptionCheck: boolean = false): Promise<DeviceRegistrationResponse> {
+  public async registerDevice(customSettings?: Partial<DeviceSettings>): Promise<DeviceRegistrationResponse> {
     try {
       // CRITICAL: Verify valid push subscription before proceeding
       const hasValidSubscription = await oneSignalService.hasValidPushSubscription();
       
-      if (!hasValidSubscription && !bypassSubscriptionCheck) {
+      if (!hasValidSubscription) {
         console.error('❌ [ScheduledNotifications] Cannot register - no valid push subscription');
         return {
           success: false,
           message: 'Cannot register device without valid push subscription. OneSignal has not obtained APNS/FCM token yet.',
           error: 'NO_VALID_SUBSCRIPTION'
         };
-      }
-      
-      if (!hasValidSubscription && bypassSubscriptionCheck) {
-        console.warn('⚠️ [ScheduledNotifications] Bypassing subscription check - attempting registration anyway');
-        console.warn('⚠️ [ScheduledNotifications] OneSignal SDK may not reflect actual subscription state in Release builds');
       }
 
       const playerId = await oneSignalService.getOneSignalUserId();
@@ -576,6 +571,7 @@ class ScheduledNotificationService {
         }
         
         console.log('✅ [ScheduledNotifications] Prerequisites met, proceeding with registration...');
+        // Attempt re-registration to recover missing device ID
         return await this.registerDevice(settings);
       }
 

@@ -71,6 +71,10 @@ const MoreScreen: React.FC<MoreScreenProps> = ({ navigation }) => {
   ];
 
   const handleMenuItemPress = (screen: string) => {
+    if (screen === 'OneSignalDebug') {
+      navigation.getParent()?.navigate(screen);
+      return;
+    }
     navigation.navigate(screen);
   };
 

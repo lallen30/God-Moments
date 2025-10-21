@@ -184,18 +184,12 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
                 notifications_enabled: notificationsEnabled,
               });
 
-              // On last attempt, bypass subscription check in case SDK is not reflecting actual state
-              const bypassCheck = (attempt === maxRetries);
-              if (bypassCheck) {
-                console.log('⚠️ [Onboarding] Last attempt - bypassing subscription check to try anyway');
-              }
-              
               const result = await scheduledNotificationService.registerDevice({
                 tz: ianaTimezone,
                 start_time: convertTo24Hour(startTime, startTimeAmPm),
                 end_time: convertTo24Hour(endTime, endTimeAmPm),
                 notifications_enabled: notificationsEnabled,
-              }, bypassCheck);
+              });
 
               if (result.success) {
                 console.log('✅ [Onboarding] Background: Device registered successfully!');
@@ -203,13 +197,6 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
                 
                 // Clear any pending registration since we succeeded
                 await AsyncStorage.removeItem('pending_registration');
-                
-                // SHOW SUCCESS ALERT (optional - can be removed for production)
-                Alert.alert(
-                  '✅ Notifications Active',
-                  'Your prayer notifications are now scheduled. You will receive reminders twice daily during your selected time window.',
-                  [{text: 'OK'}]
-                );
                 
                 return; // Success! Exit the retry loop
               } else {

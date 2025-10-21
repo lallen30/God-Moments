@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Platform } from 'react-native';
 import { oneSignalService } from '../services/OneSignalService';
 
 interface UserInfo {
@@ -9,10 +9,17 @@ interface UserInfo {
   timestamp: string;
 }
 
+interface DebugEvent {
+  timestamp: string;
+  label: string;
+  payload: any;
+}
+
 export const OneSignalDebugScreen: React.FC = () => {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [debugEvents, setDebugEvents] = useState<DebugEvent[]>([]);
 
   const checkOneSignalStatus = useCallback(async () => {
     try {
@@ -38,6 +45,8 @@ export const OneSignalDebugScreen: React.FC = () => {
       };
       
       setUserInfo(newUserInfo);
+      const events = await oneSignalService.getDebugEvents();
+      setDebugEvents(events);
       setError(null);
       
     } catch (err) {
@@ -106,6 +115,17 @@ export const OneSignalDebugScreen: React.FC = () => {
     }
   }, [handleRefresh]);
 
+  const clearDebugLog = useCallback(async () => {
+    try {
+      await oneSignalService.clearDebugEvents();
+      setDebugEvents([]);
+      Alert.alert('Debug Log', 'Cleared stored OneSignal debug events.');
+    } catch (err) {
+      console.error('Error clearing debug log:', err);
+      Alert.alert('Error', 'Failed to clear debug log');
+    }
+  }, []);
+
   const showInstructions = useCallback(() => {
     Alert.alert(
       'How to Test Push Notifications',
@@ -164,6 +184,10 @@ export const OneSignalDebugScreen: React.FC = () => {
         <TouchableOpacity style={styles.instructionButton} onPress={showInstructions}>
           <Text style={styles.buttonText}>❓ How to Test</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style={styles.clearButton} onPress={clearDebugLog}>
+          <Text style={styles.buttonText}>🧹 Clear Debug Log</Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.noticeCard}>
@@ -174,6 +198,21 @@ export const OneSignalDebugScreen: React.FC = () => {
           • Make sure notifications are enabled in device Settings{'\n'}
           • Send test notifications from OneSignal Dashboard, not from the app
         </Text>
+      </View>
+
+      <View style={styles.infoCard}>
+        <Text style={styles.cardTitle}>📝 Recent OneSignal Debug Events</Text>
+        {debugEvents.length === 0 ? (
+          <Text style={styles.infoValue}>No debug events captured yet.</Text>
+        ) : (
+          debugEvents.slice(0, 15).map((event, index) => (
+            <View key={`${event.timestamp}-${index}`} style={styles.debugRow}>
+              <Text style={styles.debugTimestamp}>{new Date(event.timestamp).toLocaleString()}</Text>
+              <Text style={styles.debugLabel}>{event.label}</Text>
+              <Text style={styles.debugPayload}>{JSON.stringify(event.payload, null, 2)}</Text>
+            </View>
+          ))
+        )}
       </View>
     </ScrollView>
   );
@@ -259,6 +298,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 12,
   },
+  clearButton: {
+    backgroundColor: '#8E8E93',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
   buttonText: {
     color: 'white',
     textAlign: 'center',
@@ -282,5 +327,27 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#856404',
     lineHeight: 20,
+  },
+  debugRow: {
+    marginBottom: 16,
+    paddingBottom: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#ddd',
+  },
+  debugTimestamp: {
+    fontSize: 12,
+    color: '#777',
+    marginBottom: 4,
+  },
+  debugLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 4,
+  },
+  debugPayload: {
+    fontSize: 12,
+    color: '#2c3e50',
+    fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }),
   },
 });

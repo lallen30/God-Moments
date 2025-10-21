@@ -16,6 +16,7 @@ import TermsAndConditionsScreen from '../screens/PostLogin/Legal/TermsConditions
 import PrivacyPolicyScreen from '../screens/PostLogin/Legal/PrivacyPolicy/PrivacyPolicyScreen';
 import { withNavigationWrapper } from './NavigationWrapper';
 import { colors } from '../theme/colors';
+import { OneSignalDebugScreen } from '../components/OneSignalDebugScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +32,7 @@ const WrappedForgotPasswordScreen = withNavigationWrapper(ForgotPasswordScreen);
 const WrappedVerifyEmailScreen = withNavigationWrapper(VerifyEmailScreen);
 const WrappedTermsAndConditionsScreen = withNavigationWrapper(TermsAndConditionsScreen);
 const WrappedPrivacyPolicyScreen = withNavigationWrapper(PrivacyPolicyScreen);
+const WrappedOneSignalDebugScreen = withNavigationWrapper(OneSignalDebugScreen);
 
 const AppNavigator = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -170,6 +172,14 @@ const AppNavigator = () => {
           component={WrappedPrivacyPolicyScreen}
           options={{
             presentation: 'modal'
+          }}
+        />
+        <Stack.Screen
+          name="OneSignalDebug"
+          component={WrappedOneSignalDebugScreen}
+          options={{
+            headerShown: true,
+            title: 'OneSignal Debug',
           }}
         />
       </Stack.Navigator>

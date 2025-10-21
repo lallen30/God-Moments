@@ -45,9 +45,8 @@ export class PushNotificationDebugger {
   
   private static async checkOneSignalInitialization(): Promise<boolean> {
     try {
-      // Try to get user state to check if OneSignal is initialized
-      const userState = await OneSignal.User.getPushSubscription();
-      return userState !== null;
+      const subscription = await this.fetchPushSubscriptionState();
+      return !!subscription.id;
     } catch (error) {
       console.log('OneSignal initialization check failed:', error);
       return false;
@@ -56,11 +55,11 @@ export class PushNotificationDebugger {
   
   private static async getPushSubscriptionDetails(): Promise<any> {
     try {
-      const pushSubscription = await OneSignal.User.getPushSubscription();
+      const subscription = await this.fetchPushSubscriptionState();
       return {
-        id: pushSubscription?.id || 'Not available',
-        token: 'Token not directly accessible in v5',
-        optedIn: pushSubscription?.id ? true : false,
+        id: subscription.id || 'Not available',
+        token: subscription.token ? `${subscription.token.substring(0, 20)}...` : 'Token not available',
+        optedIn: subscription.optedIn ?? false,
       };
     } catch (error) {
       console.log('Failed to get push subscription details:', error);
@@ -74,9 +73,13 @@ export class PushNotificationDebugger {
   
   private static async checkNotificationPermissions(): Promise<string> {
     try {
-      // In OneSignal v5, we need to check permission differently
-      const pushSubscription = await OneSignal.User.getPushSubscription();
-      return pushSubscription?.id ? 'Granted' : 'Not granted';
+      const hasPermission = OneSignal.Notifications?.hasPermission?.();
+      if (typeof hasPermission === 'boolean') {
+        return hasPermission ? 'Granted' : 'Not granted';
+      }
+
+      const subscription = await this.fetchPushSubscriptionState();
+      return subscription.id ? 'Granted' : 'Not granted';
     } catch (error) {
       console.log('Failed to check notification permissions:', error);
       return 'Error checking permissions';
@@ -116,10 +119,8 @@ ${permissionStatus !== 'Granted' ? '⚠️ Notification permission not granted' 
   static async requestNotificationPermission(): Promise<boolean> {
     try {
       console.log('🔔 Checking notification permission...');
-      // In OneSignal v5, permissions are handled automatically during initialization
-      // Check if permission was granted by checking if we have a user ID
-      const pushSubscription = await OneSignal.User.getPushSubscription();
-      const hasPermission = !!pushSubscription?.id;
+      const subscription = await this.fetchPushSubscriptionState();
+      const hasPermission = !!subscription.id;
       console.log('Permission result:', hasPermission);
       
       if (!hasPermission) {
@@ -140,15 +141,15 @@ ${permissionStatus !== 'Granted' ? '⚠️ Notification permission not granted' 
   // Method to send a test notification (for development)
   static async sendTestNotification(): Promise<void> {
     try {
-      const pushSubscription = await OneSignal.User.getPushSubscription();
-      if (!pushSubscription?.id) {
+      const subscription = await this.fetchPushSubscriptionState();
+      if (!subscription.id) {
         Alert.alert('Error', 'No OneSignal User ID found. Make sure OneSignal is properly initialized.');
         return;
       }
       
       Alert.alert(
         'Test Notification',
-        `OneSignal User ID: ${pushSubscription.id}\n\nUse this ID to send a test notification from the OneSignal dashboard.`,
+        `OneSignal User ID: ${subscription.id}\n\nUse this ID to send a test notification from the OneSignal dashboard.`,
         [{ text: 'OK' }]
       );
       
@@ -156,5 +157,57 @@ ${permissionStatus !== 'Granted' ? '⚠️ Notification permission not granted' 
       console.error('❌ Error getting user ID for test notification:', error);
       Alert.alert('Error', 'Failed to get OneSignal User ID');
     }
+  }
+
+  private static async fetchPushSubscriptionState(): Promise<{
+    id: string | null;
+    token: string | null;
+    optedIn: boolean | null;
+  }> {
+    if (!OneSignal?.User?.pushSubscription) {
+      return { id: null, token: null, optedIn: null };
+    }
+
+    let id: string | null = null;
+    let token: string | null = null;
+    let optedIn: boolean | null = null;
+
+    try {
+      if (typeof OneSignal.User.pushSubscription.getIdAsync === 'function') {
+        id = await OneSignal.User.pushSubscription.getIdAsync();
+      } else if (typeof OneSignal.User.pushSubscription.getPushSubscriptionId === 'function') {
+        const fallbackId = OneSignal.User.pushSubscription.getPushSubscriptionId();
+        id = fallbackId || null;
+      }
+    } catch (error) {
+      console.log('Failed to fetch push subscription ID:', error);
+    }
+
+    try {
+      if (typeof OneSignal.User.pushSubscription.getTokenAsync === 'function') {
+        token = await OneSignal.User.pushSubscription.getTokenAsync();
+      } else if (typeof OneSignal.User.pushSubscription.getPushSubscriptionToken === 'function') {
+        const fallbackToken = OneSignal.User.pushSubscription.getPushSubscriptionToken();
+        token = fallbackToken || null;
+      }
+    } catch (error) {
+      console.log('Failed to fetch push subscription token:', error);
+    }
+
+    try {
+      if (typeof OneSignal.User.pushSubscription.getOptedInAsync === 'function') {
+        optedIn = await OneSignal.User.pushSubscription.getOptedInAsync();
+      } else if (typeof OneSignal.User.pushSubscription.getOptedIn === 'function') {
+        optedIn = OneSignal.User.pushSubscription.getOptedIn();
+      }
+    } catch (error) {
+      console.log('Failed to fetch push subscription opt-in state:', error);
+    }
+
+    return {
+      id: id ?? null,
+      token: token ?? null,
+      optedIn: typeof optedIn === 'boolean' ? optedIn : null,
+    };
   }
 }

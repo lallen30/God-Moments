@@ -11,6 +11,9 @@ import { EnvConfig } from '../utils/EnvConfig';
 import { Linking, AppState, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const DEBUG_LOG_STORAGE_KEY = 'onesignal_debug_log';
+const MAX_DEBUG_LOG_ENTRIES = 40;
+
 export class OneSignalService {
   private static instance: OneSignalService;
   private isInitialized = false;
@@ -25,6 +28,63 @@ export class OneSignalService {
       OneSignalService.instance = new OneSignalService();
     }
     return OneSignalService.instance;
+  }
+
+  /**
+   * Serialize debug payloads safely.
+   */
+  private sanitizeDebugPayload(data: any): any {
+    try {
+      return JSON.parse(JSON.stringify(data, (_key, value) => {
+        if (typeof value === 'function') {
+          return '[Function]';
+        }
+        if (typeof value === 'bigint') {
+          return value.toString();
+        }
+        return value;
+      }));
+    } catch {
+      return data;
+    }
+  }
+
+  /**
+   * Persist recent debug events so we can inspect them on device builds
+   * where console output is stripped (e.g. TestFlight).
+   */
+  private async recordDebugEvent(label: string, payload: Record<string, any> = {}): Promise<void> {
+    try {
+      const raw = await AsyncStorage.getItem(DEBUG_LOG_STORAGE_KEY);
+      let entries: any[] = [];
+
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            entries = parsed;
+          }
+        } catch {
+          entries = [];
+        }
+      }
+
+      const sanitizedPayload = this.sanitizeDebugPayload(payload);
+
+      entries.unshift({
+        timestamp: new Date().toISOString(),
+        label,
+        payload: sanitizedPayload
+      });
+
+      if (entries.length > MAX_DEBUG_LOG_ENTRIES) {
+        entries = entries.slice(0, MAX_DEBUG_LOG_ENTRIES);
+      }
+
+      await AsyncStorage.setItem(DEBUG_LOG_STORAGE_KEY, JSON.stringify(entries));
+    } catch (error) {
+      console.log('⚠️ [OneSignal] Failed to persist debug event:', error);
+    }
   }
 
   /**
@@ -74,6 +134,74 @@ export class OneSignalService {
     }
   }
 
+  /**
+   * Retrieve the current push subscription state using the OneSignal v5 APIs.
+   * Provides a normalized snapshot so the rest of the service does not need to
+   * worry about the async helper methods or deprecated fallbacks.
+   */
+  private async getPushSubscriptionState(): Promise<{
+    id: string | null;
+    token: string | null;
+    optedIn: boolean | null;
+  }> {
+    if (!OneSignal?.User?.pushSubscription) {
+      return { id: null, token: null, optedIn: null };
+    }
+
+    let id: string | null = null;
+    let token: string | null = null;
+    let optedIn: boolean | null = null;
+
+    try {
+      if (typeof OneSignal.User.pushSubscription.getIdAsync === 'function') {
+        id = await OneSignal.User.pushSubscription.getIdAsync();
+      } else if (typeof OneSignal.User.pushSubscription.getPushSubscriptionId === 'function') {
+        const fallbackId = OneSignal.User.pushSubscription.getPushSubscriptionId();
+        id = fallbackId || null;
+      }
+    } catch (error) {
+      console.log('⚠️ [OneSignal] Failed to fetch push subscription ID:', error);
+    }
+
+    try {
+      if (typeof OneSignal.User.pushSubscription.getTokenAsync === 'function') {
+        token = await OneSignal.User.pushSubscription.getTokenAsync();
+      } else if (typeof OneSignal.User.pushSubscription.getPushSubscriptionToken === 'function') {
+        const fallbackToken = OneSignal.User.pushSubscription.getPushSubscriptionToken();
+        token = fallbackToken || null;
+      }
+    } catch (error) {
+      console.log('⚠️ [OneSignal] Failed to fetch push subscription token:', error);
+    }
+
+    try {
+      if (typeof OneSignal.User.pushSubscription.getOptedInAsync === 'function') {
+        optedIn = await OneSignal.User.pushSubscription.getOptedInAsync();
+      } else if (typeof OneSignal.User.pushSubscription.getOptedIn === 'function') {
+        optedIn = OneSignal.User.pushSubscription.getOptedIn();
+      }
+    } catch (error) {
+      console.log('⚠️ [OneSignal] Failed to fetch push subscription opt-in state:', error);
+    }
+
+    const normalizedState = {
+      id: id ?? null,
+      token: token ?? null,
+      optedIn: typeof optedIn === 'boolean' ? optedIn : null
+    };
+
+    await this.recordDebugEvent('pushSubscription:state', {
+      id: normalizedState.id,
+      optedIn: normalizedState.optedIn,
+      hasToken: !!normalizedState.token,
+      tokenPreview: normalizedState.token
+        ? `${normalizedState.token.slice(0, 8)}…${normalizedState.token.slice(-4)}`
+        : null
+    });
+
+    return normalizedState;
+  }
+
   public async initialize(): Promise<void> {
 
     if (this.isInitialized) {
@@ -86,8 +214,14 @@ export class OneSignalService {
       
       console.log('🚀 [OneSignal] Starting initialization with App ID:', appId);
       console.log('📱 [OneSignal] Expected Bundle ID: com.bluestoneapps.godmomentsdevapp');
+      await this.recordDebugEvent('initialize:start', {
+        appId,
+        expectedBundleId: 'com.bluestoneapps.godmomentsdevapp'
+      });
+      OneSignal.Debug.setLogLevel(OneSignalModule.LogLevel.Verbose);
       OneSignal.initialize(appId);
       console.log('✅ [OneSignal] Initialize called successfully');
+      await this.recordDebugEvent('initialize:initialized', { appId });
 
       // Request notification permission with explicit handling
       try {
@@ -96,22 +230,28 @@ export class OneSignalService {
         // Check current permission status first
         const hasPermission = OneSignal.Notifications.hasPermission();
         console.log('📱 [OneSignal] Current permission status:', hasPermission);
+        await this.recordDebugEvent('permission:initial-status', { hasPermission });
         
         // ALWAYS request permission to ensure proper registration
         console.log('📱 [OneSignal] Requesting permission (forced)...');
         const permission = await OneSignal.Notifications.requestPermission(true);
         console.log('📱 [OneSignal] Permission request result:', permission);
+        await this.recordDebugEvent('permission:request-result', { permission });
         
         // Double-check permission after request
         const finalPermission = OneSignal.Notifications.hasPermission();
         console.log('📱 [OneSignal] Final permission status:', finalPermission);
+        await this.recordDebugEvent('permission:final-status', { finalPermission });
         
         if (!finalPermission) {
           console.warn('⚠️ [OneSignal] Permission not granted - notifications may not work');
         }
-        
+      
       } catch (permError) {
         console.error('❌ [OneSignal] Permission request failed:', permError);
+        await this.recordDebugEvent('permission:error', {
+          message: permError instanceof Error ? permError.message : String(permError)
+        });
       }
 
       // Wait for initialization to complete
@@ -125,9 +265,13 @@ export class OneSignalService {
           // Opt into push notifications
           OneSignal.User.pushSubscription.optIn();
           console.log('✅ [OneSignal] Push subscription opted in');
+          await this.recordDebugEvent('pushSubscription:optIn-called', {});
         }
       } catch (subscriptionError) {
         console.error('❌ [OneSignal] Push subscription error:', subscriptionError);
+        await this.recordDebugEvent('pushSubscription:optIn-error', {
+          message: subscriptionError instanceof Error ? subscriptionError.message : String(subscriptionError)
+        });
       }
 
       // CRITICAL: Login with persistent UUID to ensure proper registration
@@ -140,14 +284,19 @@ export class OneSignalService {
         if (OneSignal.login) {
           await OneSignal.login(deviceUuid);
           console.log('✅ [OneSignal] Login successful with persistent UUID:', deviceUuid);
+          await this.recordDebugEvent('login:success', { deviceUuid });
         } else if (OneSignal.User && OneSignal.User.addAlias) {
           // Fallback for newer versions
           OneSignal.User.addAlias('device_id', deviceUuid);
           console.log('✅ [OneSignal] Device UUID set via alias:', deviceUuid);
+          await this.recordDebugEvent('login:alias', { deviceUuid });
         }
       } catch (loginError) {
         console.error('❌ [OneSignal] Login error:', loginError);
         console.log('🔄 [OneSignal] Continuing without login - may affect registration');
+        await this.recordDebugEvent('login:error', {
+          message: loginError instanceof Error ? loginError.message : String(loginError)
+        });
       }
 
       // Set the notification opened handler
@@ -186,8 +335,15 @@ export class OneSignalService {
         this.logUserState();
       }, 2000);
       
+      await this.recordDebugEvent('initialize:complete', {
+        hasPersistentUuid: !!this.deviceUuid
+      });
+      
     } catch (error) {
       console.error('Error initializing OneSignal:', error);
+      await this.recordDebugEvent('initialize:error', {
+        message: error instanceof Error ? error.message : String(error)
+      });
     }
   }
 
@@ -198,14 +354,12 @@ export class OneSignalService {
       // Check push subscription status
       let pushSubscriptionStatus: any = 'unknown';
       try {
-        if (OneSignal?.User?.pushSubscription) {
-          const pushSub = OneSignal.User.pushSubscription;
-          pushSubscriptionStatus = {
-            id: pushSub.id || 'none',
-            token: pushSub.token || 'none',
-            optedIn: pushSub.optedIn || false
-          };
-        }
+        const subscription = await this.getPushSubscriptionState();
+        pushSubscriptionStatus = {
+          id: subscription.id ?? 'none',
+          token: subscription.token ?? 'none',
+          optedIn: subscription.optedIn ?? false
+        };
       } catch (subError) {
         pushSubscriptionStatus = 'error checking subscription';
       }
@@ -213,6 +367,12 @@ export class OneSignalService {
       console.log('🔍 OneSignal User State after initialization:', {
         isInitialized: this.isInitialized,
         userId: userId,
+        hasNotificationPermission: OneSignal?.Notifications?.hasPermission?.() || 'unknown',
+        pushSubscription: pushSubscriptionStatus
+      });
+      await this.recordDebugEvent('userState:snapshot', {
+        isInitialized: this.isInitialized,
+        userId,
         hasNotificationPermission: OneSignal?.Notifications?.hasPermission?.() || 'unknown',
         pushSubscription: pushSubscriptionStatus
       });
@@ -538,6 +698,10 @@ export class OneSignalService {
   public async hasValidPushSubscription(): Promise<boolean> {
     if (!this.isInitialized) {
       console.log('⚠️ [OneSignal] Not initialized - no valid subscription');
+      await this.recordDebugEvent('pushSubscription:validation-result', {
+        result: false,
+        reason: 'notInitialized'
+      });
       return false;
     }
 
@@ -548,57 +712,88 @@ export class OneSignalService {
       
       if (!hasPermission) {
         console.log('⚠️ [OneSignal] No notification permission - no valid subscription');
+        await this.recordDebugEvent('pushSubscription:validation-result', {
+          result: false,
+          reason: 'noPermission'
+        });
         return false;
       }
 
-      // Check for push subscription object
       if (!OneSignal?.User?.pushSubscription) {
-        console.log('⚠️ [OneSignal] No pushSubscription object - no valid subscription');
+        console.log('⚠️ [OneSignal] pushSubscription API unavailable - no valid subscription');
+        await this.recordDebugEvent('pushSubscription:validation-result', {
+          result: false,
+          reason: 'apiUnavailable'
+        });
         return false;
       }
 
-      const pushSub = OneSignal.User.pushSubscription;
-      console.log('🔍 [OneSignal] hasValidPushSubscription check - Full subscription:', {
-        id: pushSub.id,
-        optedIn: pushSub.optedIn,
-        token: pushSub.token,
-        hasToken: !!pushSub.token,
-        tokenLength: pushSub.token?.length
+      const subscription = await this.getPushSubscriptionState();
+      console.log('🔍 [OneSignal] hasValidPushSubscription check - Snapshot:', {
+        id: subscription.id,
+        optedIn: subscription.optedIn,
+        tokenPreview: subscription.token ? `${subscription.token.substring(0, 10)}...` : null,
+        hasToken: !!subscription.token
       });
 
-      // Check if subscribed (optedIn)
-      if (!pushSub.optedIn) {
+      if (subscription.optedIn !== true) {
         console.log('⚠️ [OneSignal] Not opted in (optedIn=false) - no valid subscription');
         console.log('💡 [OneSignal] This usually means APNS certificate issue or wrong environment (Dev vs Prod)');
+        await this.recordDebugEvent('pushSubscription:validation-result', {
+          result: false,
+          reason: 'notOptedIn'
+        });
         return false;
       }
 
-      // CRITICAL: Check if we have a valid push token (identifier)
-      if (!pushSub.token || pushSub.token === '' || pushSub.token === 'null' || pushSub.token === 'none') {
+      const token = subscription.token;
+      if (!token || token === '' || token === 'null' || token === 'none') {
         console.log('⚠️ [OneSignal] No valid push token - APNS/FCM registration incomplete');
-        console.log('💡 [OneSignal] Token value:', pushSub.token);
+        console.log('💡 [OneSignal] Token value:', token);
         console.log('💡 [OneSignal] Check: 1) APNS certificate in OneSignal, 2) Dev vs Prod mismatch, 3) Bundle ID match');
+        await this.recordDebugEvent('pushSubscription:validation-result', {
+          result: false,
+          reason: 'missingToken',
+          tokenValue: token ?? 'null'
+        });
         return false;
       }
 
-      // Check if we have a subscription ID
-      if (!pushSub.id || pushSub.id === '' || pushSub.id === 'none') {
+      const subscriptionId = subscription.id;
+      if (!subscriptionId || subscriptionId === '' || subscriptionId === 'none') {
         console.log('⚠️ [OneSignal] No subscription ID - registration incomplete');
-        console.log('💡 [OneSignal] ID value:', pushSub.id);
+        console.log('💡 [OneSignal] ID value:', subscriptionId);
+        await this.recordDebugEvent('pushSubscription:validation-result', {
+          result: false,
+          reason: 'missingSubscriptionId',
+          idValue: subscriptionId ?? 'null'
+        });
         return false;
       }
 
       console.log('✅ [OneSignal] Valid push subscription confirmed:', {
-        id: pushSub.id,
-        token: pushSub.token?.substring(0, 20) + '...',
-        optedIn: pushSub.optedIn,
+        id: subscriptionId,
+        token: token.substring(0, 20) + '...',
+        optedIn: subscription.optedIn,
         hasPermission: hasPermission
+      });
+
+      await this.recordDebugEvent('pushSubscription:validation-result', {
+        result: true,
+        reason: 'validSubscription',
+        subscriptionId,
+        hasPermission
       });
 
       return true;
 
     } catch (error) {
       console.error('❌ [OneSignal] Error checking push subscription:', error);
+      await this.recordDebugEvent('pushSubscription:validation-result', {
+        result: false,
+        reason: 'exception',
+        message: error instanceof Error ? error.message : String(error)
+      });
       return false;
     }
   }
@@ -614,77 +809,70 @@ export class OneSignalService {
       console.log('🔍 Getting OneSignal User ID...');
       console.log('🔍 OneSignal object:', typeof OneSignal);
       console.log('🔍 OneSignal.User object:', typeof OneSignal?.User);
-      
-      // For OneSignal v5, use the correct API methods
-      if (OneSignal && OneSignal.User) {
-        console.log('🔍 OneSignal.User available, checking properties...');
-        
-        // Try the correct v5+ method: getOnesignalId()
+
+      if (!OneSignal?.User) {
+        console.log('❌ OneSignal.User not available');
+        console.log('📱 OneSignal initialized but User ID not yet available - this is normal on first launch');
+        return 'Initialized - ID pending...';
+      }
+
+      let resolvedId: string | null = null;
+
+      if (typeof OneSignal.User.getOnesignalId === 'function') {
         try {
-          if (typeof OneSignal.User.getOnesignalId === 'function') {
-            console.log('🔍 Calling OneSignal.User.getOnesignalId()...');
-            const userId = OneSignal.User.getOnesignalId();
-            console.log('🔍 getOnesignalId() result:', userId);
-            
-            if (userId && userId !== '') {
-              console.log('✅ Found OneSignal User ID via getOnesignalId():', userId);
-              return userId;
-            }
-          } else {
-            console.log('🔍 OneSignal.User.getOnesignalId is not a function');
-          }
+          console.log('🔍 Calling OneSignal.User.getOnesignalId()...');
+          resolvedId = await OneSignal.User.getOnesignalId();
+          console.log('🔍 getOnesignalId() result:', resolvedId);
         } catch (getIdError) {
           console.log('Error calling getOnesignalId:', getIdError);
         }
-        
-        // Try to get pushSubscription.id as alternative
-        try {
-          if (OneSignal.User.pushSubscription && OneSignal.User.pushSubscription.id) {
-            const subscriptionId = OneSignal.User.pushSubscription.id;
-            console.log('✅ Found Push Subscription ID:', subscriptionId);
-            return subscriptionId;
-          }
-        } catch (subError) {
-          console.log('Error getting push subscription:', subError);
-        }
-        
-        // Check for direct properties
-        console.log('🔍 OneSignal.User.onesignalId:', OneSignal.User.onesignalId);
-        console.log('🔍 OneSignal.User.pushSubscriptionId:', OneSignal.User.pushSubscriptionId);
-        
-        if (OneSignal.User.onesignalId) {
-          const userId = OneSignal.User.onesignalId;
-          console.log('✅ Found OneSignal User ID via property:', userId);
-          return userId;
-        }
-        
-        // Try alternative approaches for v5
-        try {
-          console.log('🔍 Available OneSignal.User methods:', Object.keys(OneSignal.User));
-          
-          // Try addAlias method to trigger user creation
-          if (typeof OneSignal.User.addAlias === 'function') {
-            console.log('🔍 Adding alias to trigger user registration...');
-            OneSignal.User.addAlias('app_user', 'miin_ojibwe_' + Date.now());
-          }
-          
-          // Set up user change listener for future updates
-          if (typeof OneSignal.User.addEventListener === 'function') {
-            console.log('🔍 Setting up OneSignal user change listener...');
-            OneSignal.User.addEventListener('change', (event: any) => {
-              console.log('🔍 OneSignal user changed event:', JSON.stringify(event, null, 2));
-              if (event?.current?.onesignalId) {
-                console.log('✅ User ID available from change event:', event.current.onesignalId);
-              }
-            });
-          }
-        } catch (aliasError) {
-          console.log('Error setting up user tracking:', aliasError);
-        }
       } else {
-        console.log('❌ OneSignal.User not available');
+        console.log('🔍 OneSignal.User.getOnesignalId is not a function');
       }
-      
+
+      if (resolvedId && resolvedId !== '') {
+        console.log('✅ Found OneSignal User ID via getOnesignalId():', resolvedId);
+        return resolvedId;
+      }
+
+      const subscriptionState = await this.getPushSubscriptionState();
+      if (subscriptionState.id) {
+        console.log('✅ Found Push Subscription ID via subscription state:', subscriptionState.id);
+        return subscriptionState.id;
+      }
+
+      const userAny = OneSignal.User as any;
+      if (userAny?.onesignalId) {
+        console.log('✅ Found OneSignal User ID via legacy property:', userAny.onesignalId);
+        return userAny.onesignalId;
+      }
+
+      if (userAny?.pushSubscriptionId) {
+        console.log('✅ Found Push Subscription ID via legacy property:', userAny.pushSubscriptionId);
+        return userAny.pushSubscriptionId;
+      }
+
+      try {
+        console.log('🔍 Available OneSignal.User methods:', Object.keys(OneSignal.User));
+
+        if (typeof OneSignal.User.addAlias === 'function') {
+          console.log('🔍 Adding alias to trigger user registration...');
+          OneSignal.User.addAlias('app_user', 'miin_ojibwe_' + Date.now());
+        }
+
+        if (typeof OneSignal.User.addEventListener === 'function') {
+          console.log('🔍 Setting up OneSignal user change listener...');
+          OneSignal.User.addEventListener('change', (event: any) => {
+            console.log('🔍 OneSignal user changed event:', JSON.stringify(event, null, 2));
+            if (event?.current?.onesignalId) {
+              console.log('✅ User ID available from change event:', event.current.onesignalId);
+            }
+          });
+        }
+      } catch (aliasError) {
+        console.log('Error setting up user tracking:', aliasError);
+      }
+
       console.log('📱 OneSignal initialized but User ID not yet available - this is normal on first launch');
       return 'Initialized - ID pending...';
     } catch (error) {
@@ -733,20 +921,22 @@ export class OneSignalService {
       console.log(`🔍 User ID check attempt ${attempts}/${maxAttempts}`);
       
       try {
-        // Try the direct method first
         if (OneSignal?.User?.getOnesignalId) {
-          const userId = OneSignal.User.getOnesignalId();
-          if (userId && userId !== '' && userId !== null && userId !== undefined) {
-            console.log('✅ OneSignal User ID found via monitoring:', userId);
-            clearInterval(checkInterval);
-            return;
+          try {
+            const monitoredId = await OneSignal.User.getOnesignalId();
+            if (monitoredId) {
+              console.log('✅ OneSignal User ID found via monitoring:', monitoredId);
+              clearInterval(checkInterval);
+              return;
+            }
+          } catch (monitorError) {
+            console.log('Error retrieving user ID during monitoring:', monitorError);
           }
         }
-        
-        // Check push subscription
-        if (OneSignal?.User?.pushSubscription?.id) {
-          const subscriptionId = OneSignal.User.pushSubscription.id;
-          console.log('✅ Push Subscription ID found via monitoring:', subscriptionId);
+
+        const subscriptionState = await this.getPushSubscriptionState();
+        if (subscriptionState.id) {
+          console.log('✅ Push Subscription ID found via monitoring:', subscriptionState.id);
           clearInterval(checkInterval);
           return;
         }
@@ -796,23 +986,19 @@ export class OneSignalService {
         
         // Try to get user ID
         try {
-          const userId = OneSignal.User.getOnesignalId?.();
-          console.log('🔍 Current user ID:', userId);
+          const currentId = await OneSignal.User.getOnesignalId?.();
+          console.log('🔍 Current user ID:', currentId);
         } catch (userError) {
           console.log('Error getting user ID:', userError);
         }
-        
-        // Check push subscription
+
         try {
-          const pushSub = OneSignal.User.pushSubscription;
-          if (pushSub) {
-            console.log('🔍 Push subscription status:');
-            console.log('  - ID:', pushSub.id);
-            console.log('  - Token:', pushSub.token);
-            console.log('  - Opted in:', pushSub.optedIn);
-          } else {
-            console.log('⚠️ No push subscription found');
-          }
+          const subscriptionState = await this.getPushSubscriptionState();
+          console.log('🔍 Push subscription status:', {
+            id: subscriptionState.id ?? 'none',
+            token: subscriptionState.token ?? 'none',
+            optedIn: subscriptionState.optedIn ?? false
+          });
         } catch (subError) {
           console.log('Error checking push subscription:', subError);
         }
@@ -849,24 +1035,27 @@ export class OneSignalService {
     console.log('🔄 [OneSignal] Forcing fresh subscription after APNS config change...');
     
     try {
+      await this.recordDebugEvent('forceRefresh:start', {});
       // Re-request permissions
       if (OneSignal?.Notifications?.requestPermission) {
         console.log('📱 [OneSignal] Re-requesting notification permissions...');
-        await OneSignal.Notifications.requestPermission(true);
+        const permissionResult = await OneSignal.Notifications.requestPermission(true);
+        await this.recordDebugEvent('forceRefresh:permission-result', { permissionResult });
       }
       
       // Force opt-in again
       if (OneSignal?.User?.pushSubscription) {
         console.log('📱 [OneSignal] Force opting into push subscription...');
         OneSignal.User.pushSubscription.optIn();
+        await this.recordDebugEvent('forceRefresh:optIn-called', {});
         
         // Wait a moment then check status
-        setTimeout(() => {
-          const pushSub = OneSignal.User.pushSubscription;
+        setTimeout(async () => {
+          const subscriptionState = await this.getPushSubscriptionState();
           console.log('🔍 [OneSignal] Push subscription after refresh:', {
-            id: pushSub?.id || 'none',
-            token: pushSub?.token || 'none',
-            optedIn: pushSub?.optedIn || false
+            id: subscriptionState.id ?? 'none',
+            token: subscriptionState.token ?? 'none',
+            optedIn: subscriptionState.optedIn ?? false
           });
         }, 2000);
       }
@@ -876,10 +1065,47 @@ export class OneSignalService {
         const timestamp = Date.now();
         OneSignal.User.addTag('refresh_timestamp', timestamp.toString());
         console.log('✅ [OneSignal] Added refresh timestamp tag:', timestamp);
+        await this.recordDebugEvent('forceRefresh:tag-added', { timestamp });
       }
       
     } catch (error) {
       console.error('❌ [OneSignal] Error during subscription refresh:', error);
+      await this.recordDebugEvent('forceRefresh:error', {
+        message: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+
+  /**
+   * Retrieve recent debug events captured on-device.
+   */
+  public async getDebugEvents(): Promise<Array<{ timestamp: string; label: string; payload: any }>> {
+    try {
+      const raw = await AsyncStorage.getItem(DEBUG_LOG_STORAGE_KEY);
+      if (!raw) {
+        return [];
+      }
+
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
+
+      return [];
+    } catch (error) {
+      console.log('⚠️ [OneSignal] Failed to load debug events:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Clear stored debug events.
+   */
+  public async clearDebugEvents(): Promise<void> {
+    try {
+      await AsyncStorage.removeItem(DEBUG_LOG_STORAGE_KEY);
+    } catch (error) {
+      console.log('⚠️ [OneSignal] Failed to clear debug events:', error);
     }
   }
 }
