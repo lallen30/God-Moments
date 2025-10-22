@@ -252,7 +252,66 @@ const AccountSettingsScreen = () => {
     
     return `${hour.toString().padStart(2, '0')}:${minutes}`;
   };
+
+  const calculateWindowDuration = (start: string, startPeriod: string, end: string, endPeriod: string): number => {
+    const startTime24 = convertTo24Hour(start, startPeriod);
+    const endTime24 = convertTo24Hour(end, endPeriod);
+    
+    const [startHour, startMin] = startTime24.split(':').map(Number);
+    const [endHour, endMin] = endTime24.split(':').map(Number);
+    
+    let startMinutes = startHour * 60 + startMin;
+    let endMinutes = endHour * 60 + endMin;
+    
+    // Handle midnight crossing
+    if (endMinutes <= startMinutes) {
+      endMinutes += 24 * 60; // Add 24 hours
+    }
+    
+    return endMinutes - startMinutes;
+  };
+
+  const validateTimeWindow = (): boolean => {
+    const durationMinutes = calculateWindowDuration(startTime, startTimeAmPm, endTime, endTimeAmPm);
+    
+    if (durationMinutes < 30) {
+      Alert.alert(
+        'Small Time Window',
+        `Your notification window is only ${durationMinutes} minutes. We recommend at least 30 minutes to ensure 2 notifications can be scheduled with proper spacing.\n\nWould you like to continue anyway?`,
+        [
+          { text: 'Go Back', style: 'cancel' },
+          { text: 'Continue Anyway', onPress: () => proceedWithSave() },
+        ]
+      );
+      return false;
+    }
+    
+    if (durationMinutes < 17) {
+      Alert.alert(
+        'Window Too Small',
+        `Your notification window is only ${durationMinutes} minutes. The minimum window size is 17 minutes to fit 2 notifications. Please adjust your times.`,
+        [{ text: 'OK' }]
+      );
+      return false;
+    }
+    
+    return true;
+  };
+
+  const proceedWithSave = async () => {
+    await saveSettings();
+  };
+
   const handleSaveSettings = async () => {
+    // Validate time window first
+    if (!validateTimeWindow()) {
+      return;
+    }
+    
+    await saveSettings();
+  };
+
+  const saveSettings = async () => {
     try {
       setIsSaving(true);
       setServiceStatus('Saving settings...');

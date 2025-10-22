@@ -11,15 +11,7 @@ prepare_react_native_project!
 # Don't enable modular headers globally - causes build issues
 # use_modular_headers!
 
-# linkage = ENV['USE_FRAMEWORKS']
-# if linkage != nil
-#   Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
-#   use_frameworks! :linkage => linkage.to_sym
-# end
-
-# Ensure module maps are generated for GoogleUtilities (required by FirebaseCoreInternal when
-# integrating as static libraries). Do NOT add FirebaseCoreInternal explicitly; it is a transitive
-# dependency pulled by RNFBApp.
+# Required for Firebase dependencies (pulled in by react-native-onesignal)
 pod 'GoogleUtilities', :modular_headers => true
 
 target 'GodMoments' do

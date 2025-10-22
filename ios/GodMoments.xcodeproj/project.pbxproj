@@ -20,7 +20,6 @@
 		1CFA3A13692143F1B7681841 /* Newsreader_24pt-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FDD6FF9DFA154088B74D8B4F /* Newsreader_24pt-Italic.ttf */; };
 		1F4C30F0453A4A08814EE12D /* Newsreader_9pt-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E8223B154341452F8ECC7042 /* Newsreader_9pt-SemiBold.ttf */; };
 		2428DDFA47604935863AE746 /* Newsreader_24pt-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DB9A7FCD09A1496DA402D5AE /* Newsreader_24pt-SemiBold.ttf */; };
-		2868280DC4DBCF294EF110ED /* libPods-GodMoments.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 67332B61FAF6E114B6CAFEDE /* libPods-GodMoments.a */; };
 		2C887BAA792D46E3B7A108E2 /* Newsreader_9pt-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6880B0EB1E2C40679BD41B97 /* Newsreader_9pt-LightItalic.ttf */; };
 		3AC78C67101C4560B8A94E21 /* Newsreader-Italic-VariableFont_opsz,wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B5005BB753814F4DAE41DAEA /* Newsreader-Italic-VariableFont_opsz,wght.ttf */; };
 		3ADB9471746E4F4AB6B5DE2D /* Newsreader_60pt-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BF47520F5E66458FBBB3097D /* Newsreader_60pt-SemiBoldItalic.ttf */; };
@@ -38,7 +37,6 @@
 		5833062152D9459E9AC26B53 /* Newsreader_24pt-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9DE3012E8CCA484CB1C11E93 /* Newsreader_24pt-ExtraLight.ttf */; };
 		589552CACFC6421CAFF76F1A /* Newsreader_9pt-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9FAB480814DA4B0BAAFA0422 /* Newsreader_9pt-Bold.ttf */; };
 		5BC2C4E38A1540638F92D98F /* Newsreader_60pt-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5B7EE77BEF084079BD909F3A /* Newsreader_60pt-BoldItalic.ttf */; };
-		5E8BB3E3FAE478E4BEC3B64B /* libPods-GodMoments-GodMomentsTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 75FAAB3BAB45D58EAD2C5B87 /* libPods-GodMoments-GodMomentsTests.a */; };
 		5ED3BBBC857D460284D46106 /* Newsreader_36pt-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 02E8F5ECC2E547AE8CAF0BC2 /* Newsreader_36pt-ExtraBoldItalic.ttf */; };
 		659B222B3BE14EF8B01BE634 /* Newsreader_14pt-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 80CAD3C9EFB7460ABFB8A2C3 /* Newsreader_14pt-Light.ttf */; };
 		66787C0A3EFC43609E68B383 /* Newsreader_24pt-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7E57BCD50D60472D9CF2A5B4 /* Newsreader_24pt-Bold.ttf */; };
@@ -79,6 +77,7 @@
 		AAD738821D0948EDA1243B8E /* Newsreader_60pt-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8F89D248AC8846F8A749CFE7 /* Newsreader_60pt-ExtraBold.ttf */; };
 		AB06F00FF51A45D9830D1E1A /* Newsreader_24pt-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AD839AB4156A41AE8BFFA1E7 /* Newsreader_24pt-Regular.ttf */; };
 		AD02C731160C4B74BB6863BC /* Montserrat-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 67E01085A42F4A058A58459E /* Montserrat-Italic.ttf */; };
+		AE2B2CDD4D66004EAEA7A81B /* libPods-GodMoments.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 59C5BEFBCEB69A6BC3FBE2DE /* libPods-GodMoments.a */; };
 		AFD7C77F5A1B47BBB40E52B2 /* Newsreader_60pt-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 70F6A7C777AA46ECBC7752BD /* Newsreader_60pt-ExtraLightItalic.ttf */; };
 		B1FD0D45F318472AB17B2914 /* Montserrat-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ACFDEE0A19954FB8A945CE27 /* Montserrat-Black.ttf */; };
 		B33E1D807A0F47C2AD822AFE /* Montserrat-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F4D70EACF2C848C19B58FBCF /* Montserrat-BlackItalic.ttf */; };
@@ -95,6 +94,7 @@
 		C4E6E86AA9374F31B35246D1 /* Newsreader_24pt-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4F7C314AA96F4E0999B92440 /* Newsreader_24pt-LightItalic.ttf */; };
 		C9795FC09BD446B8BB0E86C7 /* Newsreader_60pt-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 916EBACA814C463392B7039A /* Newsreader_60pt-ExtraBoldItalic.ttf */; };
 		D3713F297CF34B338A664F94 /* Newsreader_24pt-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 32AEB91ACF7B4DD3BD1439C1 /* Newsreader_24pt-SemiBoldItalic.ttf */; };
+		D40BDD4364A17EB0653AF8FD /* libPods-GodMoments-GodMomentsTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4673E8D5080832A6DAE66505 /* libPods-GodMoments-GodMomentsTests.a */; };
 		D96F64C08A4C4481930B86D8 /* Newsreader_24pt-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 71F1160DF57A48EEB2EB6037 /* Newsreader_24pt-ExtraLightItalic.ttf */; };
 		D97CBF66A55E441DAD4BF332 /* Newsreader_60pt-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A81EC50C76F24733B871E3CD /* Newsreader_60pt-SemiBold.ttf */; };
 		DA1B5E857D7246C8A98677A6 /* Newsreader_9pt-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C6FEE6011E364A1AA496D6A4 /* Newsreader_9pt-Light.ttf */; };
@@ -137,7 +137,6 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = GodMoments/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = GodMoments/main.m; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = GodMoments/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		1475BED93CF936FFE83D486F /* Pods-GodMoments-GodMomentsTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GodMoments-GodMomentsTests.debug.xcconfig"; path = "Target Support Files/Pods-GodMoments-GodMomentsTests/Pods-GodMoments-GodMomentsTests.debug.xcconfig"; sourceTree = "<group>"; };
 		15C4CBB58C3A4330A7E8EB53 /* Newsreader_60pt-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_60pt-Bold.ttf"; path = "../src/assets/fonts/static/Newsreader_60pt-Bold.ttf"; sourceTree = "<group>"; };
 		161927F81B8F414CBAFA4F54 /* Newsreader_9pt-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_9pt-Medium.ttf"; path = "../src/assets/fonts/static/Newsreader_9pt-Medium.ttf"; sourceTree = "<group>"; };
 		16C0AC1154E24786AA220853 /* Newsreader_9pt-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_9pt-Italic.ttf"; path = "../src/assets/fonts/static/Newsreader_9pt-Italic.ttf"; sourceTree = "<group>"; };
@@ -151,20 +150,19 @@
 		39F2D9336E1E4208AA6D5568 /* Newsreader_36pt-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_36pt-Bold.ttf"; path = "../src/assets/fonts/static/Newsreader_36pt-Bold.ttf"; sourceTree = "<group>"; };
 		3D1188F4252C47D8AC3DEC6A /* Montserrat-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-LightItalic.ttf"; path = "../src/assets/fonts/Montserrat-LightItalic.ttf"; sourceTree = "<group>"; };
 		3EDB460ED0AC44A18486C0EB /* Newsreader_60pt-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_60pt-LightItalic.ttf"; path = "../src/assets/fonts/static/Newsreader_60pt-LightItalic.ttf"; sourceTree = "<group>"; };
-		42B028ED1C82CCC2417727BE /* Pods-GodMoments-GodMomentsTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GodMoments-GodMomentsTests.release.xcconfig"; path = "Target Support Files/Pods-GodMoments-GodMomentsTests/Pods-GodMoments-GodMomentsTests.release.xcconfig"; sourceTree = "<group>"; };
 		4300EEA482864B4795C4DAAF /* Montserrat-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Thin.ttf"; path = "../src/assets/fonts/Montserrat-Thin.ttf"; sourceTree = "<group>"; };
+		4673E8D5080832A6DAE66505 /* libPods-GodMoments-GodMomentsTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GodMoments-GodMomentsTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		468F3B501E924808A9BABC95 /* Newsreader_60pt-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_60pt-ExtraLight.ttf"; path = "../src/assets/fonts/static/Newsreader_60pt-ExtraLight.ttf"; sourceTree = "<group>"; };
-		49F53B23D5911040F0071AC4 /* Pods-GodMoments.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GodMoments.release.xcconfig"; path = "Target Support Files/Pods-GodMoments/Pods-GodMoments.release.xcconfig"; sourceTree = "<group>"; };
 		4EA6E96C4F6F476CAAAF7BF0 /* Montserrat-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-ThinItalic.ttf"; path = "../src/assets/fonts/Montserrat-ThinItalic.ttf"; sourceTree = "<group>"; };
 		4F025DDE6F454E1C8E3735FE /* Newsreader_36pt-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_36pt-ExtraLightItalic.ttf"; path = "../src/assets/fonts/static/Newsreader_36pt-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		4F7C314AA96F4E0999B92440 /* Newsreader_24pt-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_24pt-LightItalic.ttf"; path = "../src/assets/fonts/static/Newsreader_24pt-LightItalic.ttf"; sourceTree = "<group>"; };
 		55707B5631684F9D9E0DFFAD /* Newsreader_9pt-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_9pt-MediumItalic.ttf"; path = "../src/assets/fonts/static/Newsreader_9pt-MediumItalic.ttf"; sourceTree = "<group>"; };
+		59C5BEFBCEB69A6BC3FBE2DE /* libPods-GodMoments.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GodMoments.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5B7EE77BEF084079BD909F3A /* Newsreader_60pt-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_60pt-BoldItalic.ttf"; path = "../src/assets/fonts/static/Newsreader_60pt-BoldItalic.ttf"; sourceTree = "<group>"; };
 		5D2E4BE3973A4A65A91ED0E4 /* Newsreader_14pt-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_14pt-LightItalic.ttf"; path = "../src/assets/fonts/static/Newsreader_14pt-LightItalic.ttf"; sourceTree = "<group>"; };
 		61CC424F9271401E83124792 /* Newsreader_24pt-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_24pt-ExtraBoldItalic.ttf"; path = "../src/assets/fonts/static/Newsreader_24pt-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
 		6298C917D81D49D0804BD33A /* Newsreader_60pt-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_60pt-Light.ttf"; path = "../src/assets/fonts/static/Newsreader_60pt-Light.ttf"; sourceTree = "<group>"; };
 		65EAC9EFEB62473B89E59C1F /* Newsreader_24pt-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_24pt-BoldItalic.ttf"; path = "../src/assets/fonts/static/Newsreader_24pt-BoldItalic.ttf"; sourceTree = "<group>"; };
-		67332B61FAF6E114B6CAFEDE /* libPods-GodMoments.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GodMoments.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		67E01085A42F4A058A58459E /* Montserrat-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Italic.ttf"; path = "../src/assets/fonts/Montserrat-Italic.ttf"; sourceTree = "<group>"; };
 		6880B0EB1E2C40679BD41B97 /* Newsreader_9pt-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_9pt-LightItalic.ttf"; path = "../src/assets/fonts/static/Newsreader_9pt-LightItalic.ttf"; sourceTree = "<group>"; };
 		6936C762B68E42AAAD47AA48 /* Newsreader_9pt-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_9pt-ExtraBoldItalic.ttf"; path = "../src/assets/fonts/static/Newsreader_9pt-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
@@ -175,21 +173,21 @@
 		72D8C842227C4C199B47E7C0 /* Newsreader_36pt-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_36pt-SemiBold.ttf"; path = "../src/assets/fonts/static/Newsreader_36pt-SemiBold.ttf"; sourceTree = "<group>"; };
 		72F2DC813FB74748995F89E0 /* Newsreader_60pt-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_60pt-MediumItalic.ttf"; path = "../src/assets/fonts/static/Newsreader_60pt-MediumItalic.ttf"; sourceTree = "<group>"; };
 		74E7A70F046943A5961F9843 /* Newsreader_14pt-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_14pt-MediumItalic.ttf"; path = "../src/assets/fonts/static/Newsreader_14pt-MediumItalic.ttf"; sourceTree = "<group>"; };
-		75FAAB3BAB45D58EAD2C5B87 /* libPods-GodMoments-GodMomentsTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GodMoments-GodMomentsTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		794E4F973F4244B494B59691 /* Montserrat-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-ExtraLightItalic.ttf"; path = "../src/assets/fonts/Montserrat-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		7E57BCD50D60472D9CF2A5B4 /* Newsreader_24pt-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_24pt-Bold.ttf"; path = "../src/assets/fonts/static/Newsreader_24pt-Bold.ttf"; sourceTree = "<group>"; };
 		80CAD3C9EFB7460ABFB8A2C3 /* Newsreader_14pt-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_14pt-Light.ttf"; path = "../src/assets/fonts/static/Newsreader_14pt-Light.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = GodMoments/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		865CB3146E52472DB9B4D710 /* Newsreader_14pt-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_14pt-Regular.ttf"; path = "../src/assets/fonts/static/Newsreader_14pt-Regular.ttf"; sourceTree = "<group>"; };
 		897FFD144B6D4FE588940D36 /* Montserrat-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Medium.ttf"; path = "../src/assets/fonts/Montserrat-Medium.ttf"; sourceTree = "<group>"; };
-		8A2256013E1C66480CF959C1 /* Pods-GodMoments.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GodMoments.debug.xcconfig"; path = "Target Support Files/Pods-GodMoments/Pods-GodMoments.debug.xcconfig"; sourceTree = "<group>"; };
 		8B347376B2AC4FDD8E3468B7 /* Newsreader_36pt-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_36pt-ExtraLight.ttf"; path = "../src/assets/fonts/static/Newsreader_36pt-ExtraLight.ttf"; sourceTree = "<group>"; };
 		8B6E5D766BE44AACA9C34F57 /* Newsreader_24pt-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_24pt-MediumItalic.ttf"; path = "../src/assets/fonts/static/Newsreader_24pt-MediumItalic.ttf"; sourceTree = "<group>"; };
 		8CEBBD3679F64AF086690106 /* Newsreader_9pt-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_9pt-ExtraLightItalic.ttf"; path = "../src/assets/fonts/static/Newsreader_9pt-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		8F89D248AC8846F8A749CFE7 /* Newsreader_60pt-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_60pt-ExtraBold.ttf"; path = "../src/assets/fonts/static/Newsreader_60pt-ExtraBold.ttf"; sourceTree = "<group>"; };
 		916EBACA814C463392B7039A /* Newsreader_60pt-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_60pt-ExtraBoldItalic.ttf"; path = "../src/assets/fonts/static/Newsreader_60pt-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
 		98E767ACF368400BBDD90D83 /* Newsreader_14pt-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_14pt-BoldItalic.ttf"; path = "../src/assets/fonts/static/Newsreader_14pt-BoldItalic.ttf"; sourceTree = "<group>"; };
+		9BA07CDD8AB77CCC5240CFFB /* Pods-GodMoments-GodMomentsTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GodMoments-GodMomentsTests.debug.xcconfig"; path = "Target Support Files/Pods-GodMoments-GodMomentsTests/Pods-GodMoments-GodMomentsTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9DE3012E8CCA484CB1C11E93 /* Newsreader_24pt-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_24pt-ExtraLight.ttf"; path = "../src/assets/fonts/static/Newsreader_24pt-ExtraLight.ttf"; sourceTree = "<group>"; };
+		9EAD7454E8D57E649853475E /* Pods-GodMoments-GodMomentsTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GodMoments-GodMomentsTests.release.xcconfig"; path = "Target Support Files/Pods-GodMoments-GodMomentsTests/Pods-GodMoments-GodMomentsTests.release.xcconfig"; sourceTree = "<group>"; };
 		9FAB480814DA4B0BAAFA0422 /* Newsreader_9pt-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_9pt-Bold.ttf"; path = "../src/assets/fonts/static/Newsreader_9pt-Bold.ttf"; sourceTree = "<group>"; };
 		A08F816ADAF44E639F976346 /* Newsreader_60pt-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_60pt-Medium.ttf"; path = "../src/assets/fonts/static/Newsreader_60pt-Medium.ttf"; sourceTree = "<group>"; };
 		A27348E11B7746839F0A9F22 /* Newsreader_36pt-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_36pt-SemiBoldItalic.ttf"; path = "../src/assets/fonts/static/Newsreader_36pt-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
@@ -217,6 +215,8 @@
 		CF6776A906F14AE888AF719C /* Newsreader_9pt-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_9pt-BoldItalic.ttf"; path = "../src/assets/fonts/static/Newsreader_9pt-BoldItalic.ttf"; sourceTree = "<group>"; };
 		D5B545101F384171BA20C846 /* Newsreader_60pt-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_60pt-Regular.ttf"; path = "../src/assets/fonts/static/Newsreader_60pt-Regular.ttf"; sourceTree = "<group>"; };
 		D7D5B070375342A98164B231 /* Newsreader_14pt-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_14pt-Italic.ttf"; path = "../src/assets/fonts/static/Newsreader_14pt-Italic.ttf"; sourceTree = "<group>"; };
+		D913906FED77A4F96DE05AC0 /* Pods-GodMoments.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GodMoments.debug.xcconfig"; path = "Target Support Files/Pods-GodMoments/Pods-GodMoments.debug.xcconfig"; sourceTree = "<group>"; };
+		DA6A4928106536E422A93D58 /* Pods-GodMoments.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GodMoments.release.xcconfig"; path = "Target Support Files/Pods-GodMoments/Pods-GodMoments.release.xcconfig"; sourceTree = "<group>"; };
 		DB9A7FCD09A1496DA402D5AE /* Newsreader_24pt-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_24pt-SemiBold.ttf"; path = "../src/assets/fonts/static/Newsreader_24pt-SemiBold.ttf"; sourceTree = "<group>"; };
 		E3418CBF240E44F2BD4B96AF /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Regular.ttf"; path = "../src/assets/fonts/Montserrat-Regular.ttf"; sourceTree = "<group>"; };
 		E52B24A16CA24FF39A0127C8 /* Newsreader_14pt-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Newsreader_14pt-ExtraBoldItalic.ttf"; path = "../src/assets/fonts/static/Newsreader_14pt-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
@@ -240,7 +240,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5E8BB3E3FAE478E4BEC3B64B /* libPods-GodMoments-GodMomentsTests.a in Frameworks */,
+				D40BDD4364A17EB0653AF8FD /* libPods-GodMoments-GodMomentsTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,7 +248,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2868280DC4DBCF294EF110ED /* libPods-GodMoments.a in Frameworks */,
+				AE2B2CDD4D66004EAEA7A81B /* libPods-GodMoments.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,8 +292,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				67332B61FAF6E114B6CAFEDE /* libPods-GodMoments.a */,
-				75FAAB3BAB45D58EAD2C5B87 /* libPods-GodMoments-GodMomentsTests.a */,
+				59C5BEFBCEB69A6BC3FBE2DE /* libPods-GodMoments.a */,
+				4673E8D5080832A6DAE66505 /* libPods-GodMoments-GodMomentsTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -432,10 +432,10 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				8A2256013E1C66480CF959C1 /* Pods-GodMoments.debug.xcconfig */,
-				49F53B23D5911040F0071AC4 /* Pods-GodMoments.release.xcconfig */,
-				1475BED93CF936FFE83D486F /* Pods-GodMoments-GodMomentsTests.debug.xcconfig */,
-				42B028ED1C82CCC2417727BE /* Pods-GodMoments-GodMomentsTests.release.xcconfig */,
+				D913906FED77A4F96DE05AC0 /* Pods-GodMoments.debug.xcconfig */,
+				DA6A4928106536E422A93D58 /* Pods-GodMoments.release.xcconfig */,
+				9BA07CDD8AB77CCC5240CFFB /* Pods-GodMoments-GodMomentsTests.debug.xcconfig */,
+				9EAD7454E8D57E649853475E /* Pods-GodMoments-GodMomentsTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -447,12 +447,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "GodMomentsTests" */;
 			buildPhases = (
-				4C81C33017C87F0055516889 /* [CP] Check Pods Manifest.lock */,
+				50BBE346EB0954F4C54101FD /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				6CA31CA84C2BA01C14B0F5AD /* [CP] Embed Pods Frameworks */,
-				6BE91441F84A787304392361 /* [CP] Copy Pods Resources */,
+				2E0732DE1E15871E9DB8228A /* [CP] Embed Pods Frameworks */,
+				CAE2CC4C64B27B63AB3B4524 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -468,15 +468,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "GodMoments" */;
 			buildPhases = (
-				9C08418C6BA97EF2E81BC2D6 /* [CP] Check Pods Manifest.lock */,
+				B68B6B86C31D0C51DCF2DC4E /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				726138116DB549BAB2E367BE /* Generate Hermes dSYM */,
-				5473E2AFE3ADD18FE5C00688 /* [CP] Embed Pods Frameworks */,
-				E79A92229230264E0BBF8C60 /* [CP] Copy Pods Resources */,
-				D85308BB71A1002E309F24FB /* [CP-User] [RNFB] Core Configuration */,
+				7A0F9EFFA404CAFB1C7628C2 /* [CP] Embed Pods Frameworks */,
+				402EB00A2706341F456B3120 /* [CP] Copy Pods Resources */,
+				1D17E8FE4834040D9B1784D2 /* [CP-User] [RNFB] Core Configuration */,
 			);
 			buildRules = (
 			);
@@ -653,7 +653,54 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		4C81C33017C87F0055516889 /* [CP] Check Pods Manifest.lock */ = {
+		1D17E8FE4834040D9B1784D2 /* [CP-User] [RNFB] Core Configuration */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "[CP-User] [RNFB] Core Configuration";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\n\n##########################################################################\n##########################################################################\n#\n#  NOTE THAT IF YOU CHANGE THIS FILE YOU MUST RUN pod install AFTERWARDS\n#\n#  This file is installed as an Xcode build script in the project file\n#  by cocoapods, and you will not see your changes until you pod install\n#\n##########################################################################\n##########################################################################\n\nset -e\n\n_MAX_LOOKUPS=2;\n_SEARCH_RESULT=''\n_RN_ROOT_EXISTS=''\n_CURRENT_LOOKUPS=1\n_JSON_ROOT=\"'react-native'\"\n_JSON_FILE_NAME='firebase.json'\n_JSON_OUTPUT_BASE64='e30=' # { }\n_CURRENT_SEARCH_DIR=${PROJECT_DIR}\n_PLIST_BUDDY=/usr/libexec/PlistBuddy\n_TARGET_PLIST=\"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n_DSYM_PLIST=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist\"\n\n# plist arrays\n_PLIST_ENTRY_KEYS=()\n_PLIST_ENTRY_TYPES=()\n_PLIST_ENTRY_VALUES=()\n\nfunction setPlistValue {\n  echo \"info:      setting plist entry '$1' of type '$2' in file '$4'\"\n  ${_PLIST_BUDDY} -c \"Add :$1 $2 '$3'\" $4 || echo \"info:      '$1' already exists\"\n}\n\nfunction getFirebaseJsonKeyValue () {\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    ruby -Ku -e \"require 'rubygems';require 'json'; output=JSON.parse('$1'); puts output[$_JSON_ROOT]['$2']\"\n  else\n    echo \"\"\n  fi;\n}\n\nfunction jsonBoolToYesNo () {\n  if [[ $1 == \"false\" ]]; then\n    echo \"NO\"\n  elif [[ $1 == \"true\" ]]; then\n    echo \"YES\"\n  else echo \"NO\"\n  fi\n}\n\necho \"info: -> RNFB build script started\"\necho \"info: 1) Locating ${_JSON_FILE_NAME} file:\"\n\nif [[ -z ${_CURRENT_SEARCH_DIR} ]]; then\n  _CURRENT_SEARCH_DIR=$(pwd)\nfi;\n\nwhile true; do\n  _CURRENT_SEARCH_DIR=$(dirname \"$_CURRENT_SEARCH_DIR\")\n  if [[ \"$_CURRENT_SEARCH_DIR\" == \"/\" ]] || [[ ${_CURRENT_LOOKUPS} -gt ${_MAX_LOOKUPS} ]]; then break; fi;\n  echo \"info:      ($_CURRENT_LOOKUPS of $_MAX_LOOKUPS) Searching in '$_CURRENT_SEARCH_DIR' for a ${_JSON_FILE_NAME} file.\"\n  _SEARCH_RESULT=$(find \"$_CURRENT_SEARCH_DIR\" -maxdepth 2 -name ${_JSON_FILE_NAME} -print | /usr/bin/head -n 1)\n  if [[ ${_SEARCH_RESULT} ]]; then\n    echo \"info:      ${_JSON_FILE_NAME} found at $_SEARCH_RESULT\"\n    break;\n  fi;\n  _CURRENT_LOOKUPS=$((_CURRENT_LOOKUPS+1))\ndone\n\nif [[ ${_SEARCH_RESULT} ]]; then\n  _JSON_OUTPUT_RAW=$(cat \"${_SEARCH_RESULT}\")\n  _RN_ROOT_EXISTS=$(ruby -Ku -e \"require 'rubygems';require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]\" || echo '')\n\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    if ! python3 --version >/dev/null 2>&1; then echo \"python3 not found, firebase.json file processing error.\" && exit 1; fi\n    _JSON_OUTPUT_BASE64=$(python3 -c 'import json,sys,base64;print(base64.b64encode(bytes(json.dumps(json.loads(open('\"'${_SEARCH_RESULT}'\"', '\"'rb'\"').read())['${_JSON_ROOT}']), '\"'utf-8'\"')).decode())' || echo \"e30=\")\n  fi\n\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n\n  # config.app_data_collection_default_enabled\n  _APP_DATA_COLLECTION_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_data_collection_default_enabled\")\n  if [[ $_APP_DATA_COLLECTION_ENABLED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseDataCollectionDefaultEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_DATA_COLLECTION_ENABLED\")\")\n  fi\n\n  # config.analytics_auto_collection_enabled\n  _ANALYTICS_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_auto_collection_enabled\")\n  if [[ $_ANALYTICS_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_COLLECTION\")\")\n  fi\n\n  # config.analytics_collection_deactivated\n  _ANALYTICS_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_collection_deactivated\")\n  if [[ $_ANALYTICS_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_DEACTIVATED\")\")\n  fi\n\n  # config.analytics_idfv_collection_enabled\n  _ANALYTICS_IDFV_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_idfv_collection_enabled\")\n  if [[ $_ANALYTICS_IDFV_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_IDFV_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_IDFV_COLLECTION\")\")\n  fi\n\n  # config.analytics_default_allow_analytics_storage\n  _ANALYTICS_STORAGE=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_analytics_storage\")\n  if [[ $_ANALYTICS_STORAGE ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_ANALYTICS_STORAGE\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_STORAGE\")\")\n  fi\n\n  # config.analytics_default_allow_ad_storage\n  _ANALYTICS_AD_STORAGE=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_storage\")\n  if [[ $_ANALYTICS_AD_STORAGE ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_STORAGE\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AD_STORAGE\")\")\n  fi\n\n  # config.analytics_default_allow_ad_user_data\n  _ANALYTICS_AD_USER_DATA=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_user_data\")\n  if [[ $_ANALYTICS_AD_USER_DATA ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_USER_DATA\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AD_USER_DATA\")\")\n  fi\n\n  # config.analytics_default_allow_ad_personalization_signals\n  _ANALYTICS_PERSONALIZATION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_personalization_signals\")\n  if [[ $_ANALYTICS_PERSONALIZATION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_PERSONALIZATION\")\")\n  fi\n\n  # config.analytics_registration_with_ad_network_enabled\n  _ANALYTICS_REGISTRATION_WITH_AD_NETWORK=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"google_analytics_registration_with_ad_network_enabled\")\n  if [[ $_ANALYTICS_REGISTRATION_WITH_AD_NETWORK ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_REGISTRATION_WITH_AD_NETWORK_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_REGISTRATION_WITH_AD_NETWORK\")\")\n  fi\n\n  # config.google_analytics_automatic_screen_reporting_enabled\n  _ANALYTICS_AUTO_SCREEN_REPORTING=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"google_analytics_automatic_screen_reporting_enabled\")\n  if [[ $_ANALYTICS_AUTO_SCREEN_REPORTING ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAutomaticScreenReportingEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_SCREEN_REPORTING\")\")\n  fi\n\n  # config.perf_auto_collection_enabled\n  _PERF_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_auto_collection_enabled\")\n  if [[ $_PERF_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_enabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_AUTO_COLLECTION\")\")\n  fi\n\n  # config.perf_collection_deactivated\n  _PERF_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_collection_deactivated\")\n  if [[ $_PERF_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_deactivated\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_DEACTIVATED\")\")\n  fi\n\n  # config.messaging_auto_init_enabled\n  _MESSAGING_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"messaging_auto_init_enabled\")\n  if [[ $_MESSAGING_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseMessagingAutoInitEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_MESSAGING_AUTO_INIT\")\")\n  fi\n\n  # config.in_app_messaging_auto_colllection_enabled\n  _FIAM_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"in_app_messaging_auto_collection_enabled\")\n  if [[ $_FIAM_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseInAppMessagingAutomaticDataCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_FIAM_AUTO_INIT\")\")\n  fi\n\n  # config.app_check_token_auto_refresh\n  _APP_CHECK_TOKEN_AUTO_REFRESH=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_check_token_auto_refresh\")\n  if [[ $_APP_CHECK_TOKEN_AUTO_REFRESH ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAppCheckTokenAutoRefreshEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_CHECK_TOKEN_AUTO_REFRESH\")\")\n  fi\n\n  # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes useful\n  _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"crashlytics_disable_auto_disabler\")\n  if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == \"true\" ]]; then\n    echo \"Disabled Crashlytics auto disabler.\" # do nothing\n  else\n    _PLIST_ENTRY_KEYS+=(\"FirebaseCrashlyticsCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"NO\")\n  fi\nelse\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n  echo \"warning:   A firebase.json file was not found, whilst this file is optional it is recommended to include it to configure firebase services in React Native Firebase.\"\nfi;\n\necho \"info: 2) Injecting Info.plist entries: \"\n\n# Log out the keys we're adding\nfor i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n  echo \"    ->  $i) ${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\"\ndone\n\nfor plist in \"${_TARGET_PLIST}\" \"${_DSYM_PLIST}\" ; do\n  if [[ -f \"${plist}\" ]]; then\n\n    # paths with spaces break the call to setPlistValue. temporarily modify\n    # the shell internal field separator variable (IFS), which normally\n    # includes spaces, to consist only of line breaks\n    oldifs=$IFS\n    IFS=\"\n\"\n\n    for i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n      setPlistValue \"${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\" \"${plist}\"\n    done\n\n    # restore the original internal field separator value\n    IFS=$oldifs\n  else\n    echo \"warning:   A Info.plist build output file was not found (${plist})\"\n  fi\ndone\n\necho \"info: <- RNFB build script finished\"\n";
+		};
+		2E0732DE1E15871E9DB8228A /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-GodMoments-GodMomentsTests/Pods-GodMoments-GodMomentsTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-GodMoments-GodMomentsTests/Pods-GodMoments-GodMomentsTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GodMoments-GodMomentsTests/Pods-GodMoments-GodMomentsTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		402EB00A2706341F456B3120 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-GodMoments/Pods-GodMoments-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-GodMoments/Pods-GodMoments-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GodMoments/Pods-GodMoments-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		50BBE346EB0954F4C54101FD /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -675,7 +722,19 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		5473E2AFE3ADD18FE5C00688 /* [CP] Embed Pods Frameworks */ = {
+		726138116DB549BAB2E367BE /* Generate Hermes dSYM */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			name = "Generate Hermes dSYM";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n\n# Only generate dSYM for Release builds\nif [ \"${CONFIGURATION}\" != \"Release\" ]; then\n  echo \"Skipping Hermes dSYM generation for ${CONFIGURATION} build\"\n  exit 0\nfi\n\necho \"Generating Hermes dSYM for ${CONFIGURATION} build...\"\n\n# Path to the Hermes framework\nHERMES_FRAMEWORK_PATH=\"${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework\"\necho \"Looking for Hermes framework at: ${HERMES_FRAMEWORK_PATH}\"\n\nif [ ! -d \"${HERMES_FRAMEWORK_PATH}\" ]; then\n  echo \"Hermes framework not found at expected path, checking Pods...\"\n  HERMES_FRAMEWORK_PATH=\"${BUILT_PRODUCTS_DIR}/hermes-engine/destroot/Library/Frameworks/hermes.framework\"\nfi\n\nif [ ! -d \"${HERMES_FRAMEWORK_PATH}\" ]; then\n  echo \"Hermes framework not found in any expected location, searching...\"\n  HERMES_FRAMEWORK_PATH=$(find \"${BUILT_PRODUCTS_DIR}\" -name \"hermes.framework\" -type d 2>/dev/null | head -1)\nfi\n\nif [ ! -d \"${HERMES_FRAMEWORK_PATH}\" ]; then\n  echo \"Warning: Hermes framework not found, cannot generate dSYM\"\n  exit 0\nfi\n\necho \"Found Hermes framework at: ${HERMES_FRAMEWORK_PATH}\"\n\n# Get the Hermes binary path\nHERMES_BINARY=\"${HERMES_FRAMEWORK_PATH}/hermes\"\nif [ ! -f \"${HERMES_BINARY}\" ]; then\n  echo \"Warning: Hermes binary not found at ${HERMES_BINARY}\"\n  exit 0\nfi\n\n# Create dSYM output directory\nDSYM_OUTPUT_DIR=\"${DWARF_DSYM_FOLDER_PATH}\"\nmkdir -p \"${DSYM_OUTPUT_DIR}\"\n\n# Generate dSYM for Hermes\nHERMES_DSYM_PATH=\"${DSYM_OUTPUT_DIR}/hermes.framework.dSYM\"\necho \"Generating dSYM at: ${HERMES_DSYM_PATH}\"\n\n# Use dsymutil to generate the dSYM\nif command -v dsymutil >/dev/null 2>&1; then\n  dsymutil \"${HERMES_BINARY}\" -o \"${HERMES_DSYM_PATH}\"\n  \n  if [ -d \"${HERMES_DSYM_PATH}\" ]; then\n    echo \"Successfully generated Hermes dSYM\"\n    \n    # Verify the dSYM contains the expected UUID\n    if command -v dwarfdump >/dev/null 2>&1; then\n      echo \"dSYM UUID information:\"\n      dwarfdump --uuid \"${HERMES_DSYM_PATH}\"\n    fi\n  else\n    echo \"Failed to generate Hermes dSYM\"\n  fi\nelse\n  echo \"dsymutil not found, cannot generate Hermes dSYM\"\nfi\n";
+		};
+		7A0F9EFFA404CAFB1C7628C2 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -692,53 +751,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GodMoments/Pods-GodMoments-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		6BE91441F84A787304392361 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-GodMoments-GodMomentsTests/Pods-GodMoments-GodMomentsTests-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-GodMoments-GodMomentsTests/Pods-GodMoments-GodMomentsTests-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GodMoments-GodMomentsTests/Pods-GodMoments-GodMomentsTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		6CA31CA84C2BA01C14B0F5AD /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-GodMoments-GodMomentsTests/Pods-GodMoments-GodMomentsTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-GodMoments-GodMomentsTests/Pods-GodMoments-GodMomentsTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GodMoments-GodMomentsTests/Pods-GodMoments-GodMomentsTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		726138116DB549BAB2E367BE /* Generate Hermes dSYM */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			name = "Generate Hermes dSYM";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -e\n\n# Only generate dSYM for Release builds\nif [ \"${CONFIGURATION}\" != \"Release\" ]; then\n  echo \"Skipping Hermes dSYM generation for ${CONFIGURATION} build\"\n  exit 0\nfi\n\necho \"Generating Hermes dSYM for ${CONFIGURATION} build...\"\n\n# Path to the Hermes framework\nHERMES_FRAMEWORK_PATH=\"${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework\"\necho \"Looking for Hermes framework at: ${HERMES_FRAMEWORK_PATH}\"\n\nif [ ! -d \"${HERMES_FRAMEWORK_PATH}\" ]; then\n  echo \"Hermes framework not found at expected path, checking Pods...\"\n  HERMES_FRAMEWORK_PATH=\"${BUILT_PRODUCTS_DIR}/hermes-engine/destroot/Library/Frameworks/hermes.framework\"\nfi\n\nif [ ! -d \"${HERMES_FRAMEWORK_PATH}\" ]; then\n  echo \"Hermes framework not found in any expected location, searching...\"\n  HERMES_FRAMEWORK_PATH=$(find \"${BUILT_PRODUCTS_DIR}\" -name \"hermes.framework\" -type d 2>/dev/null | head -1)\nfi\n\nif [ ! -d \"${HERMES_FRAMEWORK_PATH}\" ]; then\n  echo \"Warning: Hermes framework not found, cannot generate dSYM\"\n  exit 0\nfi\n\necho \"Found Hermes framework at: ${HERMES_FRAMEWORK_PATH}\"\n\n# Get the Hermes binary path\nHERMES_BINARY=\"${HERMES_FRAMEWORK_PATH}/hermes\"\nif [ ! -f \"${HERMES_BINARY}\" ]; then\n  echo \"Warning: Hermes binary not found at ${HERMES_BINARY}\"\n  exit 0\nfi\n\n# Create dSYM output directory\nDSYM_OUTPUT_DIR=\"${DWARF_DSYM_FOLDER_PATH}\"\nmkdir -p \"${DSYM_OUTPUT_DIR}\"\n\n# Generate dSYM for Hermes\nHERMES_DSYM_PATH=\"${DSYM_OUTPUT_DIR}/hermes.framework.dSYM\"\necho \"Generating dSYM at: ${HERMES_DSYM_PATH}\"\n\n# Use dsymutil to generate the dSYM\nif command -v dsymutil >/dev/null 2>&1; then\n  dsymutil \"${HERMES_BINARY}\" -o \"${HERMES_DSYM_PATH}\"\n  \n  if [ -d \"${HERMES_DSYM_PATH}\" ]; then\n    echo \"Successfully generated Hermes dSYM\"\n    \n    # Verify the dSYM contains the expected UUID\n    if command -v dwarfdump >/dev/null 2>&1; then\n      echo \"dSYM UUID information:\"\n      dwarfdump --uuid \"${HERMES_DSYM_PATH}\"\n    fi\n  else\n    echo \"Failed to generate Hermes dSYM\"\n  fi\nelse\n  echo \"dsymutil not found, cannot generate Hermes dSYM\"\nfi\n";
-		};
-		9C08418C6BA97EF2E81BC2D6 /* [CP] Check Pods Manifest.lock */ = {
+		B68B6B86C31D0C51DCF2DC4E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -760,34 +773,21 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		D85308BB71A1002E309F24FB /* [CP-User] [RNFB] Core Configuration */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
-			);
-			name = "[CP-User] [RNFB] Core Configuration";
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\n\n##########################################################################\n##########################################################################\n#\n#  NOTE THAT IF YOU CHANGE THIS FILE YOU MUST RUN pod install AFTERWARDS\n#\n#  This file is installed as an Xcode build script in the project file\n#  by cocoapods, and you will not see your changes until you pod install\n#\n##########################################################################\n##########################################################################\n\nset -e\n\n_MAX_LOOKUPS=2;\n_SEARCH_RESULT=''\n_RN_ROOT_EXISTS=''\n_CURRENT_LOOKUPS=1\n_JSON_ROOT=\"'react-native'\"\n_JSON_FILE_NAME='firebase.json'\n_JSON_OUTPUT_BASE64='e30=' # { }\n_CURRENT_SEARCH_DIR=${PROJECT_DIR}\n_PLIST_BUDDY=/usr/libexec/PlistBuddy\n_TARGET_PLIST=\"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n_DSYM_PLIST=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist\"\n\n# plist arrays\n_PLIST_ENTRY_KEYS=()\n_PLIST_ENTRY_TYPES=()\n_PLIST_ENTRY_VALUES=()\n\nfunction setPlistValue {\n  echo \"info:      setting plist entry '$1' of type '$2' in file '$4'\"\n  ${_PLIST_BUDDY} -c \"Add :$1 $2 '$3'\" $4 || echo \"info:      '$1' already exists\"\n}\n\nfunction getFirebaseJsonKeyValue () {\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    ruby -Ku -e \"require 'rubygems';require 'json'; output=JSON.parse('$1'); puts output[$_JSON_ROOT]['$2']\"\n  else\n    echo \"\"\n  fi;\n}\n\nfunction jsonBoolToYesNo () {\n  if [[ $1 == \"false\" ]]; then\n    echo \"NO\"\n  elif [[ $1 == \"true\" ]]; then\n    echo \"YES\"\n  else echo \"NO\"\n  fi\n}\n\necho \"info: -> RNFB build script started\"\necho \"info: 1) Locating ${_JSON_FILE_NAME} file:\"\n\nif [[ -z ${_CURRENT_SEARCH_DIR} ]]; then\n  _CURRENT_SEARCH_DIR=$(pwd)\nfi;\n\nwhile true; do\n  _CURRENT_SEARCH_DIR=$(dirname \"$_CURRENT_SEARCH_DIR\")\n  if [[ \"$_CURRENT_SEARCH_DIR\" == \"/\" ]] || [[ ${_CURRENT_LOOKUPS} -gt ${_MAX_LOOKUPS} ]]; then break; fi;\n  echo \"info:      ($_CURRENT_LOOKUPS of $_MAX_LOOKUPS) Searching in '$_CURRENT_SEARCH_DIR' for a ${_JSON_FILE_NAME} file.\"\n  _SEARCH_RESULT=$(find \"$_CURRENT_SEARCH_DIR\" -maxdepth 2 -name ${_JSON_FILE_NAME} -print | /usr/bin/head -n 1)\n  if [[ ${_SEARCH_RESULT} ]]; then\n    echo \"info:      ${_JSON_FILE_NAME} found at $_SEARCH_RESULT\"\n    break;\n  fi;\n  _CURRENT_LOOKUPS=$((_CURRENT_LOOKUPS+1))\ndone\n\nif [[ ${_SEARCH_RESULT} ]]; then\n  _JSON_OUTPUT_RAW=$(cat \"${_SEARCH_RESULT}\")\n  _RN_ROOT_EXISTS=$(ruby -Ku -e \"require 'rubygems';require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]\" || echo '')\n\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    if ! python3 --version >/dev/null 2>&1; then echo \"python3 not found, firebase.json file processing error.\" && exit 1; fi\n    _JSON_OUTPUT_BASE64=$(python3 -c 'import json,sys,base64;print(base64.b64encode(bytes(json.dumps(json.loads(open('\"'${_SEARCH_RESULT}'\"', '\"'rb'\"').read())['${_JSON_ROOT}']), '\"'utf-8'\"')).decode())' || echo \"e30=\")\n  fi\n\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n\n  # config.app_data_collection_default_enabled\n  _APP_DATA_COLLECTION_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_data_collection_default_enabled\")\n  if [[ $_APP_DATA_COLLECTION_ENABLED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseDataCollectionDefaultEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_DATA_COLLECTION_ENABLED\")\")\n  fi\n\n  # config.analytics_auto_collection_enabled\n  _ANALYTICS_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_auto_collection_enabled\")\n  if [[ $_ANALYTICS_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_COLLECTION\")\")\n  fi\n\n  # config.analytics_collection_deactivated\n  _ANALYTICS_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_collection_deactivated\")\n  if [[ $_ANALYTICS_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_DEACTIVATED\")\")\n  fi\n\n  # config.analytics_idfv_collection_enabled\n  _ANALYTICS_IDFV_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_idfv_collection_enabled\")\n  if [[ $_ANALYTICS_IDFV_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_IDFV_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_IDFV_COLLECTION\")\")\n  fi\n\n  # config.analytics_default_allow_analytics_storage\n  _ANALYTICS_STORAGE=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_analytics_storage\")\n  if [[ $_ANALYTICS_STORAGE ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_ANALYTICS_STORAGE\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_STORAGE\")\")\n  fi\n\n  # config.analytics_default_allow_ad_storage\n  _ANALYTICS_AD_STORAGE=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_storage\")\n  if [[ $_ANALYTICS_AD_STORAGE ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_STORAGE\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AD_STORAGE\")\")\n  fi\n\n  # config.analytics_default_allow_ad_user_data\n  _ANALYTICS_AD_USER_DATA=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_user_data\")\n  if [[ $_ANALYTICS_AD_USER_DATA ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_USER_DATA\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AD_USER_DATA\")\")\n  fi\n\n  # config.analytics_default_allow_ad_personalization_signals\n  _ANALYTICS_PERSONALIZATION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_personalization_signals\")\n  if [[ $_ANALYTICS_PERSONALIZATION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_PERSONALIZATION\")\")\n  fi\n\n  # config.analytics_registration_with_ad_network_enabled\n  _ANALYTICS_REGISTRATION_WITH_AD_NETWORK=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"google_analytics_registration_with_ad_network_enabled\")\n  if [[ $_ANALYTICS_REGISTRATION_WITH_AD_NETWORK ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_REGISTRATION_WITH_AD_NETWORK_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_REGISTRATION_WITH_AD_NETWORK\")\")\n  fi\n\n  # config.google_analytics_automatic_screen_reporting_enabled\n  _ANALYTICS_AUTO_SCREEN_REPORTING=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"google_analytics_automatic_screen_reporting_enabled\")\n  if [[ $_ANALYTICS_AUTO_SCREEN_REPORTING ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAutomaticScreenReportingEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_SCREEN_REPORTING\")\")\n  fi\n\n  # config.perf_auto_collection_enabled\n  _PERF_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_auto_collection_enabled\")\n  if [[ $_PERF_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_enabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_AUTO_COLLECTION\")\")\n  fi\n\n  # config.perf_collection_deactivated\n  _PERF_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_collection_deactivated\")\n  if [[ $_PERF_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_deactivated\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_DEACTIVATED\")\")\n  fi\n\n  # config.messaging_auto_init_enabled\n  _MESSAGING_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"messaging_auto_init_enabled\")\n  if [[ $_MESSAGING_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseMessagingAutoInitEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_MESSAGING_AUTO_INIT\")\")\n  fi\n\n  # config.in_app_messaging_auto_colllection_enabled\n  _FIAM_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"in_app_messaging_auto_collection_enabled\")\n  if [[ $_FIAM_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseInAppMessagingAutomaticDataCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_FIAM_AUTO_INIT\")\")\n  fi\n\n  # config.app_check_token_auto_refresh\n  _APP_CHECK_TOKEN_AUTO_REFRESH=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_check_token_auto_refresh\")\n  if [[ $_APP_CHECK_TOKEN_AUTO_REFRESH ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAppCheckTokenAutoRefreshEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_CHECK_TOKEN_AUTO_REFRESH\")\")\n  fi\n\n  # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes useful\n  _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"crashlytics_disable_auto_disabler\")\n  if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == \"true\" ]]; then\n    echo \"Disabled Crashlytics auto disabler.\" # do nothing\n  else\n    _PLIST_ENTRY_KEYS+=(\"FirebaseCrashlyticsCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"NO\")\n  fi\nelse\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n  echo \"warning:   A firebase.json file was not found, whilst this file is optional it is recommended to include it to configure firebase services in React Native Firebase.\"\nfi;\n\necho \"info: 2) Injecting Info.plist entries: \"\n\n# Log out the keys we're adding\nfor i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n  echo \"    ->  $i) ${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\"\ndone\n\nfor plist in \"${_TARGET_PLIST}\" \"${_DSYM_PLIST}\" ; do\n  if [[ -f \"${plist}\" ]]; then\n\n    # paths with spaces break the call to setPlistValue. temporarily modify\n    # the shell internal field separator variable (IFS), which normally\n    # includes spaces, to consist only of line breaks\n    oldifs=$IFS\n    IFS=\"\n\"\n\n    for i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n      setPlistValue \"${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\" \"${plist}\"\n    done\n\n    # restore the original internal field separator value\n    IFS=$oldifs\n  else\n    echo \"warning:   A Info.plist build output file was not found (${plist})\"\n  fi\ndone\n\necho \"info: <- RNFB build script finished\"\n";
-		};
-		E79A92229230264E0BBF8C60 /* [CP] Copy Pods Resources */ = {
+		CAE2CC4C64B27B63AB3B4524 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-GodMoments/Pods-GodMoments-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-GodMoments-GodMomentsTests/Pods-GodMoments-GodMomentsTests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-GodMoments/Pods-GodMoments-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-GodMoments-GodMomentsTests/Pods-GodMoments-GodMomentsTests-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GodMoments/Pods-GodMoments-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GodMoments-GodMomentsTests/Pods-GodMoments-GodMomentsTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -823,7 +823,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1475BED93CF936FFE83D486F /* Pods-GodMoments-GodMomentsTests.debug.xcconfig */;
+			baseConfigurationReference = 9BA07CDD8AB77CCC5240CFFB /* Pods-GodMoments-GodMomentsTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -842,7 +842,7 @@
 					"-lc++",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.bluestoneapps.godmomentsdevapp;
+				PRODUCT_BUNDLE_IDENTIFIER = hr.apps.219596;
 				PRODUCT_NAME = GodMoments;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LAReactNative.app/LAReactNative";
 			};
@@ -850,7 +850,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 42B028ED1C82CCC2417727BE /* Pods-GodMoments-GodMomentsTests.release.xcconfig */;
+			baseConfigurationReference = 9EAD7454E8D57E649853475E /* Pods-GodMoments-GodMomentsTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -866,7 +866,7 @@
 					"-lc++",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.bluestoneapps.godmomentsdevapp;
+				PRODUCT_BUNDLE_IDENTIFIER = hr.apps.219596;
 				PRODUCT_NAME = GodMoments;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LAReactNative.app/LAReactNative";
 			};
@@ -874,16 +874,18 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8A2256013E1C66480CF959C1 /* Pods-GodMoments.debug.xcconfig */;
+			baseConfigurationReference = D913906FED77A4F96DE05AC0 /* Pods-GodMoments.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = GodMoments/GodMoments.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = YQGQU3RV34;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = M48JDU7AWV;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = GodMoments/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "God Moments";
@@ -892,15 +894,16 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 6.0.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.bluestoneapps.godmomentsdevapp;
+				PRODUCT_BUNDLE_IDENTIFIER = hr.apps.219596;
 				PRODUCT_NAME = GodMoments;
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "God Moments App Store 2025";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -910,17 +913,19 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 49F53B23D5911040F0071AC4 /* Pods-GodMoments.release.xcconfig */;
+			baseConfigurationReference = DA6A4928106536E422A93D58 /* Pods-GodMoments.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = GodMoments/GodMoments.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = YQGQU3RV34;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = M48JDU7AWV;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = GodMoments/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "God Moments";
@@ -929,15 +934,16 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 6.0.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.bluestoneapps.godmomentsdevapp;
+				PRODUCT_BUNDLE_IDENTIFIER = hr.apps.219596;
 				PRODUCT_NAME = GodMoments;
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "God Moments App Store 2025";
 				STRIP_INSTALLED_PRODUCT = NO;
 				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_VERSION = 5.0;
@@ -995,6 +1001,17 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
@@ -1069,6 +1086,17 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,

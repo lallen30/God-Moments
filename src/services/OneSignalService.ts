@@ -89,6 +89,7 @@ export class OneSignalService {
 
   /**
    * Get or create a persistent device UUID for OneSignal login
+   * IMPORTANT: Always generates a NEW UUID to avoid conflicts with deleted OneSignal subscriptions
    */
   private async getOrCreateDeviceUuid(): Promise<string> {
     if (this.deviceUuid) {
@@ -96,16 +97,8 @@ export class OneSignalService {
     }
 
     try {
-      // Try to get existing UUID from storage
-      const storedUuid = await AsyncStorage.getItem('onesignal_device_uuid');
-      
-      if (storedUuid) {
-        console.log('🆔 [OneSignal] Using existing device UUID:', storedUuid);
-        this.deviceUuid = storedUuid;
-        return storedUuid;
-      }
-
-      // Generate new UUID if none exists
+      // ALWAYS generate a NEW UUID on each app initialization
+      // This prevents conflicts when user uninstalls, deletes OneSignal subscription, and reinstalls
       const newUuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         const r = Math.random() * 16 | 0;
         const v = c === 'x' ? r : (r & 0x3 | 0x8);
@@ -116,7 +109,8 @@ export class OneSignalService {
       await AsyncStorage.setItem('onesignal_device_uuid', newUuid);
       this.deviceUuid = newUuid;
       
-      console.log('🆔 [OneSignal] Generated new device UUID:', newUuid);
+      console.log('🆔 [OneSignal] Generated fresh device UUID:', newUuid);
+      await this.recordDebugEvent('deviceUuid:generated', { newUuid });
       return newUuid;
 
     } catch (error) {
@@ -213,10 +207,10 @@ export class OneSignalService {
       const appId = '2613c87d-4f81-4094-bd84-08495e68bda0';
       
       console.log('🚀 [OneSignal] Starting initialization with App ID:', appId);
-      console.log('📱 [OneSignal] Expected Bundle ID: com.bluestoneapps.godmomentsdevapp');
+      console.log('📱 [OneSignal] Expected Bundle ID: hr.apps.219596');
       await this.recordDebugEvent('initialize:start', {
         appId,
-        expectedBundleId: 'com.bluestoneapps.godmomentsdevapp'
+        expectedBundleId: 'hr.apps.219596'
       });
       OneSignal.Debug.setLogLevel(OneSignalModule.LogLevel.Verbose);
       OneSignal.initialize(appId);
