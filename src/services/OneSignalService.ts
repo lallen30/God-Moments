@@ -18,6 +18,10 @@ export class OneSignalService {
   private static instance: OneSignalService;
   private isInitialized = false;
   private deviceUuid: string | null = null;
+  private appStateSubscription: any = null;
+  private subscriptionCheckInterval: any = null;
+  private retryAttempts = 0;
+  private maxRetryAttempts = 5;
 
   private constructor() {
     // Private constructor to enforce singleton pattern
@@ -260,6 +264,12 @@ export class OneSignalService {
           OneSignal.User.pushSubscription.optIn();
           console.log('✅ [OneSignal] Push subscription opted in');
           await this.recordDebugEvent('pushSubscription:optIn-called', {});
+          
+          // IMPORTANT: Wait for APNS token registration (critical for iPhone 17 Pro / iOS 26)
+          // Some devices need 2-3 seconds to receive APNS token from Apple servers
+          console.log('⏳ [OneSignal] Waiting for APNS token registration (3 seconds)...');
+          await new Promise(resolve => setTimeout(resolve, 3000));
+          console.log('✅ [OneSignal] APNS wait period complete');
         }
       } catch (subscriptionError) {
         console.error('❌ [OneSignal] Push subscription error:', subscriptionError);
@@ -315,15 +325,18 @@ export class OneSignalService {
       // Start monitoring for user registration
       this.startUserIdMonitoring();
       
+      // CRITICAL: Check subscription status on first launch (not just on app resume)
+      // The app state listener only triggers on state CHANGES, so we need to check manually
+      // This runs at 5 seconds (3s APNS wait + 2s buffer) and will retry if needed
+      setTimeout(async () => {
+        console.log('🔍 [OneSignal] Performing first-launch subscription check...');
+        await this.checkAndRetrySubscription();
+      }, 5000);
+      
       // Delayed user registration attempt if natural registration fails
       setTimeout(async () => {
         await this.attemptDelayedUserRegistration();
-      }, 5000);
-      
-      // Force refresh subscription after APNS config change
-      setTimeout(async () => {
-        await this.forceRefreshSubscription();
-      }, 7000);
+      }, 6000);
       
       setTimeout(() => {
         this.logUserState();
@@ -620,18 +633,184 @@ export class OneSignalService {
     try {
       console.log('📱 Setting up app state listeners for notification handling...');
       
-      AppState.addEventListener('change', (nextAppState) => {
+      // Remove existing listener if any
+      if (this.appStateSubscription) {
+        this.appStateSubscription.remove();
+      }
+      
+      this.appStateSubscription = AppState.addEventListener('change', async (nextAppState) => {
         console.log('📱 App state changed to:', nextAppState);
         
         if (nextAppState === 'active') {
-          console.log('📱 App became active - checking for pending notifications...');
-          // App became active, possibly from notification click
-          // Additional logic can be added here if needed
+          console.log('📱 App became active - checking subscription status...');
+          await this.recordDebugEvent('appState:active', {});
+          
+          // Check if we have a valid subscription
+          await this.checkAndRetrySubscription();
         }
       });
       
     } catch (error) {
       console.error('❌ Error setting up app state listeners:', error);
+    }
+  }
+
+  /**
+   * Check subscription status and retry if in 'Never Subscribed' state
+   * This handles cases where APNS registration fails (common on iOS 18 or with certificate issues)
+   * Can be called from screens during onboarding to fix subscription before registration
+   */
+  public async checkAndRetrySubscription(): Promise<void> {
+    try {
+      console.log('🔍 [OneSignal] Checking subscription status on app resume...');
+      
+      // Wait a moment for OneSignal to stabilize after app resume
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const hasValidSubscription = await this.hasValidPushSubscription();
+      
+      if (!hasValidSubscription) {
+        console.warn('⚠️ [OneSignal] No valid subscription detected (Never Subscribed state)');
+        console.log('💡 [OneSignal] This often happens on iOS 18 or with APNS certificate issues');
+        await this.recordDebugEvent('subscription:invalid-on-resume', {
+          retryAttempts: this.retryAttempts,
+          maxRetryAttempts: this.maxRetryAttempts
+        });
+        
+        // Only retry if we haven't exceeded max attempts
+        if (this.retryAttempts < this.maxRetryAttempts) {
+          this.retryAttempts++;
+          console.log(`🔄 [OneSignal] Attempting subscription retry ${this.retryAttempts}/${this.maxRetryAttempts}...`);
+          await this.retrySubscriptionRegistration();
+        } else {
+          console.warn('⚠️ [OneSignal] Max retry attempts reached. Manual troubleshooting needed.');
+          console.log('💡 [OneSignal] Check: 1) APNS certificate in OneSignal dashboard, 2) Certificate environment (Dev vs Prod), 3) Bundle ID match');
+          await this.recordDebugEvent('subscription:max-retries-reached', {
+            retryAttempts: this.retryAttempts
+          });
+        }
+      } else {
+        console.log('✅ [OneSignal] Valid subscription confirmed on app resume');
+        // Reset retry counter on success
+        this.retryAttempts = 0;
+      }
+      
+    } catch (error) {
+      console.error('❌ [OneSignal] Error checking subscription on resume:', error);
+      await this.recordDebugEvent('subscription:check-error', {
+        message: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+
+  /**
+   * Retry subscription registration with enhanced iOS 18 compatibility
+   */
+  private async retrySubscriptionRegistration(): Promise<void> {
+    try {
+      console.log('🔄 [OneSignal] Starting subscription retry process...');
+      await this.recordDebugEvent('subscription:retry-start', {
+        attempt: this.retryAttempts
+      });
+      
+      // Step 1: Re-request notification permissions (critical for iOS 18)
+      console.log('📱 [OneSignal] Step 1: Re-requesting notification permissions...');
+      if (OneSignal?.Notifications?.requestPermission) {
+        try {
+          const permissionResult = await OneSignal.Notifications.requestPermission(true);
+          console.log('📱 [OneSignal] Permission result:', permissionResult);
+          await this.recordDebugEvent('subscription:retry-permission', { permissionResult });
+        } catch (permError) {
+          console.error('❌ [OneSignal] Permission request failed:', permError);
+        }
+      }
+      
+      // Step 2: Force opt-in to push subscription
+      console.log('📱 [OneSignal] Step 2: Force opting into push subscription...');
+      if (OneSignal?.User?.pushSubscription) {
+        try {
+          OneSignal.User.pushSubscription.optIn();
+          console.log('✅ [OneSignal] Push subscription opt-in called');
+          await this.recordDebugEvent('subscription:retry-optin', {});
+        } catch (optInError) {
+          console.error('❌ [OneSignal] Opt-in failed:', optInError);
+        }
+      }
+      
+      // Step 3: Wait for APNS token registration (iOS needs time)
+      console.log('⏳ [OneSignal] Step 3: Waiting for APNS token registration...');
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      // Step 4: Trigger registration with fresh UUID (iOS 18 fix)
+      console.log('🔑 [OneSignal] Step 4: Triggering registration with fresh UUID...');
+      try {
+        const freshUuid = await this.getOrCreateDeviceUuid();
+        if (OneSignal?.login) {
+          await OneSignal.login(freshUuid);
+          console.log('✅ [OneSignal] Login called with UUID:', freshUuid);
+          await this.recordDebugEvent('subscription:retry-login', { freshUuid });
+        }
+      } catch (loginError) {
+        console.error('❌ [OneSignal] Login failed:', loginError);
+      }
+      
+      // Step 5: Add tags to trigger backend registration
+      console.log('🏷️ [OneSignal] Step 5: Adding tags to trigger registration...');
+      if (OneSignal?.User?.addTag) {
+        try {
+          const timestamp = Date.now();
+          OneSignal.User.addTag('retry_timestamp', timestamp.toString());
+          OneSignal.User.addTag('retry_attempt', this.retryAttempts.toString());
+          OneSignal.User.addTag('platform', Platform.OS);
+          OneSignal.User.addTag('ios_version', Platform.Version.toString());
+          console.log('✅ [OneSignal] Tags added successfully');
+          await this.recordDebugEvent('subscription:retry-tags', { timestamp, attempt: this.retryAttempts });
+        } catch (tagError) {
+          console.error('❌ [OneSignal] Tag addition failed:', tagError);
+        }
+      }
+      
+      // Step 6: Wait and verify subscription status
+      console.log('⏳ [OneSignal] Step 6: Waiting for subscription to complete...');
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      
+      const subscriptionState = await this.getPushSubscriptionState();
+      console.log('🔍 [OneSignal] Subscription state after retry:', {
+        id: subscriptionState.id ?? 'none',
+        token: subscriptionState.token ? `${subscriptionState.token.substring(0, 15)}...` : 'none',
+        optedIn: subscriptionState.optedIn ?? false
+      });
+      
+      await this.recordDebugEvent('subscription:retry-result', {
+        hasId: !!subscriptionState.id,
+        hasToken: !!subscriptionState.token,
+        optedIn: subscriptionState.optedIn,
+        attempt: this.retryAttempts
+      });
+      
+      // Check if retry was successful
+      if (subscriptionState.token && subscriptionState.optedIn) {
+        console.log('✅ [OneSignal] Subscription retry SUCCESSFUL!');
+        this.retryAttempts = 0; // Reset counter on success
+        
+        // IMPORTANT: Trigger Laravel registration retry
+        // Since OneSignal subscription is now valid, retry Laravel registration if it previously failed
+        await this.triggerLaravelRegistrationRetry();
+      } else {
+        console.warn('⚠️ [OneSignal] Subscription retry incomplete - may need more time or manual intervention');
+        console.log('💡 [OneSignal] Common causes:');
+        console.log('   1. APNS certificate not uploaded or expired in OneSignal dashboard');
+        console.log('   2. Wrong certificate environment (Development vs Production)');
+        console.log('   3. Bundle ID mismatch between app and OneSignal dashboard');
+        console.log('   4. iOS 18 requires Production APNS certificate even for TestFlight');
+      }
+      
+    } catch (error) {
+      console.error('❌ [OneSignal] Subscription retry failed:', error);
+      await this.recordDebugEvent('subscription:retry-error', {
+        message: error instanceof Error ? error.message : String(error),
+        attempt: this.retryAttempts
+      });
     }
   }
 
@@ -793,14 +972,17 @@ export class OneSignalService {
   }
 
   // Method to get the OneSignal user ID with enhanced debugging
-  public async getOneSignalUserId(): Promise<string | null> {
+  public async getOneSignalUserId(retryCount: number = 0): Promise<string | null> {
+    const maxRetries = 3;
+    const retryDelayMs = 2000; // 2 seconds between retries
+    
     if (!this.isInitialized) {
       console.log('OneSignal not initialized');
       return null;
     }
     
     try {
-      console.log('🔍 Getting OneSignal User ID...');
+      console.log(`🔍 Getting OneSignal User ID... (attempt ${retryCount + 1}/${maxRetries + 1})`);
       console.log('🔍 OneSignal object:', typeof OneSignal);
       console.log('🔍 OneSignal.User object:', typeof OneSignal?.User);
 
@@ -824,25 +1006,43 @@ export class OneSignalService {
         console.log('🔍 OneSignal.User.getOnesignalId is not a function');
       }
 
+      // SUCCESS: Got User ID
       if (resolvedId && resolvedId !== '') {
         console.log('✅ Found OneSignal User ID via getOnesignalId():', resolvedId);
+        console.log('💡 [OneSignal] This is the USER ID (not subscription ID) - required for Laravel');
         return resolvedId;
       }
 
-      const subscriptionState = await this.getPushSubscriptionState();
-      if (subscriptionState.id) {
-        console.log('✅ Found Push Subscription ID via subscription state:', subscriptionState.id);
-        return subscriptionState.id;
-      }
-
+      // Check legacy property for User ID
       const userAny = OneSignal.User as any;
       if (userAny?.onesignalId) {
         console.log('✅ Found OneSignal User ID via legacy property:', userAny.onesignalId);
         return userAny.onesignalId;
       }
 
+      // NO USER ID FOUND - Should we retry?
+      if (retryCount < maxRetries) {
+        console.warn(`⚠️ [OneSignal] User ID not available yet, retrying in ${retryDelayMs}ms... (${retryCount + 1}/${maxRetries})`);
+        await new Promise(resolve => setTimeout(resolve, retryDelayMs));
+        return this.getOneSignalUserId(retryCount + 1);
+      }
+
+      // LAST RESORT: Try Subscription ID (but warn heavily)
+      console.error('❌ [OneSignal] Could not get User ID after multiple retries!');
+      console.error('❌ [OneSignal] This means OneSignal User registration has not completed');
+      
+      const subscriptionState = await this.getPushSubscriptionState();
+      if (subscriptionState.id) {
+        console.error('⚠️ [OneSignal] Falling back to Subscription ID (will NOT work with Laravel!):', subscriptionState.id);
+        console.error('💡 [OneSignal] Subscription ID cannot be used as User ID');
+        console.error('💡 [OneSignal] Notification delivery WILL FAIL');
+        console.error('💡 [OneSignal] User needs to close/reopen app to fix');
+        return subscriptionState.id;
+      }
+
+      // Legacy fallback for Subscription ID
       if (userAny?.pushSubscriptionId) {
-        console.log('✅ Found Push Subscription ID via legacy property:', userAny.pushSubscriptionId);
+        console.error('⚠️ [OneSignal] Found legacy Subscription ID (will NOT work with Laravel):', userAny.pushSubscriptionId);
         return userAny.pushSubscriptionId;
       }
 
@@ -1100,6 +1300,90 @@ export class OneSignalService {
       await AsyncStorage.removeItem(DEBUG_LOG_STORAGE_KEY);
     } catch (error) {
       console.log('⚠️ [OneSignal] Failed to clear debug events:', error);
+    }
+  }
+
+  /**
+   * Manually trigger subscription check and retry
+   * Can be called from settings screen or debug menu
+   */
+  public async manualSubscriptionCheck(): Promise<boolean> {
+    console.log('🔧 [OneSignal] Manual subscription check triggered');
+    await this.recordDebugEvent('subscription:manual-check', {});
+    
+    const hasValidSubscription = await this.hasValidPushSubscription();
+    
+    if (!hasValidSubscription) {
+      console.log('⚠️ [OneSignal] No valid subscription - attempting retry...');
+      await this.retrySubscriptionRegistration();
+      
+      // Check again after retry
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      return await this.hasValidPushSubscription();
+    }
+    
+    console.log('✅ [OneSignal] Valid subscription confirmed');
+    return true;
+  }
+
+  /**
+   * Get current retry attempt count
+   */
+  public getRetryAttempts(): number {
+    return this.retryAttempts;
+  }
+
+  /**
+   * Reset retry counter (useful after manual fixes)
+   */
+  public resetRetryCounter(): void {
+    console.log('🔄 [OneSignal] Retry counter reset');
+    this.retryAttempts = 0;
+  }
+
+  /**
+   * Cleanup method to remove listeners
+   */
+  public cleanup(): void {
+    if (this.appStateSubscription) {
+      this.appStateSubscription.remove();
+      this.appStateSubscription = null;
+    }
+    if (this.subscriptionCheckInterval) {
+      clearInterval(this.subscriptionCheckInterval);
+      this.subscriptionCheckInterval = null;
+    }
+  }
+
+  /**
+   * Trigger Laravel registration retry after successful OneSignal subscription
+   * This handles the case where initial registration failed due to missing OneSignal subscription
+   */
+  private async triggerLaravelRegistrationRetry(): Promise<void> {
+    try {
+      console.log('🔄 [OneSignal] Checking if Laravel registration needs retry...');
+      
+      // Check if there's a pending registration from onboarding
+      const pendingRegistration = await AsyncStorage.getItem('pending_registration');
+      
+      if (pendingRegistration) {
+        console.log('📤 [OneSignal] Found pending registration, retrying now that subscription is valid...');
+        console.log('💡 [OneSignal] User should open Settings and save to complete registration');
+        
+        // Store a flag that registration should be retried
+        await AsyncStorage.setItem('needs_laravel_registration', 'true');
+        await this.recordDebugEvent('laravel:registration-pending-retry', {
+          message: 'OneSignal subscription fixed, Laravel registration needs to be triggered'
+        });
+      } else {
+        console.log('ℹ️ [OneSignal] No pending registration found');
+      }
+      
+    } catch (error) {
+      console.error('❌ [OneSignal] Error triggering Laravel registration retry:', error);
+      await this.recordDebugEvent('laravel:registration-retry-error', {
+        message: error instanceof Error ? error.message : String(error)
+      });
     }
   }
 }

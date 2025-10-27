@@ -110,6 +110,9 @@ class ScheduledNotificationService {
         isInitialized: this.isInitialized,
       });
 
+      // Check if Laravel registration needs to be retried (after OneSignal subscription was fixed)
+      await this.checkAndRetryPendingRegistration();
+
     } catch (error) {
       console.error('❌ [ScheduledNotifications] Failed to initialize:', error);
       // Mark as not initialized so it can be retried
@@ -299,6 +302,38 @@ class ScheduledNotificationService {
 
     } catch (error) {
       console.error('❌ [ScheduledNotifications] Failed to check/register device:', error);
+    }
+  }
+
+  /**
+   * Check if there's a pending registration that needs to be retried
+   * This is called after OneSignal subscription is fixed
+   */
+  private async checkAndRetryPendingRegistration(): Promise<void> {
+    try {
+      const needsRetry = await AsyncStorage.getItem('needs_laravel_registration');
+      const pendingRegistration = await AsyncStorage.getItem('pending_registration');
+      
+      if (needsRetry === 'true' && pendingRegistration) {
+        console.log('🔄 [ScheduledNotifications] Found pending registration, attempting retry...');
+        
+        try {
+          const settings = JSON.parse(pendingRegistration);
+          const result = await this.registerDevice(settings);
+          
+          if (result.success) {
+            console.log('✅ [ScheduledNotifications] Pending registration completed successfully!');
+            await AsyncStorage.removeItem('pending_registration');
+            await AsyncStorage.removeItem('needs_laravel_registration');
+          } else {
+            console.warn('⚠️ [ScheduledNotifications] Pending registration still failed:', result.message);
+          }
+        } catch (error) {
+          console.error('❌ [ScheduledNotifications] Error retrying pending registration:', error);
+        }
+      }
+    } catch (error) {
+      console.error('❌ [ScheduledNotifications] Error checking pending registration:', error);
     }
   }
 

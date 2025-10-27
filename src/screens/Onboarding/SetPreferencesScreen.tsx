@@ -42,6 +42,24 @@ const SetPreferencesScreen: React.FC<SetPreferencesScreenProps> = ({ navigation 
   const hourOptions = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
   const minuteOptions = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'));
 
+  // CRITICAL: Trigger OneSignal subscription retry when user reaches this screen
+  // This fixes "Never Subscribed" issue without requiring user to close/reopen app
+  useEffect(() => {
+    console.log('🔄 [SetPreferences] Triggering OneSignal subscription check...');
+    
+    // Trigger the same retry logic that works on app resume
+    const checkSubscription = async () => {
+      try {
+        await oneSignalService.checkAndRetrySubscription();
+        console.log('✅ [SetPreferences] OneSignal subscription check complete');
+      } catch (error) {
+        console.error('❌ [SetPreferences] Error checking subscription:', error);
+      }
+    };
+    
+    checkSubscription();
+  }, []); // Run once when screen mounts
+
   const parseTime = (time: string): { hour: string; minute: string } => {
     const [h, m] = time.split(':');
     return { hour: h.replace(/^0+/, '') || '0', minute: m || '00' };
