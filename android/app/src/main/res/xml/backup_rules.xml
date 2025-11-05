@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Exclude AsyncStorage data that should not be restored after reinstall -->
+    <exclude domain="sharedpref" path="RCTAsyncLocalStorage_V1"/>
+    
+    <!-- Exclude OneSignal data to ensure fresh registration -->
+    <exclude domain="sharedpref" path="OneSignal"/>
+    <exclude domain="database" path="OneSignal.db"/>
+</full-backup-content>
