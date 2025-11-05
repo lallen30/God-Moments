@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../../theme/colors';
+import { apiService } from '../../../services/apiService';
 
 const { width, height } = Dimensions.get('window');
 
@@ -38,30 +39,60 @@ const OurMissionScreen: React.FC<OurMissionScreenProps> = ({ navigation }) => {
   const [error, setError] = useState<string | null>(null);
 
   // Parse HTML content to extract text and structure
-  const parseHtmlContent = (htmlContent: string) => {
+  const parseHtmlContent = (htmlContent: string | null) => {
+    if (!htmlContent) {
+      console.log('Mission HTML content is null or empty');
+      return [];
+    }
     console.log('Parsing Mission HTML content:', htmlContent);
     
     const sections: Array<{title: string, content: string}> = [];
     
-    // Split by <strong> tags to identify sections
-    const parts = htmlContent.split(/<\/?strong>/);
-    console.log('Mission HTML parts after splitting:', parts);
+    // Split content by div tags first
+    const divs = htmlContent.split(/<\/?div[^>]*>/);
+    const cleanDivs = divs.filter(div => div.trim()).map(div => div.trim());
     
-    for (let i = 0; i < parts.length; i += 2) {
-      if (i + 1 < parts.length) {
-        const title = parts[i + 1]?.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
-        
-        // Get content from the next part and clean it up
-        let content = '';
-        if (i + 2 < parts.length) {
-          content = parts[i + 2]?.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+    console.log('Mission content divs:', cleanDivs);
+    
+    // Check if first div has a strong tag (title)
+    let currentTitle = '';
+    let currentContent = '';
+    
+    for (let i = 0; i < cleanDivs.length; i++) {
+      const div = cleanDivs[i];
+      
+      // Check if this div contains a strong tag (title)
+      if (div.includes('<strong>') && div.includes('</strong>')) {
+        // If we have accumulated content, save it
+        if (currentTitle && currentContent) {
+          sections.push({ title: currentTitle, content: currentContent });
         }
         
-        console.log(`Mission Section ${Math.floor(i/2)}: Title="${title}", Content="${content}"`);
-        
-        if (title && content) {
-          sections.push({ title, content });
+        // Extract the new title
+        currentTitle = div.replace(/<\/?strong>/g, '').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+        currentContent = '';
+      } else {
+        // This is content
+        const cleanText = div.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+        if (cleanText) {
+          currentContent += (currentContent ? ' ' : '') + cleanText;
         }
+      }
+    }
+    
+    // Add the last section if exists
+    if (currentTitle && currentContent) {
+      sections.push({ title: currentTitle, content: currentContent });
+    }
+    
+    // If no sections were found with strong tags, treat all content as one section
+    if (sections.length === 0 && cleanDivs.length > 0) {
+      const allContent = cleanDivs.map(div => 
+        div.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim()
+      ).filter(text => text).join(' ');
+      
+      if (allContent) {
+        sections.push({ title: 'Our Mission', content: allContent });
       }
     }
     
@@ -70,7 +101,11 @@ const OurMissionScreen: React.FC<OurMissionScreenProps> = ({ navigation }) => {
   };
 
   // Parse top content with proper strong tag and blockquote handling
-  const parseTopContent = (htmlContent: string) => {
+  const parseTopContent = (htmlContent: string | null) => {
+    if (!htmlContent) {
+      console.log('Mission top content is null or empty');
+      return { parsedContent: [], tagline: '' };
+    }
     console.log('Parsing mission top content:', htmlContent);
     
     // Extract blockquote content first
@@ -118,26 +153,26 @@ const OurMissionScreen: React.FC<OurMissionScreenProps> = ({ navigation }) => {
     return { parsedContent, tagline };
   };
 
-  // Simulate API data (in real app, this would be an API call)
+  // Fetch Our Mission data from API
   useEffect(() => {
     const loadMissionData = async () => {
       try {
         setLoading(true);
         setError(null);
         
-        // Simulate API response with the provided data
-        const simulatedData: MissionData = {
-          id: 1,
-          page_name: 'our_mission',
-          page_title: 'Our Mission',
-          top_content: '<div><strong>About God Moments</strong><br><br>Our app is a simple way to awaken you to the presence of God before you. Twice each day, at random times, your phone will gently chime with a bell and display a short scripture verse, inviting you to pause for a sacred moment of gratitude and prayer.<br><br></div><blockquote>Stop. Breathe. Give thanks.</blockquote>',
-          page_content: '<div><strong>Our Mission</strong><br><br>We are a ministry of evangelization offered by the Vincentian priests and brothers of St. Vincent de Paul. If you\'re seeking a deeper prayer experience, discover our companion app, The God Minute—a 10-minute daily prayer that weaves together music, scripture, and reflection.</div>',
-          page_url: 'our-mission',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        };
+        console.log('Fetching Our Mission from mobile API endpoint...');
+        const response = await apiService.getData('our-mission');
+        console.log('Full Our Mission API Response:', JSON.stringify(response, null, 2));
         
-        setMissionData(simulatedData);
+        if (response && response.status === 'ok' && response.pageData) {
+          console.log('Our Mission Data received:', response.pageData);
+          console.log('Our Mission top_content:', response.pageData.top_content);
+          console.log('Our Mission page_content:', response.pageData.page_content);
+          setMissionData(response.pageData);
+        } else {
+          console.log('Our Mission API endpoint failed:', response);
+          setError('Failed to load mission content');
+        }
       } catch (err) {
         console.error('Error loading mission data:', err);
         setError('Failed to load mission content');

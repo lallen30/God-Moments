@@ -93,7 +93,7 @@ export class OneSignalService {
 
   /**
    * Get or create a persistent device UUID for OneSignal login
-   * IMPORTANT: Always generates a NEW UUID to avoid conflicts with deleted OneSignal subscriptions
+   * CRITICAL: This UUID must be PERSISTENT across app opens to maintain same OneSignal User
    */
   private async getOrCreateDeviceUuid(): Promise<string> {
     if (this.deviceUuid) {
@@ -101,19 +101,29 @@ export class OneSignalService {
     }
 
     try {
-      // ALWAYS generate a NEW UUID on each app initialization
-      // This prevents conflicts when user uninstalls, deletes OneSignal subscription, and reinstalls
+      // CRITICAL FIX: Read existing UUID from storage first
+      const existingUuid = await AsyncStorage.getItem('onesignal_device_uuid');
+      
+      if (existingUuid) {
+        // Use existing UUID to maintain same OneSignal User across app opens
+        this.deviceUuid = existingUuid;
+        console.log('🆔 [OneSignal] Using existing device UUID:', existingUuid);
+        await this.recordDebugEvent('deviceUuid:existing', { existingUuid });
+        return existingUuid;
+      }
+
+      // Only generate NEW UUID if none exists (first launch or after uninstall)
       const newUuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         const r = Math.random() * 16 | 0;
         const v = c === 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
       });
 
-      // Save the new UUID
+      // Save the new UUID for future app opens
       await AsyncStorage.setItem('onesignal_device_uuid', newUuid);
       this.deviceUuid = newUuid;
       
-      console.log('🆔 [OneSignal] Generated fresh device UUID:', newUuid);
+      console.log('🆔 [OneSignal] Generated NEW device UUID (first launch):', newUuid);
       await this.recordDebugEvent('deviceUuid:generated', { newUuid });
       return newUuid;
 

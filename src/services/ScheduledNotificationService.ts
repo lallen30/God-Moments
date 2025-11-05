@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import DeviceInfo from 'react-native-device-info';
 
 // Use the properly constructed API URL from environment
-// environment.apiURL = "https://godmoments.betaplanets.com/api/"
+// environment.apiURL = "https://app.godmoments.info/api/"
 // We need to remove the trailing slash for our endpoint construction
 const API_BASE = environment.apiURL.replace(/\/$/, '');
 

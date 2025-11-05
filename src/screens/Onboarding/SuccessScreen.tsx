@@ -40,12 +40,19 @@ const SuccessScreen: React.FC<SuccessScreenProps> = ({ navigation }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await apiService.getApiData('success');
-      console.log('Success API Response:', response);
       
-      if (response?.status === 'success' && response?.data) {
-        setSuccessData(response.data);
+      console.log('Fetching Success page from mobile API endpoint...');
+      const response = await apiService.getData('success-message');
+      console.log('Full Success API Response:', JSON.stringify(response, null, 2));
+      
+      if (response && response.status === 'ok' && response.pageData) {
+        console.log('Success Data received:', response.pageData);
+        setSuccessData({
+          page_title: response.pageData.page_title,
+          page_content: response.pageData.page_content
+        });
       } else {
+        console.log('Success API endpoint failed:', response);
         throw new Error('Failed to fetch success data');
       }
     } catch (err) {

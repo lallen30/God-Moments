@@ -14,7 +14,7 @@ interface ServerConfig {
 
 // WordPress configuration
 const wordpressConfig: ServerConfig = {
-  serverHost: 'godmoments.betaplanets.com',
+  serverHost: 'app.godmoments.info',
   serverProtocol: 'https',
   serverPath: '/',
   apiPath: 'wp-json'
@@ -24,7 +24,7 @@ const wordpressConfig: ServerConfig = {
 // Local development server - localhost works for iOS Simulator
 // Physical device: use Mac's IP address (192.168.0.100:8000)
 const laravelConfig: ServerConfig = {
-  serverHost: 'godmoments.betaplanets.com',
+  serverHost: 'app.godmoments.info',
   serverProtocol: 'https',
   serverPath: '/',
   apiPath: 'api'

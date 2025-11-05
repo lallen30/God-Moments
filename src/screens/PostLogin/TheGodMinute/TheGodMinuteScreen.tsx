@@ -42,12 +42,20 @@ const TheGodMinuteScreen: React.FC<TheGodMinuteScreenProps> = ({ navigation }) =
     try {
       setLoading(true);
       setError(null);
-      const response = await apiService.getApiData('the-god-minute');
-      console.log('God Minute API Response:', response);
       
-      if (response?.status === 'success' && response?.data) {
-        setGodMinuteData(response.data);
+      console.log('Fetching The God Minute from mobile API endpoint...');
+      const response = await apiService.getData('the-god-minute');
+      console.log('Full God Minute API Response:', JSON.stringify(response, null, 2));
+      
+      if (response && response.status === 'ok' && response.pageData) {
+        console.log('God Minute Data received:', response.pageData);
+        setGodMinuteData({
+          page_title: response.pageData.page_title,
+          page_content: response.pageData.page_content,
+          top_content: response.pageData.top_content
+        });
       } else {
+        console.log('God Minute API endpoint failed:', response);
         throw new Error('Failed to fetch God Minute data');
       }
     } catch (err) {

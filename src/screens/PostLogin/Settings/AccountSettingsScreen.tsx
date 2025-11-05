@@ -19,7 +19,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { colors } from '../../../theme/colors';
 import { scheduledNotificationService } from '../../../services/ScheduledNotificationService';
-import { OneSignalDiagnostics } from '../../../components/OneSignalDiagnostics';
+
 
 const AccountSettingsScreen = () => {
   const navigation = useNavigation<any>();
@@ -676,9 +676,6 @@ const AccountSettingsScreen = () => {
             <Text style={styles.saveButtonText}>Save Settings</Text>
           )}
         </TouchableOpacity>
-
-        {/* OneSignal Diagnostics Panel */}
-        <OneSignalDiagnostics />
 
         <View style={styles.footer}>
           <Image source={require('../../../assets/images/footer-icon.png')} style={styles.footerIcon} resizeMode="contain" />
