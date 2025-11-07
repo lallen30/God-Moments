@@ -13,6 +13,7 @@ import {
   Linking,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import HTML from 'react-native-render-html';
 import { colors } from '../../../theme/colors';
 import { apiService } from '../../../services/apiService';
 
@@ -229,9 +230,6 @@ const OurMissionScreen: React.FC<OurMissionScreenProps> = ({ navigation }) => {
     );
   }
 
-  const topContent = parseTopContent(missionData.top_content);
-  const contentSections = parseHtmlContent(missionData.page_content);
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -264,14 +262,47 @@ const OurMissionScreen: React.FC<OurMissionScreenProps> = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
       >
 
-        {/* Content Sections */}
-        {contentSections.map((section, index) => (
-          <View key={index} style={styles.contentCard}>
-            <View style={styles.cardBorder} />
-            <Text style={styles.cardTitle}>{section.title}</Text>
-            <Text style={styles.cardDescription}>{section.content}</Text>
+        {/* Top Content */}
+        {missionData.top_content && (
+          <View style={styles.htmlContentContainer}>
+            <HTML 
+              source={{ html: missionData.top_content }} 
+              contentWidth={width - 80}
+              tagsStyles={{
+                p: { fontSize: 16, color: colors.textDark, lineHeight: 24, marginBottom: 12 },
+                strong: { fontWeight: '600', color: '#8B4513', fontSize: 18 },
+                blockquote: { 
+                  fontSize: 18, 
+                  fontWeight: '600', 
+                  color: '#8B4513', 
+                  fontStyle: 'italic',
+                  textAlign: 'center',
+                  marginVertical: 16,
+                  paddingHorizontal: 20,
+                },
+                div: { marginBottom: 12 },
+              }}
+            />
           </View>
-        ))}
+        )}
+
+        {/* Page Content */}
+        {missionData.page_content && (
+          <View style={styles.htmlContentContainer}>
+            <HTML 
+              source={{ html: missionData.page_content }} 
+              contentWidth={width - 80}
+              tagsStyles={{
+                p: { fontSize: 16, color: colors.textDark, lineHeight: 24, marginBottom: 12 },
+                strong: { fontWeight: '600', color: '#8B4513', fontSize: 18 },
+                div: { marginBottom: 16 },
+                h1: { fontSize: 20, fontWeight: '600', color: '#8B4513', marginBottom: 12 },
+                h2: { fontSize: 18, fontWeight: '600', color: '#8B4513', marginBottom: 12 },
+                h3: { fontSize: 16, fontWeight: '600', color: '#8B4513', marginBottom: 12 },
+              }}
+            />
+          </View>
+        )}
 
         {/* God Minute Button */}
         <TouchableOpacity 
@@ -365,6 +396,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20,
     paddingBottom: 20,
+  },
+  htmlContentContainer: {
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 3,
   },
   topContentContainer: {
     marginBottom: 20,

@@ -91,7 +91,14 @@ const SuccessScreen: React.FC<SuccessScreenProps> = ({ navigation }) => {
             ) : (
               <>
                 {/* Success Title */}
-                <Text style={styles.successTitle}>
+                <Text 
+                  style={styles.successTitle}
+                  adjustsFontSizeToFit
+                  numberOfLines={1}
+                  allowFontScaling={false}
+                  maxFontSizeMultiplier={1}
+                  minimumFontScale={0.5}
+                >
                   {successData?.page_title?.toUpperCase() || 'SUCCESS!'}
                 </Text>
 
@@ -174,6 +181,8 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Impact' : 'sans-serif-condensed',
     textTransform: 'uppercase',
     includeFontPadding: false,
+    width: '100%',
+    paddingHorizontal: 20,
   },
   messageCard: {
     backgroundColor: 'rgba(252, 246, 233, 0.75)',

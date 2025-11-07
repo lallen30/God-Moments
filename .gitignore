@@ -92,3 +92,4 @@ firebase/service-account-*.json
 *.log
 .tmp
 .temp
+*.apk
